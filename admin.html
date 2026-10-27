@@ -8,35 +8,30 @@
     * { box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
     
-    /* ヘッダー＆タブ */
     .header { background: #fff; padding: 16px 24px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     h1 { margin: 0 0 12px 0; font-size: 1.3rem; color: #1a365d; }
     .nav-tabs { display: flex; gap: 8px; border-bottom: 2px solid #edf2f7; padding-bottom: 8px; margin-bottom: 16px; }
     .tab-btn { padding: 8px 16px; border: none; background: none; font-size: 0.95rem; font-weight: bold; color: #718096; cursor: pointer; border-radius: 6px; }
     .tab-btn.active { background: #3182ce; color: #fff; }
 
-    /* フィルターエリア */
     .filter-box { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
     input[type="date"], input[type="text"], textarea { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
     .btn-action { padding: 8px 14px; background: #4a5568; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn-blue { background: #3182ce; }
     .btn-green { background: #38a169; }
 
-    /* テーブルデザイン (一列一覧) */
     .table-container { background: #fff; border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; min-width: 950px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; min-width: 1000px; }
     th { background: #edf2f7; color: #2d3748; padding: 12px 14px; font-weight: bold; border-bottom: 2px solid #e2e8f0; }
     td { padding: 12px 14px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
     tr:hover { background: #f8fafc; }
 
-    /* ステータスバッジ */
     .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
     .badge-予約受付 { background: #ebf8ff; color: #2b6cb0; }
     .badge-受付済 { background: #feebc8; color: #c05621; }
     .badge-診察完了 { background: #c6f6d5; color: #22543d; }
     .badge-キャンセル { background: #fed7d7; color: #9b2c2c; }
 
-    /* 操作ボタン */
     .btn-sm { padding: 4px 8px; border: none; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-right: 2px; }
     .btn-sm-check { background: #feebc8; color: #c05621; }
     .btn-sm-complete { background: #c6f6d5; color: #22543d; }
@@ -44,11 +39,9 @@
     .btn-sm-cancel { background: #fed7d7; color: #9b2c2c; }
     .btn-sm-line { background: #06C755; color: #fff; }
 
-    /* タブコンテンツ制御 */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* モーダル（LINE送信ポップアップ） */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; }
     .modal-content { background: #fff; padding: 24px; border-radius: 12px; width: 90%; max-width: 480px; }
   </style>
@@ -64,12 +57,13 @@
     </div>
   </div>
 
-  <!-- TAB 1: 予約一覧（テーブル形式） -->
+  <!-- TAB 1: 予約一覧 -->
   <div id="tab-reservations" class="tab-content active">
     <div class="filter-box">
+      <label style="font-weight:bold;">日付絞り込み:</label>
       <input type="date" id="datePicker" onchange="filterReservations()">
-      <button class="btn-action" onclick="loadData()">更新</button>
-      <button class="btn-action btn-blue" onclick="renderReservationTable(allReservations)">全件表示</button>
+      <button class="btn-action btn-blue" onclick="showAllReservations()">全件表示</button>
+      <button class="btn-action" onclick="loadData()">🔄 データ更新</button>
     </div>
 
     <div class="table-container">
@@ -77,7 +71,7 @@
         <thead>
           <tr>
             <th>予約日時</th>
-            <th>飼い主名（LINE）</th>
+            <th>飼い主名</th>
             <th>ペット名</th>
             <th>診療メニュー</th>
             <th>問診・備考</th>
@@ -86,7 +80,7 @@
           </tr>
         </thead>
         <tbody id="reservationTableBody">
-          <tr><td colspan="6" style="text-align:center; padding:20px;">データを読み込み中...</td></tr>
+          <tr><td colspan="7" style="text-align:center; padding:20px;">データを読み込み中...</td></tr>
         </tbody>
       </table>
     </div>
@@ -98,7 +92,8 @@
       <table>
         <thead>
           <tr>
-            <th>ペット名（種類）</th>
+            <th>飼い主名</th>
+            <th>ペット名</th>
             <th>LINE ID</th>
             <th>累計受診回数</th>
             <th>最終受診日</th>
@@ -106,7 +101,7 @@
           </tr>
         </thead>
         <tbody id="patientTableBody">
-          <tr><td colspan="5" style="text-align:center; padding:20px;">患者データを集計中...</td></tr>
+          <tr><td colspan="6" style="text-align:center; padding:20px;">患者データを集計中...</td></tr>
         </tbody>
       </table>
     </div>
@@ -138,14 +133,18 @@
   </div>
 
   <script>
-    // ★ GASのウェブアプリURLを貼り付けてください
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
     
     let allReservations = [];
     let currentTargetUserId = '';
 
     window.onload = () => {
-      document.getElementById('datePicker').value = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      document.getElementById('datePicker').value = `${yyyy}-${mm}-${dd}`;
+      
       loadData();
     };
 
@@ -154,40 +153,49 @@
         .then(res => res.json())
         .then(data => {
           allReservations = data;
-          filterReservations();
+          renderReservationTable(allReservations);
           renderPatientTable();
         })
         .catch(err => {
-          document.getElementById('reservationTableBody').innerHTML = "<tr><td colspan='6' style='color:red; text-align:center;'>データ読み込みエラー</td></tr>";
+          document.getElementById('reservationTableBody').innerHTML = "<tr><td colspan='7' style='color:red; text-align:center;'>データ読み込みエラー</td></tr>";
         });
+    }
+
+    function normalizeDateStr(str) {
+      if (!str) return '';
+      const matched = String(str).match(/(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/);
+      if (!matched) return '';
+      return `${matched[1]}-${matched[2].padStart(2, '0')}-${matched[3].padStart(2, '0')}`;
     }
 
     function filterReservations() {
       const selectedDate = document.getElementById('datePicker').value;
-      if (!selectedDate) return;
+      if (!selectedDate) {
+        renderReservationTable(allReservations);
+        return;
+      }
 
-      const filtered = allReservations.filter(r => {
-        if (!r.date) return false;
-        const matched = String(r.date).match(/(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/);
-        if (!matched) return false;
-        const formattedRDate = `${matched[1]}-${matched[2].padStart(2, '0')}-${matched[3].padStart(2, '0')}`;
-        return formattedRDate === selectedDate;
-      });
-
+      const filtered = allReservations.filter(r => normalizeDateStr(r.date) === selectedDate);
       renderReservationTable(filtered);
+    }
+
+    function showAllReservations() {
+      document.getElementById('datePicker').value = '';
+      renderReservationTable(allReservations);
     }
 
     function renderReservationTable(list) {
       const tbody = document.getElementById('reservationTableBody');
       if (!list || list.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#888; padding:30px;'>該当する予約はありません</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#888; padding:30px;'>該当する予約はありません</td></tr>";
         return;
       }
 
       tbody.innerHTML = list.map(r => `
         <tr>
           <td><strong>${r.date}</strong><br><span style="color:#666;">${r.time}</span></td>
-          <td><strong>🐾 ${r.petName}</strong></td>
+          <td><strong>👤 ${r.lineUserName || '不明'}</strong></td>
+          <td>🐾 ${r.petName}</td>
           <td>${r.menu}</td>
           <td style="max-width:250px; font-size:0.85rem; color:#4a5568;">${r.symptoms || 'なし'}</td>
           <td><span class="badge badge-${r.status}">${r.status}</span></td>
@@ -196,7 +204,7 @@
             <button class="btn-sm btn-sm-complete" onclick="updateStatus(${r.rowIndex}, '診察完了')">完了</button>
             <button class="btn-sm btn-sm-reset" onclick="updateStatus(${r.rowIndex}, '予約受付')">戻す</button>
             <button class="btn-sm btn-sm-cancel" onclick="updateStatus(${r.rowIndex}, 'キャンセル')">取消</button>
-            <button class="btn-sm btn-sm-line" onclick="openModal('${r.lineUserId}', '${r.petName}')">💬 LINE送信</button>
+            <button class="btn-sm btn-sm-line" onclick="openModal('${r.lineUserId}', '${r.lineUserName || r.petName}')">💬 LINE送信</button>
           </td>
         </tr>
       `).join('');
@@ -208,27 +216,29 @@
 
       allReservations.forEach(r => {
         if (!r.petName) return;
-        if (!patientsMap[r.petName]) {
-          patientsMap[r.petName] = { petName: r.petName, lineUserId: r.lineUserId, count: 0, lastDate: r.date };
+        const key = `${r.lineUserName}_${r.petName}`;
+        if (!patientsMap[key]) {
+          patientsMap[key] = { ownerName: r.lineUserName || '不明', petName: r.petName, lineUserId: r.lineUserId, count: 0, lastDate: r.date };
         }
-        patientsMap[r.petName].count += 1;
-        patientsMap[r.petName].lastDate = r.date;
+        patientsMap[key].count += 1;
+        patientsMap[key].lastDate = r.date;
       });
 
       const patientList = Object.values(patientsMap);
       if (patientList.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#888;'>患者データがありません</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#888;'>患者データがありません</td></tr>";
         return;
       }
 
       tbody.innerHTML = patientList.map(p => `
         <tr>
-          <td><strong>🐾 ${p.petName}</strong></td>
+          <td><strong>👤 ${p.ownerName}</strong></td>
+          <td>🐾 ${p.petName}</td>
           <td style="font-size:0.8rem; color:#666;">${p.lineUserId}</td>
           <td>${p.count} 回</td>
           <td>${p.lastDate}</td>
           <td>
-            <button class="btn-sm btn-sm-line" onclick="openModal('${p.lineUserId}', '${p.petName}')">💬 個別LINE送信</button>
+            <button class="btn-sm btn-sm-line" onclick="openModal('${p.lineUserId}', '${p.ownerName}')">💬 個別LINE送信</button>
           </td>
         </tr>
       `).join('');
@@ -241,7 +251,6 @@
       }).then(() => loadData());
     }
 
-    /* タブ切り替え */
     function switchTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -250,10 +259,9 @@
       document.getElementById(`tab-${tabName}`).classList.add('active');
     }
 
-    /* モーダル（LINE送信）関連 */
-    function openModal(userId, petName) {
+    function openModal(userId, name) {
       currentTargetUserId = userId;
-      document.getElementById('modalTargetName').innerText = `💬 ${petName} ちゃんへのLINEメッセージ`;
+      document.getElementById('modalTargetName').innerText = `💬 ${name} 様へのLINEメッセージ`;
       document.getElementById('msgModal').style.display = 'flex';
     }
 
@@ -281,7 +289,6 @@
       });
     }
 
-    /* 一括配信 */
     function sendBroadcast() {
       const msg = document.getElementById('broadcastMsg').value;
       if (!msg) return alert('一括配信メッセージを入力してください');
