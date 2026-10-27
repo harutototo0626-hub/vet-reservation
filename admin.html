@@ -24,7 +24,7 @@
 
     /* テーブルデザイン (一列一覧) */
     .table-container { background: #fff; border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; min-width: 900px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; min-width: 950px; }
     th { background: #edf2f7; color: #2d3748; padding: 12px 14px; font-weight: bold; border-bottom: 2px solid #e2e8f0; }
     td { padding: 12px 14px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
     tr:hover { background: #f8fafc; }
@@ -40,7 +40,8 @@
     .btn-sm { padding: 4px 8px; border: none; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-right: 2px; }
     .btn-sm-check { background: #feebc8; color: #c05621; }
     .btn-sm-complete { background: #c6f6d5; color: #22543d; }
-    .btn-sm-cancel { background: #edf2f7; color: #e53e3e; }
+    .btn-sm-reset { background: #edf2f7; color: #4a5568; }
+    .btn-sm-cancel { background: #fed7d7; color: #9b2c2c; }
     .btn-sm-line { background: #06C755; color: #fff; }
 
     /* タブコンテンツ制御 */
@@ -136,7 +137,7 @@
   </div>
 
   <script>
-    // ★ 最新のGASのウェブアプリURLに置き換えてください
+    // ★ GASのウェブアプリURLを貼り付けてください
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
     
     let allReservations = [];
@@ -192,6 +193,7 @@
           <td>
             <button class="btn-sm btn-sm-check" onclick="updateStatus(${r.rowIndex}, '受付済')">受付</button>
             <button class="btn-sm btn-sm-complete" onclick="updateStatus(${r.rowIndex}, '診察完了')">完了</button>
+            <button class="btn-sm btn-sm-reset" onclick="updateStatus(${r.rowIndex}, '予約受付')">戻す</button>
             <button class="btn-sm btn-sm-cancel" onclick="updateStatus(${r.rowIndex}, 'キャンセル')">取消</button>
             <button class="btn-sm btn-sm-line" onclick="openModal('${r.lineUserId}', '${r.petName}')">💬 LINE送信</button>
           </td>
