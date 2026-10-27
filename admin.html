@@ -153,7 +153,7 @@
         .then(res => res.json())
         .then(data => {
           allReservations = data;
-          renderReservationTable(allReservations);
+          filterReservations(); 
           renderPatientTable();
         })
         .catch(err => {
