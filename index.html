@@ -223,6 +223,7 @@
         if (liff.isLoggedIn()) {
           liff.getProfile().then(p => {
             lineUserId = p.userId;
+            lineUserName = p.displayName;
             const infoEl = document.getElementById('lineUserInfo');
             if (infoEl) infoEl.innerHTML = `✅ LINE連携中: <strong>${p.displayName}</strong> さん`;
           });
@@ -335,6 +336,7 @@
 
       const payload = {
         lineUserId: lineUserId,
+        lineUserName: lineUserName,
         petName: `${petName}（${petType}）`,
         menu: menu,
         date: date,
