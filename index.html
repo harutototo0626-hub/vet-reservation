@@ -66,10 +66,11 @@
       <!-- STEP 1: 基本情報 -->
       <div class="step-content active" id="step1">
         <h2>🐾 1/4 ペットの情報</h2>
-        <!-- Step 1 の h2 の下あたりに追加 -->
-<div id="lineUserInfo" style="background:#e8f9ee; color:#06C755; padding:8px 12px; border-radius:8px; font-size:0.8rem; margin-bottom:12px; text-align:center; font-weight:bold;">
-  LINE連携確認中...
-</div>
+
+        <!-- ① LINE連携状態の表示領域 -->
+        <div id="lineUserInfo" style="background:#e8f9ee; color:#06C755; padding:8px 12px; border-radius:8px; font-size:0.8rem; margin-bottom:12px; text-align:center; font-weight:bold;">
+          LINE連携確認中...
+        </div>
         
         <label>診察区分 <span style="color:red;">*</span></label>
         <div class="grid-options">
@@ -209,15 +210,31 @@
 
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
+    
+    // ★ 発行された LIFF ID に書き換えてください
     const LIFF_ID = "2006687046-Q04fom0s";
+    
     let lineUserId = "WEB_TEST_USER";
 
-    if (LIFF_ID && LIFF_ID !== "YOUR_LIFF_ID") {
+    // ② LINE連携およびユーザー名取得処理
+    if (LIFF_ID && LIFF_ID !== "ここにLIFF_IDを貼り付け") {
       liff.init({ liffId: LIFF_ID }).then(() => {
         if (liff.isLoggedIn()) {
-          liff.getProfile().then(p => { lineUserId = p.userId; });
+          liff.getProfile().then(p => {
+            lineUserId = p.userId;
+            const infoEl = document.getElementById('lineUserInfo');
+            if (infoEl) infoEl.innerHTML = `✅ LINE連携中: <strong>${p.displayName}</strong> さん`;
+          });
+        } else {
+          liff.login();
         }
-      }).catch(err => console.log("LIFF初期化スキップ（Webテスト）"));
+      }).catch(err => {
+        const infoEl = document.getElementById('lineUserInfo');
+        if (infoEl) infoEl.innerText = "⚠️ Webテストモード（WEB_TEST_USER）";
+      });
+    } else {
+      const infoEl = document.getElementById('lineUserInfo');
+      if (infoEl) infoEl.innerText = "⚠️ LIFF ID未設定（WEB_TEST_USER）";
     }
 
     document.getElementById("date").valueAsDate = new Date();
@@ -254,7 +271,6 @@
       }
       
       if (step === 3) {
-        // 確認画面（Step 4）の表示データをセット
         const visitType = document.querySelector('input[name="visitType"]:checked').value;
         const petType = document.querySelector('input[name="petType"]:checked').value;
         const petName = document.getElementById('petName').value;
@@ -262,7 +278,6 @@
         const date = document.getElementById('date').value;
         const time = document.querySelector('input[name="time"]:checked').value;
 
-        // 選択された症状チップの収集
         const selectedChips = Array.from(document.querySelectorAll('.chip.selected')).map(c => c.innerText);
         const detailText = document.getElementById('symptomsDetail').value;
         let symptomsSummary = selectedChips.join('、');
@@ -313,7 +328,6 @@
       const selectedChips = Array.from(document.querySelectorAll('.chip.selected')).map(c => c.innerText);
       const detailText = document.getElementById('symptomsDetail').value;
       
-      // 問診欄に【区分】【ペット種別】【選択症状】【詳細】を整形してまとめる
       let formattedSymptoms = `【${visitType}】 `;
       if (selectedChips.length > 0) formattedSymptoms += `[症状] ${selectedChips.join('、')} `;
       if (detailText) formattedSymptoms += `[詳細] ${detailText}`;
