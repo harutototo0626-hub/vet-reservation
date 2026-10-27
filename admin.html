@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【病院用】予約管理ダッシュボード</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+    .header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    h1 { margin: 0; font-size: 1.3rem; color: #1a365d; }
+    .filter-box { display: flex; align-items: center; gap: 12px; }
+    input[type="date"] { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+    .btn-refresh { padding: 8px 16px; background: #4a5568; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .card { background: #fff; border-radius: 10px; padding: 16px; border-left: 6px solid #3182ce; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    .card.status-受付済 { border-left-color: #dd6b20; }
+    .card.status-診察完了 { border-left-color: #38a169; background: #f8fafc; opacity: 0.85; }
+    .card.status-キャンセル { border-left-color: #e53e3e; opacity: 0.5; }
+    .pet-name { font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .badge { font-size: 0.75rem; padding: 4px 8px; border-radius: 12px; background: #edf2f7; color: #4a5568; }
+    .info { font-size: 0.9rem; color: #4a5568; margin: 4px 0; }
+    .symptoms { background: #f7fafc; padding: 8px; border-radius: 6px; font-size: 0.85rem; color: #2d3748; margin-top: 8px; word-break: break-all; border: 1px solid #edf2f7; }
+    .actions { display: flex; gap: 6px; margin-top: 12px; }
+    .btn { flex: 1; padding: 8px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+    .btn-check { background: #3182ce; color: #fff; }
+    .btn-complete { background: #38a169; color: #fff; }
+    .btn-cancel { background: #edf2f7; color: #e53e3e; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🏥 予約管理ダッシュボード</h1>
+    <div class="filter-box">
+      <input type="date" id="datePicker" onchange="filterReservations()">
+      <button class="btn-refresh" onclick="loadReservations()">更新</button>
+      <button class="btn-refresh" style="background:#3182ce;" onclick="renderCards(allReservations)">全件表示</button>
+    </div>
+  </div>
+
+  <div id="reservationContainer" class="grid">
+    <p>データを読み込み中...</p>
+  </div>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
+    let allReservations = [];
+
+    window.onload = () => {
+      document.getElementById('datePicker').value = new Date().toISOString().split('T')[0];
+      loadReservations();
+    };
+
+    function loadReservations() {
+      document.getElementById('reservationContainer').innerHTML = "<p>データ更新中...</p>";
+      fetch(GAS_URL)
+        .then(res => res.json())
+        .then(data => {
+          allReservations = data;
+          filterReservations();
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('reservationContainer').innerHTML = "<p style='color:red;'>データの取得に失敗しました。GASのURLを確認してください。</p>";
+        });
+    }
+
+    function filterReservations() {
+  const selectedDate = document.getElementById('datePicker').value; // 例: "2026-10-27"
+  if (!selectedDate) return;
+
+  const filtered = allReservations.filter(r => {
+    if (!r.date) return false;
+    
+    // スプレッドシートから取得した日付文字列から数字（年・月・日）だけを取り出す
+    const rDateStr = String(r.date);
+    const matched = rDateStr.match(/(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/);
+    
+    if (!matched) return false;
+    
+    // YYYY-MM-DD 形式に統一して比較
+    const year = matched[1];
+    const month = matched[2].padStart(2, '0');
+    const day = matched[3].padStart(2, '0');
+    const formattedRDate = `${year}-${month}-${day}`;
+
+    return formattedRDate === selectedDate;
+  });
+
+  renderCards(filtered);
+}
+      
+
+    function renderCards(list) {
+      const container = document.getElementById('reservationContainer');
+      if (list.length === 0) {
+        container.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: #718096; padding: 40px;'>該当する予約はありません</p>";
+        return;
+      }
+
+      container.innerHTML = list.map(r => `
+        <div class="card status-${r.status}">
+          <div class="pet-name">
+            🐾 ${r.petName} ちゃん
+            <span class="badge">${r.status}</span>
+          </div>
+          <div class="info"><strong>時間:</strong> ${r.time}</div>
+          <div class="info"><strong>内容:</strong> ${r.menu}</div>
+          <div class="symptoms"><strong>問診:</strong> ${r.symptoms || 'なし'}</div>
+          <div class="actions">
+            <button class="btn btn-check" onclick="updateStatus(${r.rowIndex}, '受付済')">受付</button>
+            <button class="btn btn-complete" onclick="updateStatus(${r.rowIndex}, '診察完了')">完了</button>
+            <button class="btn btn-cancel" onclick="updateStatus(${r.rowIndex}, 'キャンセル')">取消</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateStatus(rowIndex, newStatus) {
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "updateStatus", rowIndex: rowIndex, status: newStatus })
+      })
+      .then(res => res.json())
+      .then(data => {
+        loadReservations();
+      });
+    }
+  </script>
+</body>
+</html>
