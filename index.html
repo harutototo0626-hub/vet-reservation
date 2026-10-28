@@ -265,23 +265,22 @@
     let lineUserId = "WEB_TEST_USER";
     let lineUserName = "テストユーザー";
 
-    if (LIFF_ID && LIFF_ID !== "ここにLIFF_IDを貼り付け") {
-      liff.init({ liffId: LIFF_ID }).then(() => {
-        if (liff.isLoggedIn()) {
-          liff.getProfile().then(p => {
-            lineUserId = p.userId;
-            lineUserName = p.displayName;
-            const infoEl = document.getElementById('lineUserInfo');
-            if (infoEl) infoEl.innerHTML = `✅ LINE連携: <strong>${p.displayName}</strong> 様`;
-          });
-        } else {
-          liff.login();
-        }
-      }).catch(() => {
-        const infoEl = document.getElementById('lineUserInfo');
-        if (infoEl) infoEl.innerText = "⚠️ Webテストモード";
-      });
-    }
+    // LIFF初期化処理
+    liff.init({ liffId: LIFF_ID }).then(() => {
+      if (liff.isLoggedIn()) {
+        liff.getProfile().then(p => {
+          lineUserId = p.userId;
+          lineUserName = p.displayName;
+          const infoEl = document.getElementById('lineUserInfo');
+          if (infoEl) infoEl.innerHTML = `✅ LINE連携: <strong>${p.displayName}</strong> 様`;
+        });
+      } else {
+        liff.login();
+      }
+    }).catch(() => {
+      const infoEl = document.getElementById('lineUserInfo');
+      if (infoEl) infoEl.innerText = "⚠️ Webテストモード";
+    });
 
     document.getElementById("date").valueAsDate = new Date();
 
@@ -364,10 +363,55 @@
       const petType = document.querySelector('input[name="petType"]:checked').value;
       const petName = document.getElementById('petName').value;
       const petBreed = document.getElementById('petBreed').value;
-      const petSex = document.getElementById('petSex').value;
+      const petSex = document.querySelector('#petSex').value;
       const menu = document.querySelector('input[name="menu"]:checked').value;
       const date = document.getElementById('date').value;
       const time = document.querySelector('input[name="time"]:checked').value;
 
       const chips = Array.from(document.querySelectorAll('.chip.selected')).map(c => c.innerText);
-      const detail =
+      const detail = document.getElementById('symptomsDetail').value;
+      
+      let formattedSymptoms = '';
+      if (chips.length > 0) formattedSymptoms += `[症状] ${chips.join('、')} `;
+      if (detail) formattedSymptoms += detail;
+
+      let visitTypeStr = visitType;
+      if (ticketNo) visitTypeStr += ` 券No:${ticketNo}`;
+
+      let petInfoStr = `${petBreed} ${petSex}`.trim();
+
+      const payload = {
+        lineUserId: lineUserId,
+        lineUserName: lineUserName,
+        phoneNo: phoneNo,
+        visitType: visitTypeStr,
+        petName: `${petName}（${petType}）`,
+        petInfo: petInfoStr,
+        menu: menu,
+        date: date,
+        time: time,
+        symptoms: formattedSymptoms || '特になし'
+      };
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(() => {
+        alert("予約を受け付けました！");
+        if (typeof liff !== 'undefined' && liff.isInClient && liff.isInClient()) {
+          liff.closeWindow();
+        } else {
+          location.reload();
+        }
+      })
+      .catch(err => {
+        alert("送信エラーが発生しました: " + err);
+        btn.disabled = false;
+        btn.innerText = "予約を確定する 🐾";
+      });
+    });
+  </script>
+</body>
+</html>
