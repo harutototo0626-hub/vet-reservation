@@ -221,15 +221,9 @@
         </div>
       </div>
 
-      <!-- STEP 4: 担当医・日時選択 -->
+      <!-- STEP 4: 日時選択 -->
       <div class="step-content" id="step4">
         <h2>4. 希望日時の選択</h2>
-
-        <label for="doctorSelect">担当医の希望 <span class="optional-tag">任意</span></label>
-        <select id="doctorSelect">
-          <option value="指名なし">指名なし</option>
-          <option value="院長（中川）">院長（中川）</option>
-        </select>
 
         <label for="date">希望日 <span class="required-tag">必須</span></label>
         <input type="date" id="date" required>
@@ -276,7 +270,7 @@
           <span id="confPetInfo">-</span>
         </div>
         <div class="confirm-card">
-          <strong>診療メニュー・担当医</strong>
+          <strong>診療メニュー</strong>
           <span id="confMenuInfo">-</span>
         </div>
         <div class="confirm-card">
@@ -390,7 +384,6 @@
         const petBreed = document.getElementById('petBreed').value;
         const petSex = document.getElementById('petSex').value;
         const menu = document.querySelector('input[name="menu"]:checked').value;
-        const doctor = document.getElementById('doctorSelect').value;
         const date = document.getElementById('date').value;
         const time = document.querySelector('input[name="time"]:checked').value;
 
@@ -405,7 +398,7 @@
         if (petBreed || petSex) petDetailStr += ` [${petBreed} ${petSex}]`;
         document.getElementById('confPetInfo').innerText = petDetailStr;
 
-        document.getElementById('confMenuInfo').innerText = `${menu} (担当: ${doctor})`;
+        document.getElementById('confMenuInfo').innerText = menu;
         document.getElementById('confDateTime').innerText = `${date} ${time}`;
         document.getElementById('confSymptoms').innerText = symptomsSummary || '特になし';
       }
@@ -444,7 +437,6 @@
       const petBreed = document.getElementById('petBreed').value;
       const petSex = document.getElementById('petSex').value;
       const menu = document.querySelector('input[name="menu"]:checked').value;
-      const doctor = document.getElementById('doctorSelect').value;
       const date = document.getElementById('date').value;
       const time = document.querySelector('input[name="time"]:checked').value;
 
@@ -462,7 +454,7 @@
         lineUserId: lineUserId,
         lineUserName: lineUserName,
         petName: fullPetName,
-        menu: `${menu}（${doctor}）`,
+        menu: menu,
         date: date,
         time: time,
         symptoms: formattedSymptoms
