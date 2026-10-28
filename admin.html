@@ -11,74 +11,74 @@
       --primary-light: #e8f9ee;
       --bg-color: #f4f6f8;
       --card-bg: #ffffff;
-      --text-main: #1f2937;
-      --text-sub: #6b7280;
-      --border-color: #e5e7eb;
+      --text-main: #111827;
+      --text-sub: #4b5563;
+      --border-color: #d1d5db;
     }
 
     * { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 20px; color: var(--text-main); font-size: 16px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 20px; color: var(--text-main); font-size: 18px; font-weight: 500; }
     
     /* ヘッダー */
-    .header { background: var(--card-bg); padding: 18px 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); border: 1px solid var(--border-color); }
-    h1 { margin: 0 0 14px 0; font-size: 1.4rem; color: var(--primary-dark); }
-    .nav-tabs { display: flex; gap: 10px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
-    .tab-btn { padding: 10px 18px; border: none; background: none; font-size: 1rem; font-weight: bold; color: var(--text-sub); cursor: pointer; border-radius: 8px; }
+    .header { background: var(--card-bg); padding: 20px 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
+    h1 { margin: 0 0 16px 0; font-size: 1.6rem; color: var(--primary-dark); font-weight: 800; }
+    .nav-tabs { display: flex; gap: 12px; border-bottom: 3px solid #e5e7eb; padding-bottom: 10px; }
+    .tab-btn { padding: 12px 22px; border: none; background: none; font-size: 1.1rem; font-weight: 800; color: var(--text-sub); cursor: pointer; border-radius: 8px; }
     .tab-btn.active { background: var(--primary-dark); color: #fff; }
 
     /* フィルター */
-    .filter-box { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; font-size: 1rem; }
-    input[type="date"], textarea { padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; }
-    .btn-action { padding: 10px 16px; background: #4b5563; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
+    .filter-box { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; font-size: 1.1rem; font-weight: 700; }
+    input[type="date"], textarea { padding: 12px 16px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 1.05rem; font-weight: 700; }
+    .btn-action { padding: 12px 20px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 1.05rem; }
     .btn-green { background: var(--primary); }
     .btn-dark { background: var(--primary-dark); }
 
     /* テーブル */
-    .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border-color); }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.98rem; min-width: 1200px; }
-    th { background: #f9fafb; color: #374151; padding: 14px; font-weight: bold; border-bottom: 2px solid #e5e7eb; white-space: nowrap; font-size: 0.95rem; }
-    td { padding: 14px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+    .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1.05rem; min-width: 1350px; }
+    th { background: #f3f4f6; color: #111827; padding: 16px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; font-size: 1.1rem; }
+    td { padding: 16px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
     tr:hover { background: #f9fafb; }
 
-    /* 各セル用スタイル */
-    .time-cell { font-weight: bold; color: var(--primary-dark); font-size: 1.05rem; line-height: 1.35; }
-    .time-cell small { color: #6b7280; font-size: 0.85rem; font-weight: normal; display: block; margin-top: 2px; }
+    /* 各セル用スタイル（極太字＆拡大） */
+    .time-cell { font-weight: 900; color: var(--primary-dark); font-size: 1.25rem; line-height: 1.3; }
+    .time-cell small { color: #374151; font-size: 0.95rem; font-weight: 700; display: block; margin-top: 4px; }
     
-    .owner-name { font-weight: bold; color: #1f2937; font-size: 1rem; }
-    .phone-badge { display: inline-block; background: #f3f4f6; color: #374151; font-size: 0.88rem; padding: 4px 8px; border-radius: 6px; font-weight: 500; }
+    .owner-name { font-weight: 900; color: #111827; font-size: 1.15rem; }
+    .phone-badge { display: inline-block; background: #e5e7eb; color: #111827; font-size: 1rem; padding: 6px 10px; border-radius: 6px; font-weight: 800; border: 1px solid #d1d5db; }
 
-    .visit-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; }
-    .visit-初診 { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
-    .visit-再診 { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+    .visit-badge { display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 0.95rem; font-weight: 900; }
+    .visit-初診 { background: #fee2e2; color: #991b1b; border: 1.5px solid #f87171; }
+    .visit-再診 { background: #dcfce7; color: #166534; border: 1.5px solid #4ade80; }
 
-    .pet-name-box { font-size: 1rem; font-weight: bold; }
-    .pet-info-box { color: #4b5563; font-size: 0.88rem; }
+    .pet-name-box { font-size: 1.2rem; font-weight: 900; color: #111827; }
+    .pet-info-box { color: #374151; font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
 
-    .menu-badge { font-weight: bold; color: #047857; font-size: 0.98rem; }
-    .memo-text { font-size: 0.9rem; color: #1f2937; line-height: 1.4; max-width: 280px; word-break: break-word; }
+    .menu-badge { font-weight: 900; color: #047857; font-size: 1.1rem; }
+    .memo-text { font-size: 1rem; color: #111827; font-weight: 600; line-height: 1.45; max-width: 300px; word-break: break-word; }
 
     /* ステータスバッジ */
-    .badge { padding: 6px 12px; border-radius: 14px; font-size: 0.85rem; font-weight: bold; display: inline-block; white-space: nowrap; }
-    .badge-予約受付 { background: #e0f2fe; color: #0369a1; }
-    .badge-受付済 { background: #fef3c7; color: #b45309; }
-    .badge-診察完了 { background: #dcfce7; color: #15803d; }
-    .badge-キャンセル { background: #fee2e2; color: #b91c1c; }
+    .badge { padding: 8px 14px; border-radius: 16px; font-size: 0.95rem; font-weight: 900; display: inline-block; white-space: nowrap; }
+    .badge-予約受付 { background: #bae6fd; color: #0369a1; }
+    .badge-受付済 { background: #fde68a; color: #92400e; }
+    .badge-診察完了 { background: #bbf7d0; color: #15803d; }
+    .badge-キャンセル { background: #fca5a5; color: #991b1b; }
 
     /* 操作ボタン */
-    .btn-group-sm { display: flex; flex-wrap: wrap; gap: 4px; width: 155px; }
-    .btn-sm { padding: 6px 8px; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
-    .btn-sm-check { background: #fef3c7; color: #b45309; }
-    .btn-sm-complete { background: #dcfce7; color: #15803d; }
-    .btn-sm-reset { background: #f3f4f6; color: #4b5563; }
-    .btn-sm-cancel { background: #fee2e2; color: #b91c1c; }
-    .btn-sm-line { background: var(--primary); color: #fff; width: 100%; margin-top: 2px; font-size: 0.82rem; padding: 6px; }
+    .btn-group-sm { display: flex; flex-wrap: wrap; gap: 6px; width: 170px; }
+    .btn-sm { padding: 8px 10px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 800; cursor: pointer; }
+    .btn-sm-check { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .btn-sm-complete { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .btn-sm-reset { background: #e5e7eb; color: #374151; border: 1px solid #d1d5db; }
+    .btn-sm-cancel { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .btn-sm-line { background: var(--primary); color: #fff; width: 100%; margin-top: 4px; font-size: 0.95rem; padding: 8px; font-weight: 900; }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
     /* モーダル */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; }
-    .modal-content { background: #fff; padding: 24px; border-radius: 14px; width: 90%; max-width: 480px; font-size: 1rem; }
+    .modal-content { background: #fff; padding: 28px; border-radius: 14px; width: 90%; max-width: 520px; font-size: 1.1rem; font-weight: 700; }
   </style>
 </head>
 <body>
@@ -95,7 +95,7 @@
   <!-- TAB 1: 予約一覧 -->
   <div id="tab-reservations" class="tab-content active">
     <div class="filter-box">
-      <label style="font-weight:bold;">日付絞り込み:</label>
+      <label style="font-weight:900;">日付絞り込み:</label>
       <input type="date" id="datePicker" onchange="filterReservations()">
       <button class="btn-action btn-dark" onclick="showAllReservations()">全件表示</button>
       <button class="btn-action" onclick="loadData()">🔄 データ更新</button>
@@ -105,20 +105,20 @@
       <table>
         <thead>
           <tr>
-            <th style="width: 110px;">予約日時</th>
-            <th style="width: 120px;">飼い主名</th>
-            <th style="width: 130px;">電話番号</th>
-            <th style="width: 120px;">診察区分</th>
-            <th style="width: 130px;">ペット名</th>
-            <th style="width: 130px;">ペット情報</th>
-            <th style="width: 120px;">メニュー</th>
+            <th style="width: 120px;">予約日時</th>
+            <th style="width: 130px;">飼い主名</th>
+            <th style="width: 150px;">電話番号</th>
+            <th style="width: 130px;">診察区分</th>
+            <th style="width: 140px;">ペット名</th>
+            <th style="width: 140px;">ペット情報</th>
+            <th style="width: 130px;">メニュー</th>
             <th>症状・メモ</th>
-            <th style="width: 95px;">状態</th>
-            <th style="width: 160px;">操作 / LINE</th>
+            <th style="width: 110px;">状態</th>
+            <th style="width: 175px;">操作 / LINE</th>
           </tr>
         </thead>
         <tbody id="reservationTableBody">
-          <tr><td colspan="10" style="text-align:center; padding:30px;">データを読み込み中...</td></tr>
+          <tr><td colspan="10" style="text-align:center; padding:40px; font-size:1.1rem; font-weight:bold;">データを読み込み中...</td></tr>
         </tbody>
       </table>
     </div>
@@ -139,7 +139,7 @@
           </tr>
         </thead>
         <tbody id="patientTableBody">
-          <tr><td colspan="6" style="text-align:center; padding:30px;">患者データを集計中...</td></tr>
+          <tr><td colspan="6" style="text-align:center; padding:40px; font-size:1.1rem; font-weight:bold;">患者データを集計中...</td></tr>
         </tbody>
       </table>
     </div>
@@ -147,19 +147,19 @@
 
   <!-- TAB 3: 一括LINE配信 -->
   <div id="tab-broadcast" class="tab-content">
-    <div style="background:#fff; padding:24px; border-radius:12px; max-width:600px; border:1px solid #e5e7eb;">
-      <h3 style="margin-top:0; color:var(--primary-dark); font-size:1.2rem;">📢 全員への一括LINE配信</h3>
-      <textarea id="broadcastMsg" rows="5" style="width:100%; margin-top:8px; font-size:1rem;" placeholder="【お知らせ】休診日案内など..."></textarea>
-      <button class="btn-action btn-green" style="width:100%; margin-top:14px; padding:12px; font-size:1.05rem;" onclick="sendBroadcast()">一括配信を実行する</button>
+    <div style="background:#fff; padding:28px; border-radius:12px; max-width:640px; border:2px solid #d1d5db;">
+      <h3 style="margin-top:0; color:var(--primary-dark); font-size:1.3rem; font-weight:900;">📢 全員への一括LINE配信</h3>
+      <textarea id="broadcastMsg" rows="5" style="width:100%; margin-top:10px; font-size:1.05rem;" placeholder="【お知らせ】休診日案内など..."></textarea>
+      <button class="btn-action btn-green" style="width:100%; margin-top:16px; padding:14px; font-size:1.1rem;" onclick="sendBroadcast()">一括配信を実行する</button>
     </div>
   </div>
 
   <!-- 個別LINEモーダル -->
   <div id="msgModal" class="modal">
     <div class="modal-content">
-      <h3 id="modalTargetName" style="margin-top:0; font-size:1.2rem;">LINE個別送信</h3>
-      <textarea id="individualMsg" rows="4" style="width:100%; font-size:1rem;" placeholder="メッセージを入力..."></textarea>
-      <div style="display:flex; gap:10px; margin-top:16px;">
+      <h3 id="modalTargetName" style="margin-top:0; font-size:1.3rem; font-weight:900;">LINE個別送信</h3>
+      <textarea id="individualMsg" rows="4" style="width:100%; font-size:1.05rem;" placeholder="メッセージを入力..."></textarea>
+      <div style="display:flex; gap:12px; margin-top:18px;">
         <button class="btn-action" style="flex:1;" onclick="closeModal()">キャンセル</button>
         <button class="btn-action btn-green" style="flex:1;" onclick="submitIndividualMsg()">送信する</button>
       </div>
@@ -191,7 +191,7 @@
           renderPatientTable();
         })
         .catch(err => {
-          document.getElementById('reservationTableBody').innerHTML = "<tr><td colspan='10' style='color:red; text-align:center;'>データ読み込みエラー</td></tr>";
+          document.getElementById('reservationTableBody').innerHTML = "<tr><td colspan='10' style='color:red; text-align:center; font-weight:bold;'>データ読み込みエラー</td></tr>";
         });
     }
 
@@ -221,7 +221,7 @@
     function renderReservationTable(list) {
       const tbody = document.getElementById('reservationTableBody');
       if (!list || list.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='10' style='text-align:center; color:#888; padding:35px; font-size:1rem;'>該当する予約はありません</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='10' style='text-align:center; color:#6b7280; padding:40px; font-size:1.1rem; font-weight:bold;'>該当する予約はありません</td></tr>";
         return;
       }
 
@@ -273,19 +273,19 @@
 
       const patientList = Object.values(patientsMap);
       if (patientList.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#888; padding:35px;'>患者データがありません</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#6b7280; padding:40px; font-weight:bold;'>患者データがありません</td></tr>";
         return;
       }
 
       tbody.innerHTML = patientList.map(p => `
         <tr>
-          <td><strong style="font-size:1rem;">👤 ${p.ownerName}</strong></td>
-          <td><strong style="font-size:1rem;">🐾 ${p.petName}</strong></td>
-          <td style="font-size:0.88rem; color:#6b7280;">${p.lineUserId}</td>
-          <td><strong style="font-size:1rem;">${p.count}</strong> 回</td>
-          <td>${p.lastDate}</td>
+          <td><strong style="font-size:1.15rem; font-weight:900;">👤 ${p.ownerName}</strong></td>
+          <td><strong style="font-size:1.15rem; font-weight:900;">🐾 ${p.petName}</strong></td>
+          <td style="font-size:0.95rem; color:#4b5563; font-weight:700;">${p.lineUserId}</td>
+          <td><strong style="font-size:1.15rem; font-weight:900;">${p.count}</strong> 回</td>
+          <td><strong style="font-size:1.05rem;">${p.lastDate}</strong></td>
           <td>
-            <button class="btn-sm btn-sm-line" style="width:auto; padding:6px 12px; font-size:0.85rem;" onclick="openModal('${p.lineUserId}', '${p.ownerName}')">💬 LINE個別送信</button>
+            <button class="btn-sm btn-sm-line" style="width:auto; padding:8px 14px; font-size:0.95rem;" onclick="openModal('${p.lineUserId}', '${p.ownerName}')">💬 LINE個別送信</button>
           </td>
         </tr>
       `).join('');
