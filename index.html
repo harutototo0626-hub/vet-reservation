@@ -113,6 +113,9 @@
         <div class="step-content active" id="step1">
           <h2>1. 受診者・ペットの情報</h2>
 
+          <label for="ownerName">飼い主様のお名前 <span class="req">必須</span></label>
+          <input type="text" id="ownerName" placeholder="例: 山田 太郎" required>
+
           <label>診察区分 <span class="req">必須</span></label>
           <div class="grid-2">
             <label class="btn-tile selected" onclick="toggleTicket(true)">
@@ -433,11 +436,13 @@
 
     function nextStep(step) {
       if (step === 1) {
+        if (!document.getElementById('ownerName').value.trim()) return alert('飼い主様のお名前を入力してください');
         if (!document.getElementById('phoneNo').value.trim()) return alert('電話番号を入力してください');
         if (!document.getElementById('petName').value.trim()) return alert('ペット名を入力してください');
       }
 
       if (step === 4) {
+        const ownerName = document.getElementById('ownerName').value.trim();
         const visitType = document.querySelector('input[name="visitType"]:checked').value;
         const ticketNo = document.getElementById('ticketNo').value;
         const phoneNo = document.getElementById('phoneNo').value;
@@ -452,7 +457,7 @@
         let symptoms = chips.join('、');
         if (detail) symptoms += (symptoms ? ' / ' : '') + detail;
 
-        document.getElementById('confOwner').innerText = `${lineUserName} 様 (${visitType}${ticketNo ? ' 券:' + ticketNo : ''}) TEL: ${phoneNo}`;
+        document.getElementById('confOwner').innerText = `${ownerName} 様 (${visitType}${ticketNo ? ' 券:' + ticketNo : ''}) TEL: ${phoneNo}`;
         document.getElementById('confPet').innerText = `${petName} ちゃん（${petType}） ${petBreed} ${petSex}`;
         document.getElementById('confMenu').innerText = menu;
         document.getElementById('confDate').innerText = `${selectedDateStr} ${selectedTimeStr}`;
@@ -483,6 +488,7 @@
       btn.disabled = true;
       btn.innerText = "送信中...";
 
+      const ownerName = document.getElementById('ownerName').value.trim();
       const visitType = document.querySelector('input[name="visitType"]:checked').value;
       const ticketNo = document.getElementById('ticketNo').value;
       const phoneNo = document.getElementById('phoneNo').value;
@@ -506,7 +512,7 @@
 
       const payload = {
         lineUserId: lineUserId,
-        lineUserName: lineUserName,
+        lineUserName: ownerName, // 手入力された飼い主様のお名前を送信
         phoneNo: phoneNo,
         visitType: visitTypeStr,
         petName: `${petName}（${petType}）`,
