@@ -67,7 +67,7 @@
     
     .cal-table-wrap { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
     .cal-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.78rem; table-layout: fixed; }
-    .cal-table th, .cal-table td { border: 1px solid #e2e8f0; padding: 6px 2px; vertical-align: middle; }
+    .cal-table th, .cal-table td { border: 1px solid #e2e8f0; padding: 8px 2px; vertical-align: middle; }
     .cal-table th { background: var(--cal-bg); color: var(--cal-blue); font-weight: bold; }
     .cal-table th.sun { color: #e11d48; }
     .cal-table th.sat { color: #2563eb; }
@@ -238,7 +238,7 @@
 
         <!-- STEP 4 -->
         <div class="step-content" id="step4">
-          <h2>4. 時間帯の選択（9:00〜18:00枠）</h2>
+          <h2>4. 時間帯の選択（午前 9〜11時 / 午後 16〜18時）</h2>
 
           <div class="cal-nav">
             <button type="button" class="btn-cal-week" onclick="changeWeek(-7)">‹ 前の週</button>
@@ -313,8 +313,8 @@
     let selectedDateStr = "";
     let selectedTimeStr = "";
 
-    // 9:00〜18:00枠（9:00~19:00）
-    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "12:00~", "13:00~", "14:00~", "15:00~", "16:00~", "17:00~", "18:00~"];
+    // 9:00〜11:00、16:00〜18:00 の予約枠のみ
+    const TIME_SLOTS = ["09:00~", "10:00~", "16:00~", "17:00~"];
 
     liff.init({ liffId: LIFF_ID }).then(() => {
       if (liff.isLoggedIn()) {
@@ -467,7 +467,7 @@
 
       let bodyHtml = "";
       TIME_SLOTS.forEach(time => {
-        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.7rem;">${time.replace('~','')}</td>`;
+        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.75rem;">${time.replace('~','')}</td>`;
         
         dates.forEach(d => {
           let yyyy = d.getFullYear();
