@@ -374,7 +374,8 @@
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
     
-    const TIME_SLOTS = ["09:00~", "10:00~", "16:00~", "17:00~"];
+    // 9:00~, 10:00~, 11:00~, 16:00~, 17:00~, 18:00~ の6枠
+    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
 
     let allReservations = [];
     let adminPass = sessionStorage.getItem('adminPass') || '';
