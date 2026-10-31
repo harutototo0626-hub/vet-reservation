@@ -97,6 +97,7 @@
     .tile-table th { background: #f1f5f9; color: #0f172a; font-weight: bold; }
     .tile-cell-item { background: #e0f2fe; border: 1px solid #0284c7; border-radius: 6px; padding: 4px; margin-bottom: 4px; font-size: 0.8rem; text-align: left; cursor: pointer; }
     .tile-cell-item.item-受取 { background: #fef3c7; border-color: #d97706; }
+    .tile-cell-item.item-休診 { background: #e2e8f0; border-color: #94a3b8; color: #64748b; }
 
     .holiday-cell { cursor: pointer; transition: background 0.2s; height: 42px; vertical-align: middle !important; font-weight: bold; }
     .holiday-cell.is-open { background: #f0fdf4; color: #166534; }
@@ -241,7 +242,7 @@
       <table>
         <thead>
           <tr>
-            <th style="width: 120px;">予約日時</th>
+            <th style="width: 140px;">予約日時</th>
             <th style="width: 130px;">飼い主名</th>
             <th style="width: 140px;">電話番号</th>
             <th style="width: 120px;">診察区分</th>
@@ -413,7 +414,9 @@
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
     
-    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~", "午前 (09:00~12:00)", "午後 (16:00~19:00)"];
+    // 通常診察枠＋薬フード受取用のまとめ表示用リスト
+    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
+    const DISPLAY_SLOTS = ["09:00~", "10:00~", "11:00~", "午前 (受取のみ)", "16:00~", "17:00~", "18:00~", "午後 (受取のみ)"];
 
     let allReservations = [];
     let checkedInterviews = new Set();
@@ -490,16 +493,21 @@
     }
 
     function parseSymptoms(fullText) {
-      if (!fullText) return { chipsHtml: '<span style="color:#9ca3af;">なし</span>', detailText: '記入なし' };
+      if (!fullText) return { chipsHtml: '<span style="color:#9ca3af;">選択なし</span>', detailText: '記入なし' };
 
       const match = fullText.match(/^\[(?:症状|受取品)\]\s*([^/]+)(?:\s*\/\s*([\s\S]*))?$/);
       if (match) {
-        const chipsList = match[1].split('、').map(s => `<span class="chip-simple">${s.trim()}</span>`).join('');
-        const detailText = match[2] ? match[2].trim() : '記入なし';
-        return { chipsHtml: chipsList || '<span style="color:#9ca3af;">なし</span>', detailText };
+        const chipsPart = match[1].trim();
+        const detailPart = match[2] ? match[2].trim() : '記入なし';
+
+        const chipsList = chipsPart.split('、').map(s => `<span class="chip-simple">${s.trim()}</span>`).join('');
+        return { chipsHtml: chipsList || '<span style="color:#9ca3af;">選択なし</span>', detailText: detailPart };
       }
 
-      return { chipsHtml: `<span class="chip-simple">${fullText.substring(0, 15)}...</span>`, detailText: fullText };
+      return { 
+        chipsHtml: `<span class="chip-simple">📋 問診入力あり</span>`, 
+        detailText: fullText 
+      };
     }
 
     function setCategoryFilter(type) {
@@ -724,10 +732,18 @@
       const dayReservations = allReservations.filter(r => normalizeDateStr(r.date) === selectedDate && r.status !== 'キャンセル');
 
       let html = "";
-      TIME_SLOTS.forEach(time => {
-        const slots = dayReservations.filter(r => r.time === time);
+      DISPLAY_SLOTS.forEach(slotLabel => {
+        let slots = [];
+        if (slotLabel === '午前 (受取のみ)') {
+          slots = dayReservations.filter(r => r.menu.includes('薬・フード') && r.time.includes('午前'));
+        } else if (slotLabel === '午後 (受取のみ)') {
+          slots = dayReservations.filter(r => r.menu.includes('薬・フード') && r.time.includes('午後'));
+        } else {
+          slots = dayReservations.filter(r => r.time === slotLabel);
+        }
+
         html += `<div style="border-left: 4px solid var(--primary); padding-left: 12px; margin-bottom: 8px;">`;
-        html += `<strong style="font-size: 1.15rem; color: var(--primary-dark);">${time}</strong>`;
+        html += `<strong style="font-size: 1.15rem; color: var(--primary-dark);">${slotLabel}</strong>`;
         
         if (slots.length === 0) {
           html += `<div style="color:#94a3b8; font-size:0.95rem; margin-top:2px;">（予約なし・空き）</div>`;
@@ -772,22 +788,29 @@
       document.getElementById('tileWeekTitle').innerText = m1 === m2 ? m1 : `${m1} / ${m2}`;
 
       const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-      let headerHtml = `<th style="width:80px;">時間</th>`;
+      let headerHtml = `<th style="width:110px;">時間</th>`;
       dates.forEach(d => {
         headerHtml += `<th>${d.getDate()}<br>(${dayNames[d.getDay()]})</th>`;
       });
       document.getElementById('tileHeaderRow').innerHTML = headerHtml;
 
       let bodyHtml = "";
-      TIME_SLOTS.forEach(time => {
-        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc;">${time}</td>`;
+      DISPLAY_SLOTS.forEach(slotLabel => {
+        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc;">${slotLabel}</td>`;
         dates.forEach(d => {
           let yyyy = d.getFullYear();
           let mm = String(d.getMonth() + 1).padStart(2, '0');
           let dd = String(d.getDate()).padStart(2, '0');
           let dateStr = `${yyyy}-${mm}-${dd}`;
 
-          const matches = allReservations.filter(r => normalizeDateStr(r.date) === dateStr && r.time === time && r.status !== 'キャンセル');
+          let matches = [];
+          if (slotLabel === '午前 (受取のみ)') {
+            matches = allReservations.filter(r => normalizeDateStr(r.date) === dateStr && r.menu.includes('薬・フード') && r.time.includes('午前') && r.status !== 'キャンセル');
+          } else if (slotLabel === '午後 (受取のみ)') {
+            matches = allReservations.filter(r => normalizeDateStr(r.date) === dateStr && r.menu.includes('薬・フード') && r.time.includes('午後') && r.status !== 'キャンセル');
+          } else {
+            matches = allReservations.filter(r => normalizeDateStr(r.date) === dateStr && r.time === slotLabel && r.status !== 'キャンセル');
+          }
 
           bodyHtml += `<td>`;
           if (matches.length === 0) {
