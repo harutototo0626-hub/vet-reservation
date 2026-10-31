@@ -238,7 +238,7 @@
 
         <!-- STEP 4 -->
         <div class="step-content" id="step4">
-          <h2>4. 時間帯の選択（午前 9〜11時 / 午後 16〜18時）</h2>
+          <h2>4. 時間帯の選択（午前 9, 10, 11時 / 午後 16, 17, 18時）</h2>
 
           <div class="cal-nav">
             <button type="button" class="btn-cal-week" onclick="changeWeek(-7)">‹ 前の週</button>
@@ -313,8 +313,8 @@
     let selectedDateStr = "";
     let selectedTimeStr = "";
 
-    // 9:00〜11:00、16:00〜18:00 の予約枠のみ
-    const TIME_SLOTS = ["09:00~", "10:00~", "16:00~", "17:00~"];
+    // 9:00~, 10:00~, 11:00~, 16:00~, 17:00~, 18:00~ の6枠
+    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
 
     liff.init({ liffId: LIFF_ID }).then(() => {
       if (liff.isLoggedIn()) {
