@@ -122,7 +122,7 @@
       </div>
 
       <form id="reserveForm">
-        <!-- STEP 1 -->
+        <!-- STEP 1: ペット・飼い主情報 -->
         <div class="step-content active" id="step1">
           <h2>1. ペット・飼い主様の情報</h2>
 
@@ -197,7 +197,7 @@
           </div>
         </div>
 
-        <!-- STEP 2 -->
+        <!-- STEP 2: メニュー選択 -->
         <div class="step-content" id="step2">
           <h2>2. 診療メニュー</h2>
 
@@ -226,7 +226,7 @@
           </div>
         </div>
 
-        <!-- STEP 3 -->
+        <!-- STEP 3: 問診・詳細入力 -->
         <div class="step-content" id="step3">
           <!-- A: 通常診療用問診 -->
           <div id="sectionMedicalSymptoms">
@@ -267,7 +267,7 @@
           </div>
         </div>
 
-        <!-- STEP 4 -->
+        <!-- STEP 4: 日時選択 -->
         <div class="step-content" id="step4">
           <h2>4. 希望日時の選択</h2>
 
@@ -317,7 +317,7 @@
           </div>
         </div>
 
-        <!-- STEP 5 -->
+        <!-- STEP 5: 確認画面 -->
         <div class="step-content" id="step5">
           <h2>📋 予約内容の確認</h2>
 
@@ -610,7 +610,6 @@
       document.getElementById('selectedSlotNotice').style.display = 'none';
       document.getElementById('btnToStep5').disabled = true;
 
-      // その日の休診設定を検索
       const dayHolidays = existingReservations.filter(r => normalizeDateStr(r.date) === dateVal && r.status === '休診');
       const offTimes = dayHolidays.map(r => r.time);
 
@@ -628,7 +627,6 @@
       btnAm.classList.remove('selected', 'disabled');
       btnPm.classList.remove('selected', 'disabled');
 
-      // 午前の可能時間判定
       if (amAvailable.length === 0) {
         btnAm.classList.add('disabled');
         lblAm.innerText = "受付不可・休診";
@@ -637,7 +635,6 @@
         lblAm.innerText = `${startAm}~12:00`;
       }
 
-      // 午後の可能時間判定
       if (pmAvailable.length === 0) {
         btnPm.classList.add('disabled');
         lblPm.innerText = "受付不可・休診";
