@@ -26,7 +26,6 @@
     .header { background: var(--card-bg); padding: 20px 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); position: relative; }
     h1 { margin: 0 0 16px 0; font-size: 1.6rem; color: var(--primary-dark); font-weight: 800; }
     
-    /* ベルマーク通知スタイル */
     .notice-bell-wrap { position: relative; cursor: pointer; }
     .notice-bell-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; position: relative; }
     .notice-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; border-radius: 50%; font-size: 0.75rem; font-weight: 900; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #fff; }
@@ -50,7 +49,6 @@
     .btn-filter { background: #e5e7eb; color: #374151; border: 1.5px solid #d1d5db; }
     .btn-filter.active { background: #0284c7; color: #fff; border-color: #0284c7; }
 
-    /* ★画面内に収まる高さ制限＋スクロールバー固定 */
     .table-container { 
       background: var(--card-bg); 
       border-radius: 12px; 
@@ -61,7 +59,6 @@
     }
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1rem; min-width: 1350px; }
     
-    /* ★見出し行（th）の固定化 */
     th { 
       position: sticky; 
       top: 0; 
@@ -174,10 +171,10 @@
           <div class="notice-popover" id="noticePopover">
             <div class="notice-popover-header">
               <strong>🔔 新着・未読通知</strong>
-              <span style="font-size:0.75rem; color:#64748b;">(確認済み)</span>
+              <button onclick="markAllNoticesAsRead()" style="background:none; border:none; color:#0284c7; font-size:0.75rem; font-weight:bold; cursor:pointer;">すべて既読にする</button>
             </div>
             <div class="notice-popover-body" id="noticeListContainer">
-              <div style="padding:16px; text-align:center; color:#94a3b8;">新着通知はありません</div>
+              <div style="padding:16px; text-align:center; color:#94a3b8;">未読の新着通知はありません</div>
             </div>
           </div>
         </div>
@@ -624,25 +621,18 @@
       };
     }
 
-    // --- 新着通知 ベルマーク処理（作成日での判定＋未読件数計算） ---
+    // --- 新着通知 ベルマーク処理（未読のものだけをカウント・リスト表示） ---
     function updateNoticeBell() {
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const dd = String(now.getDate()).padStart(2, '0');
-      const todayStr = `${yyyy}-${mm}-${dd}`;
-
       const notices = [];
       allReservations.forEach(r => {
         if (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY') return;
 
-        const createdDateStr = normalizeDateStr(r.createdAt);
         const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
         const isRead = readNoticeIds.has(id);
         const isCancel = r.status === 'キャンセル';
 
-        // 作成日(createdAt)が本日、または未読の通知を対象に保持
-        if (createdDateStr === todayStr || !isRead) {
+        // 未読の通知のみ対象
+        if (!isRead) {
           notices.push({
             id: id,
             rowIndex: r.rowIndex,
@@ -650,13 +640,12 @@
             time: r.time,
             name: r.lineUserName,
             pet: r.petName,
-            type: isCancel ? 'キャンセル' : '新規受付',
-            isRead: isRead
+            type: isCancel ? 'キャンセル' : '新規受付'
           });
         }
       });
 
-      const unreadCount = notices.filter(n => !n.isRead).length;
+      const unreadCount = notices.length;
       const badge = document.getElementById('noticeBadge');
       if (unreadCount > 0) {
         badge.innerText = unreadCount;
@@ -667,12 +656,12 @@
 
       const container = document.getElementById('noticeListContainer');
       if (notices.length === 0) {
-        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">新着通知はありません</div>`;
+        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">未読の新着通知はありません</div>`;
         return;
       }
 
       container.innerHTML = notices.map(n => `
-        <div class="notice-item ${n.isRead ? '' : 'unread'}" onclick="clickNoticeItem('${n.id}', ${n.rowIndex})">
+        <div class="notice-item unread" onclick="clickNoticeItem('${n.id}', ${n.rowIndex})">
           <div style="font-weight:bold; color:${n.type === 'キャンセル' ? '#dc2626' : '#0369a1'}; font-size:0.85rem;">
             ${n.type === 'キャンセル' ? '❌ キャンセル通知' : '🆕 新規受付'}
           </div>
@@ -690,12 +679,9 @@
       const popover = document.getElementById('noticePopover');
       const isOpening = (popover.style.display !== 'block');
       popover.style.display = isOpening ? 'block' : 'none';
-
-      if (isOpening) {
-        markAllNoticesAsRead();
-      }
     }
 
+    // 個別の通知を押した時だけ既読にして対象画面へジャンプ
     function clickNoticeItem(noticeId, rowIndex) {
       readNoticeIds.add(noticeId);
       localStorage.setItem('arbre_read_notices', JSON.stringify(Array.from(readNoticeIds)));
@@ -895,7 +881,6 @@
               <div style="white-space:pre-wrap; font-weight:600; font-size:0.95rem; line-height:1.5; color:#1e293b;">${parsed.detailText}</div>
             </div>
 
-            <!-- 病院側メモ欄 -->
             <div style="margin-top:12px; background:#fff8e6; border:1.5px solid #fcd34d; padding:12px; border-radius:8px;">
               <div style="font-size:0.85rem; color:#b45309; font-weight:900; margin-bottom:4px;">🏥 病院用メモ欄（カルテ共有・スタッフメモ）</div>
               <textarea id="hospitalNote-${r.rowIndex}" rows="2" style="width:100%; font-size:0.95rem; padding:8px; border:1px solid #d1d5db; border-radius:6px;" placeholder="院内共有用のメモ（例: 車内でお待ち、次回検査希望ありなど）">${r.hospitalNote || ''}</textarea>
