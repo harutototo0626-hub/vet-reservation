@@ -25,57 +25,81 @@
 
     .header { background: var(--card-bg); padding: 20px 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
     h1 { margin: 0 0 16px 0; font-size: 1.6rem; color: var(--primary-dark); font-weight: 800; }
-    .nav-tabs { display: flex; gap: 10px; border-bottom: 3px solid #e5e7eb; padding-bottom: 10px; flex-wrap: wrap; }
-    .tab-btn { padding: 10px 18px; border: none; background: none; font-size: 1.05rem; font-weight: 800; color: #4b5563; cursor: pointer; border-radius: 8px; }
+    .nav-tabs { display: flex; gap: 8px; border-bottom: 3px solid #e5e7eb; padding-bottom: 10px; flex-wrap: wrap; }
+    .tab-btn { padding: 8px 14px; border: none; background: none; font-size: 1rem; font-weight: 800; color: #4b5563; cursor: pointer; border-radius: 8px; }
     .tab-btn.active { background: var(--primary-dark); color: #fff; }
 
-    .filter-box { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; font-size: 1.1rem; font-weight: 700; }
-    input[type="date"], select, textarea { padding: 10px 14px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 1.05rem; font-weight: 700; }
-    .btn-action { padding: 10px 18px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 1rem; }
+    .filter-box { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; font-size: 1rem; font-weight: 700; }
+    input[type="date"], select, textarea { padding: 10px 14px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 1rem; font-weight: 700; }
+    .btn-action { padding: 10px 16px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.95rem; }
     .btn-green { background: var(--primary); }
     .btn-dark { background: var(--primary-dark); }
+    .btn-filter { background: #e5e7eb; color: #374151; border: 1.5px solid #d1d5db; }
+    .btn-filter.active { background: #0284c7; color: #fff; border-color: #0284c7; }
 
     .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1.05rem; min-width: 1350px; }
-    th { background: #f3f4f6; color: #111827; padding: 16px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; font-size: 1.1rem; }
-    td { padding: 16px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1rem; min-width: 1300px; }
+    th { background: #f3f4f6; color: #111827; padding: 14px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; font-size: 1.05rem; }
+    td { padding: 14px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
     tr:hover { background: #f9fafb; }
 
-    .time-cell { font-weight: 900; color: var(--primary-dark); font-size: 1.25rem; line-height: 1.3; }
-    .time-cell small { color: #374151; font-size: 0.95rem; font-weight: 700; display: block; margin-top: 4px; }
-    .owner-name { font-weight: 900; color: #111827; font-size: 1.15rem; }
-    .phone-badge { display: inline-block; background: #e5e7eb; color: #111827; font-size: 1rem; padding: 6px 10px; border-radius: 6px; font-weight: 800; border: 1px solid #d1d5db; }
-    .visit-badge { display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 0.95rem; font-weight: 900; }
+    .time-cell { font-weight: 900; color: var(--primary-dark); font-size: 1.2rem; line-height: 1.3; }
+    .time-cell small { color: #374151; font-size: 0.9rem; font-weight: 700; display: block; margin-top: 2px; }
+    .owner-name { font-weight: 900; color: #111827; font-size: 1.1rem; }
+    .phone-badge { display: inline-block; background: #e5e7eb; color: #111827; font-size: 0.95rem; padding: 4px 8px; border-radius: 6px; font-weight: 800; border: 1px solid #d1d5db; }
+    .visit-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; font-weight: 900; }
     .visit-初診 { background: #fee2e2; color: #991b1b; border: 1.5px solid #f87171; }
     .visit-再診 { background: #dcfce7; color: #166534; border: 1.5px solid #4ade80; }
-    .pet-name-box { font-size: 1.2rem; font-weight: 900; color: #111827; }
-    .pet-info-box { color: #374151; font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
-    .menu-badge { font-weight: 900; color: #047857; font-size: 1.1rem; }
+    .pet-name-box { font-size: 1.15rem; font-weight: 900; color: #111827; }
+    .pet-info-box { color: #374151; font-size: 0.9rem; font-weight: 700; margin-top: 2px; }
+    
+    .menu-badge { font-weight: 900; padding: 4px 10px; border-radius: 6px; font-size: 0.95rem; display: inline-block; }
+    .menu-診療 { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+    .menu-受取 { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
 
-    .memo-preview { max-width: 250px; font-size: 0.95rem; line-height: 1.4; color: #1f2937; }
-    .btn-detail-view { display: inline-block; margin-top: 4px; color: #0284c7; font-weight: bold; cursor: pointer; text-decoration: underline; font-size: 0.88rem; }
+    .memo-preview { max-width: 220px; font-size: 0.9rem; line-height: 1.4; color: #1f2937; }
+    .btn-detail-view { display: inline-block; margin-top: 4px; color: #0284c7; font-weight: bold; cursor: pointer; text-decoration: underline; font-size: 0.85rem; }
 
-    .badge { padding: 8px 14px; border-radius: 16px; font-size: 0.95rem; font-weight: 900; display: inline-block; white-space: nowrap; }
+    .badge { padding: 6px 12px; border-radius: 16px; font-size: 0.9rem; font-weight: 900; display: inline-block; white-space: nowrap; }
     .badge-予約受付 { background: #bae6fd; color: #0369a1; }
     .badge-受付済 { background: #fde68a; color: #92400e; }
     .badge-診察完了 { background: #bbf7d0; color: #15803d; }
     .badge-キャンセル { background: #fca5a5; color: #991b1b; }
+    .badge-休診 { background: #e2e8f0; color: #64748b; }
 
-    .btn-group-sm { display: flex; flex-wrap: wrap; gap: 6px; width: 170px; }
-    .btn-sm { padding: 8px 10px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 800; cursor: pointer; }
+    .btn-group-sm { display: flex; flex-wrap: wrap; gap: 4px; width: 160px; }
+    .btn-sm { padding: 6px 8px; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; }
     .btn-sm-check { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
     .btn-sm-complete { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .btn-sm-reset { background: #e5e7eb; color: #374151; border: 1px solid #d1d5db; }
     .btn-sm-cancel { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-    .btn-sm-line { background: var(--primary); color: #fff; width: 100%; margin-top: 4px; font-size: 0.95rem; padding: 8px; font-weight: 900; }
+    .btn-sm-line { background: var(--primary); color: #fff; width: 100%; margin-top: 4px; font-size: 0.9rem; padding: 6px; font-weight: 900; }
 
-    .menu-portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 10px; }
-    .portal-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 14px; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; }
+    .menu-portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 10px; }
+    .portal-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 14px; padding: 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; }
     .portal-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    .portal-card .icon { font-size: 2.2rem; margin-right: 16px; }
-    .portal-card .info h3 { margin: 0 0 6px 0; font-size: 1.2rem; color: #111827; }
-    .portal-card .info p { margin: 0; font-size: 0.9rem; color: #6b7280; }
-    .portal-card .arrow { font-size: 1.5rem; color: #9ca3af; font-weight: bold; }
+    .portal-card .icon { font-size: 2rem; margin-right: 14px; }
+    .portal-card .info h3 { margin: 0 0 4px 0; font-size: 1.15rem; color: #111827; }
+    .portal-card .info p { margin: 0; font-size: 0.85rem; color: #6b7280; }
+    .portal-card .arrow { font-size: 1.4rem; color: #9ca3af; font-weight: bold; }
+
+    /* タイル表示用スタイル */
+    .tile-grid-wrap { overflow-x: auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; }
+    .tile-table { width: 100%; border-collapse: collapse; min-width: 900px; text-align: center; font-size: 0.85rem; }
+    .tile-table th, .tile-table td { border: 1px solid #cbd5e0; padding: 8px 4px; vertical-align: top; }
+    .tile-table th { background: #f1f5f9; color: #0f172a; font-weight: bold; }
+    .tile-cell-item { background: #e0f2fe; border: 1px solid #0284c7; border-radius: 6px; padding: 4px; margin-bottom: 4px; font-size: 0.8rem; text-align: left; }
+    .tile-cell-item.item-受取 { background: #fef3c7; border-color: #d97706; }
+    .tile-cell-item.item-休診 { background: #f1f5f9; border-color: #94a3b8; color: #64748b; text-align: center; font-weight: bold; }
+
+    /* 休日設定用スタイル */
+    .holiday-cell { cursor: pointer; transition: background 0.2s; height: 42px; vertical-align: middle !important; font-weight: bold; }
+    .holiday-cell.is-open { background: #f0fdf4; color: #166534; }
+    .holiday-cell.is-open:hover { background: #dcfce7; }
+    .holiday-cell.is-off { background: #fef2f2; color: #991b1b; }
+    .holiday-cell.is-off:hover { background: #fee2e2; }
+    .th-day-toggle { cursor: pointer; background: #e2e8f0 !important; }
+    .th-day-toggle:hover { background: #cbd5e0 !important; }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -102,10 +126,13 @@
       <span id="autoRefreshNotice" style="font-size:0.85rem; color:#047857; font-weight:bold; background:#e8f9ee; padding:4px 10px; border-radius:12px;">🔄 自動更新中 (30秒)</span>
     </div>
     <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('menu')">📱 メニュー画面</button>
+      <button class="tab-btn active" onclick="switchTab('menu')">📱 メニュー</button>
       <button class="tab-btn" onclick="switchTab('reservations')">📅 予約一覧</button>
+      <button class="tab-btn" onclick="switchTab('timeline')">🕒 1日スケジュール</button>
+      <button class="tab-btn" onclick="switchTab('tile')">🔲 週間タイル表示</button>
+      <button class="tab-btn" onclick="switchTab('holiday')">⚙️ 休業・受付枠設定</button>
       <button class="tab-btn" onclick="switchTab('patients')">🐾 患者名簿</button>
-      <button class="tab-btn" onclick="switchTab('broadcast')">📢 一括LINE配信</button>
+      <button class="tab-btn" onclick="switchTab('broadcast')">📢 一括LINE</button>
     </div>
   </div>
 
@@ -117,7 +144,40 @@
           <div class="icon">📅</div>
           <div class="info">
             <h3>予約状況の確認・受付</h3>
-            <p>本日の診察予約の一覧表示、ステータス変更ができます。</p>
+            <p>診察と薬・フード受け取りを切り替えて確認・編集ができます。</p>
+          </div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <div class="portal-card" onclick="switchTab('timeline')">
+        <div style="display:flex; align-items:center;">
+          <div class="icon">🕒</div>
+          <div class="info">
+            <h3>1日のタイムライン</h3>
+            <p>9:00〜18:00の時系列で本日の流れを一覧確認できます。</p>
+          </div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <div class="portal-card" onclick="switchTab('tile')">
+        <div style="display:flex; align-items:center;">
+          <div class="icon">🔲</div>
+          <div class="info">
+            <h3>週間予約タイル表示</h3>
+            <p>週間カレンダー形式で予約のつまり具合を視覚的に把握できます。</p>
+          </div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <div class="portal-card" onclick="switchTab('holiday')">
+        <div style="display:flex; align-items:center;">
+          <div class="icon">⚙️</div>
+          <div class="info">
+            <h3>休業・受付枠設定</h3>
+            <p>タイルをタップして「1日休止」や「指定時間の受付停止」を簡単に切り替えられます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -128,7 +188,7 @@
           <div class="icon">🐾</div>
           <div class="info">
             <h3>患者様名簿・カルテ参照</h3>
-            <p>診察券番号順・五十音順での並べ替えや個別LINE連絡ができます。</p>
+            <p>診察券番号順・五十音順での並べ替えや無料チャット連絡ができます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -147,12 +207,19 @@
     </div>
   </div>
 
-  <!-- TAB 1: 予約一覧 -->
+  <!-- TAB 1: 予約一覧（種別フィルター付き） -->
   <div id="tab-reservations" class="tab-content">
     <div class="filter-box">
-      <label style="font-weight:900;">日付絞り込み:</label>
+      <label style="font-weight:900;">絞り込み:</label>
       <input type="date" id="datePicker" onchange="filterReservations()">
-      <button class="btn-action btn-dark" onclick="showAllReservations()">全件表示</button>
+      
+      <div style="display:inline-flex; gap:4px; margin-left:8px;">
+        <button class="btn-action btn-filter active" id="f-all" onclick="setCategoryFilter('all')">全件表示</button>
+        <button class="btn-action btn-filter" id="f-medical" onclick="setCategoryFilter('medical')">🩺 診療等のみ</button>
+        <button class="btn-action btn-filter" id="f-pickup" onclick="setCategoryFilter('pickup')">💊 薬・フード等のみ</button>
+      </div>
+
+      <button class="btn-action btn-dark" style="margin-left:auto;" onclick="showAllReservations()">全日付表示</button>
       <button class="btn-action" onclick="loadData()">🔄 手動更新</button>
     </div>
 
@@ -162,14 +229,14 @@
           <tr>
             <th style="width: 120px;">予約日時</th>
             <th style="width: 130px;">飼い主名</th>
-            <th style="width: 150px;">電話番号</th>
-            <th style="width: 130px;">診察区分</th>
-            <th style="width: 140px;">ペット名</th>
-            <th style="width: 150px;">ペット情報</th>
-            <th style="width: 130px;">メニュー</th>
+            <th style="width: 140px;">電話番号</th>
+            <th style="width: 120px;">診察区分</th>
+            <th style="width: 130px;">ペット名</th>
+            <th style="width: 140px;">ペット情報</th>
+            <th style="width: 150px;">メニュー</th>
             <th>症状・メモ（詳細確認可）</th>
-            <th style="width: 110px;">状態</th>
-            <th style="width: 175px;">操作 / LINE</th>
+            <th style="width: 100px;">状態</th>
+            <th style="width: 165px;">操作 / LINE</th>
           </tr>
         </thead>
         <tbody id="reservationTableBody">
@@ -179,7 +246,64 @@
     </div>
   </div>
 
-  <!-- TAB 2: 患者名簿 -->
+  <!-- TAB 2: 1日スケジュール表示 -->
+  <div id="tab-timeline" class="tab-content">
+    <div class="filter-box">
+      <label style="font-weight:900;">対象日付:</label>
+      <input type="date" id="timelineDatePicker" onchange="renderTimeline()">
+    </div>
+
+    <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:16px;">
+      <h3 style="margin-top:0; color:var(--primary-dark);" id="timelineTitle">1日のタイムライン</h3>
+      <div id="timelineBody" style="display:flex; flex-direction:column; gap:12px;">
+        <!-- タイムライン項目が挿入されます -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: 週間予約タイル表示 -->
+  <div id="tab-tile" class="tab-content">
+    <div class="filter-box">
+      <button class="btn-action" onclick="changeTileWeek(-7)">‹ 前の週</button>
+      <span id="tileWeekTitle" style="font-weight:bold; font-size:1.1rem; padding:0 8px;"></span>
+      <button class="btn-action" onclick="changeTileWeek(7)">次の週 ›</button>
+    </div>
+
+    <div class="tile-grid-wrap">
+      <table class="tile-table">
+        <thead>
+          <tr id="tileHeaderRow"></tr>
+        </thead>
+        <tbody id="tileBodyRow"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 4: 休業・受付枠設定（タイル状で簡単タップ設定） -->
+  <div id="tab-holiday" class="tab-content">
+    <div style="background:#fff3cd; border:1px solid #ffeba2; padding:12px; border-radius:8px; margin-bottom:14px; font-size:0.95rem; color:#856404;">
+      💡 <strong>休み設定の使い方</strong>：<br>
+      ・日付ヘッダーをタップ ➔ その日を<strong>1日まとめて「全日休診」</strong>に切り替えます。<br>
+      ・各時間枠のセルをタップ ➔ その時間枠のみ<strong>「受付停止/受付再開」</strong>を切り替えます。
+    </div>
+
+    <div class="filter-box">
+      <button class="btn-action" onclick="changeHolidayWeek(-7)">‹ 前の週</button>
+      <span id="holidayWeekTitle" style="font-weight:bold; font-size:1.1rem; padding:0 8px;"></span>
+      <button class="btn-action" onclick="changeHolidayWeek(7)">次の週 ›</button>
+    </div>
+
+    <div class="tile-grid-wrap">
+      <table class="tile-table">
+        <thead>
+          <tr id="holidayHeaderRow"></tr>
+        </thead>
+        <tbody id="holidayBodyRow"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 5: 患者名簿 -->
   <div id="tab-patients" class="tab-content">
     <div class="filter-box">
       <label style="font-weight:900;">並べ替え（ソート）:</label>
@@ -211,7 +335,7 @@
     </div>
   </div>
 
-  <!-- TAB 3: 一括LINE配信 -->
+  <!-- TAB 6: 一括LINE配信 -->
   <div id="tab-broadcast" class="tab-content">
     <div style="background:#fff; padding:28px; border-radius:12px; max-width:640px; border:2px solid #d1d5db;">
       <h3 style="margin-top:0; color:var(--primary-dark); font-size:1.3rem; font-weight:900;">📢 全員への一括LINE配信</h3>
@@ -229,32 +353,46 @@
     </div>
   </div>
 
-  <!-- 個別LINEモーダル -->
+  <!-- 名前自動コピー付きチャットモーダル -->
   <div id="msgModal" class="modal">
     <div class="modal-content">
-      <h3 id="modalTargetName" style="margin-top:0; font-size:1.3rem; font-weight:900;">LINE個別送信</h3>
-      <textarea id="individualMsg" rows="4" style="width:100%; font-size:1.05rem;" placeholder="メッセージを入力..."></textarea>
-      <div style="display:flex; gap:12px; margin-top:18px;">
-        <button class="btn-action" style="flex:1;" onclick="closeModal()">キャンセル</button>
-        <button class="btn-action btn-green" style="flex:1;" onclick="submitIndividualMsg()">送信する</button>
+      <h3 id="modalTargetName" style="margin-top:0; font-size:1.3rem; font-weight:900; color:var(--primary-dark);">💬 LINE個別チャット（完全無料）</h3>
+      <p style="font-size:0.95rem; color:#4b5563; margin-bottom:12px; line-height:1.4;">
+        下のボタンを押すと<strong>お名前がコピーされ、LINEチャットが開きます</strong>。<br>チャット画面の検索欄に貼り付けて（ペーストして）検索してください。
+      </p>
+      <div style="background:#f0fff4; border:1px solid #c6f6d5; padding:12px; border-radius:8px; margin-bottom:16px;">
+        <span style="font-size:0.85rem; color:#047857; font-weight:bold; display:block; margin-bottom:4px;">コピー対象のお名前:</span>
+        <strong id="modalCopyName" style="font-size:1.2rem; color:#111827;">-</strong>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn-action btn-green" style="width:100%; padding:14px; font-size:1.1rem; font-weight:900;" onclick="copyAndOpenLine()">📋 名前をコピーしてLINEを開く (0円)</button>
+        <button class="btn-action" style="background:#6b7280;" onclick="closeModal()">閉じる</button>
       </div>
     </div>
   </div>
 
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
-    
+    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "12:00~", "13:00~", "14:00~", "15:00~", "16:00~", "17:00~", "18:00~"];
+
     let allReservations = [];
-    let currentTargetUserId = '';
     let adminPass = sessionStorage.getItem('adminPass') || '';
     let autoRefreshTimer = null;
+    let currentTargetName = '';
+    
+    let currentCategoryFilter = 'all'; // all, medical, pickup
+    let tileWeekStart = new Date();
+    let holidayWeekStart = new Date();
 
     window.onload = () => {
       const now = new Date();
       const yyyy = now.getFullYear();
       const mm = String(now.getMonth() + 1).padStart(2, '0');
       const dd = String(now.getDate()).padStart(2, '0');
-      document.getElementById('datePicker').value = `${yyyy}-${mm}-${dd}`;
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+
+      document.getElementById('datePicker').value = todayStr;
+      document.getElementById('timelineDatePicker').value = todayStr;
       
       if (adminPass) {
         document.getElementById('loginOverlay').style.display = 'none';
@@ -289,6 +427,9 @@
 
           allReservations = Array.isArray(data) ? data : [];
           filterReservations();
+          renderTimeline();
+          renderTileView();
+          renderHolidayView();
           renderPatientTable();
         })
         .catch(() => {});
@@ -301,20 +442,34 @@
       return `${matched[1]}-${matched[2].padStart(2, '0')}-${matched[3].padStart(2, '0')}`;
     }
 
+    /* カテゴリ切り替え（診療等 vs 薬・フード等） */
+    function setCategoryFilter(type) {
+      currentCategoryFilter = type;
+      document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`f-${type}`).classList.add('active');
+      filterReservations();
+    }
+
     function filterReservations() {
       const selectedDate = document.getElementById('datePicker').value;
-      if (!selectedDate) {
-        renderReservationTable(allReservations);
-        return;
+      let filtered = allReservations;
+
+      if (selectedDate) {
+        filtered = filtered.filter(r => normalizeDateStr(r.date) === selectedDate);
       }
 
-      const filtered = allReservations.filter(r => normalizeDateStr(r.date) === selectedDate);
+      if (currentCategoryFilter === 'medical') {
+        filtered = filtered.filter(r => !r.menu.includes('薬・フード'));
+      } else if (currentCategoryFilter === 'pickup') {
+        filtered = filtered.filter(r => r.menu.includes('薬・フード'));
+      }
+
       renderReservationTable(filtered);
     }
 
     function showAllReservations() {
       document.getElementById('datePicker').value = '';
-      renderReservationTable(allReservations);
+      filterReservations();
     }
 
     function renderReservationTable(list) {
@@ -327,12 +482,14 @@
       tbody.innerHTML = list.map(r => {
         const isFirst = r.visitType && r.visitType.includes('初診');
         const visitClass = isFirst ? 'visit-初診' : 'visit-再診';
+        const isPickup = r.menu && r.menu.includes('薬・フード');
+        const menuClass = isPickup ? 'menu-受取' : 'menu-診療';
 
         const fullMemo = r.symptoms || 'なし';
         let shortMemo = fullMemo;
         let hasMore = false;
-        if (fullMemo.length > 25) {
-          shortMemo = fullMemo.substring(0, 25) + '...';
+        if (fullMemo.length > 22) {
+          shortMemo = fullMemo.substring(0, 22) + '...';
           hasMore = true;
         }
 
@@ -347,7 +504,7 @@
             <td><span class="visit-badge ${visitClass}">${r.visitType || '-'}</span></td>
             <td><div class="pet-name-box">🐾 ${r.petName}</div></td>
             <td><div class="pet-info-box">${r.petInfo || '-'}</div></td>
-            <td><span class="menu-badge">${r.menu}</span></td>
+            <td><span class="menu-badge ${menuClass}">${r.menu}</span></td>
             <td>
               <div class="memo-preview">${shortMemo}</div>
               ${hasMore ? `<span class="btn-detail-view" onclick="openSymptomModal('${escapeHtml(fullMemo)}')">🔍 全文表示</span>` : ''}
@@ -359,7 +516,7 @@
                 <button class="btn-sm btn-sm-complete" onclick="updateStatus(${r.rowIndex}, '診察完了')">完了</button>
                 <button class="btn-sm btn-sm-reset" onclick="updateStatus(${r.rowIndex}, '予約受付')">戻す</button>
                 <button class="btn-sm btn-sm-cancel" onclick="updateStatus(${r.rowIndex}, 'キャンセル')">取消</button>
-                <button class="btn-sm btn-sm-line" onclick="openModal('${r.lineUserId}', '${r.lineUserName || r.petName}')">💬 LINE送信</button>
+                <button class="btn-sm btn-sm-line" onclick="openModal('${r.lineUserName || r.petName}')">💬 無料チャット</button>
               </div>
             </td>
           </tr>
@@ -367,13 +524,182 @@
       }).join('');
     }
 
+    /* --- TAB 2: 1日タイムライン表示 --- */
+    function renderTimeline() {
+      const selectedDate = document.getElementById('timelineDatePicker').value;
+      const container = document.getElementById('timelineBody');
+      document.getElementById('timelineTitle').innerText = `🕒 ${selectedDate} のタイムラインスケジュール`;
+
+      const dayReservations = allReservations.filter(r => normalizeDateStr(r.date) === selectedDate && r.status !== 'キャンセル');
+
+      let html = "";
+      TIME_SLOTS.forEach(time => {
+        const slots = dayReservations.filter(r => r.time === time);
+        html += `<div style="border-left: 4px solid var(--primary); padding-left: 12px; margin-bottom: 8px;">`;
+        html += `<strong style="font-size: 1.15rem; color: var(--primary-dark);">${time}</strong>`;
+        
+        if (slots.length === 0) {
+          html += `<div style="color:#94a3b8; font-size:0.95rem; margin-top:2px;">（予約なし・空き）</div>`;
+        } else {
+          slots.forEach(r => {
+            const isPickup = r.menu.includes('薬・フード');
+            const bg = isPickup ? '#fffbebf5' : '#f0f9ff';
+            const border = isPickup ? '#fcd34d' : '#bae6fd';
+            html += `
+              <div style="background:${bg}; border:1px solid ${border}; border-radius:8px; padding:8px 12px; margin-top:4px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <strong style="font-size:1.05rem;">👤 ${r.lineUserName} 様 (${r.petName})</strong>
+                  <span class="menu-badge ${isPickup ? 'menu-受取' : 'menu-診療'}" style="margin-left:8px;">${r.menu}</span>
+                  <div style="font-size:0.85rem; color:#4b5563; margin-top:2px;">メモ: ${r.symptoms || 'なし'}</div>
+                </div>
+                <div><span class="badge badge-${r.status}">${r.status}</span></div>
+              </div>
+            `;
+          });
+        }
+        html += `</div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    /* --- TAB 3: 週間予約タイル表示 --- */
+    function changeTileWeek(offset) {
+      tileWeekStart.setDate(tileWeekStart.getDate() + offset);
+      renderTileView();
+    }
+
+    function renderTileView() {
+      const dates = [];
+      for (let i = 0; i < 7; i++) {
+        let d = new Date(tileWeekStart);
+        d.setDate(d.getDate() + i);
+        dates.push(d);
+      }
+
+      let m1 = `${dates[0].getFullYear()}年 ${dates[0].getMonth() + 1}月`;
+      let m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
+      document.getElementById('tileWeekTitle').innerText = m1 === m2 ? m1 : `${m1} / ${m2}`;
+
+      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+      let headerHtml = `<th style="width:80px;">時間</th>`;
+      dates.forEach(d => {
+        headerHtml += `<th>${d.getDate()}<br>(${dayNames[d.getDay()]})</th>`;
+      });
+      document.getElementById('tileHeaderRow').innerHTML = headerHtml;
+
+      let bodyHtml = "";
+      TIME_SLOTS.forEach(time => {
+        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc;">${time}</td>`;
+        dates.forEach(d => {
+          let yyyy = d.getFullYear();
+          let mm = String(d.getMonth() + 1).padStart(2, '0');
+          let dd = String(d.getDate()).padStart(2, '0');
+          let dateStr = `${yyyy}-${mm}-${dd}`;
+
+          const matches = allReservations.filter(r => normalizeDateStr(r.date) === dateStr && r.time === time && r.status !== 'キャンセル');
+
+          bodyHtml += `<td>`;
+          if (matches.length === 0) {
+            bodyHtml += `<span style="color:#cbd5e0; font-size:0.8rem;">-</span>`;
+          } else {
+            matches.forEach(r => {
+              if (r.status === '休診') {
+                bodyHtml += `<div class="tile-cell-item item-休診">休診枠</div>`;
+              } else {
+                const isPickup = r.menu.includes('薬・フード');
+                bodyHtml += `<div class="tile-cell-item ${isPickup ? 'item-受取' : ''}">
+                  <strong>${r.lineUserName}</strong><br><small>${r.petName}</small>
+                </div>`;
+              }
+            });
+          }
+          bodyHtml += `</td>`;
+        });
+        bodyHtml += `</tr>`;
+      });
+
+      document.getElementById('tileBodyRow').innerHTML = bodyHtml;
+    }
+
+    /* --- TAB 4: 休業・受付枠設定（簡単タップ設定） --- */
+    function changeHolidayWeek(offset) {
+      holidayWeekStart.setDate(holidayWeekStart.getDate() + offset);
+      renderHolidayView();
+    }
+
+    function renderHolidayView() {
+      const dates = [];
+      for (let i = 0; i < 7; i++) {
+        let d = new Date(holidayWeekStart);
+        d.setDate(d.getDate() + i);
+        dates.push(d);
+      }
+
+      let m1 = `${dates[0].getFullYear()}年 ${dates[0].getMonth() + 1}月`;
+      let m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
+      document.getElementById('holidayWeekTitle').innerText = m1 === m2 ? m1 : `${m1} / ${m2}`;
+
+      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+      let headerHtml = `<th style="width:80px;">時間</th>`;
+      dates.forEach(d => {
+        let yyyy = d.getFullYear();
+        let mm = String(d.getMonth() + 1).padStart(2, '0');
+        let dd = String(d.getDate()).padStart(2, '0');
+        let dateStr = `${yyyy}-${mm}-${dd}`;
+
+        headerHtml += `<th class="th-day-toggle" onclick="toggleDayHoliday('${dateStr}')" title="1日まとめて休止/解除">
+          ${d.getDate()} (${dayNames[d.getDay()]})<br><span style="font-size:0.75rem; color:#0284c7;">[1日切替]</span>
+        </th>`;
+      });
+      document.getElementById('holidayHeaderRow').innerHTML = headerHtml;
+
+      let bodyHtml = "";
+      TIME_SLOTS.forEach(time => {
+        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc;">${time}</td>`;
+        dates.forEach(d => {
+          let yyyy = d.getFullYear();
+          let mm = String(d.getMonth() + 1).padStart(2, '0');
+          let dd = String(d.getDate()).padStart(2, '0');
+          let dateStr = `${yyyy}-${mm}-${dd}`;
+
+          const isOff = allReservations.some(r => normalizeDateStr(r.date) === dateStr && r.time === time && r.status === '休診');
+
+          bodyHtml += `<td class="holiday-cell ${isOff ? 'is-off' : 'is-open'}" onclick="toggleHolidaySlot('${dateStr}', '${time}')">
+            ${isOff ? '休診 (受付不可)' : '受付中 (〇)'}
+          </td>`;
+        });
+        bodyHtml += `</tr>`;
+      });
+
+      document.getElementById('holidayBodyRow').innerHTML = bodyHtml;
+    }
+
+    function toggleHolidaySlot(dateStr, timeStr) {
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "toggleHoliday", date: dateStr, time: timeStr, pass: adminPass })
+      }).then(() => loadData());
+    }
+
+    function toggleDayHoliday(dateStr) {
+      const isSet = confirm(`${dateStr} を1日まとめて「休診」に切り替えますか？（既に全休の場合は解除されます）`);
+      if (!isSet) return;
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "toggleDayHoliday", date: dateStr, isSet: true, pass: adminPass })
+      }).then(() => loadData());
+    }
+
+    /* --- TAB 5: 患者名簿 --- */
     function renderPatientTable() {
       const tbody = document.getElementById('patientTableBody');
       const sortType = document.getElementById('patientSortSelect').value;
       const patientsMap = {};
 
       allReservations.forEach(r => {
-        if (!r.petName) return;
+        if (!r.petName || r.status === '休診') return;
         const key = `${r.lineUserName}_${r.petName}`;
         
         let ticketNo = '';
@@ -421,7 +747,7 @@
           <td><strong style="font-size:1.15rem; font-weight:900;">${p.count}</strong> 回</td>
           <td><strong style="font-size:1.05rem;">${p.lastDate}</strong></td>
           <td>
-            <button class="btn-sm btn-sm-line" style="width:auto; padding:8px 14px; font-size:0.95rem;" onclick="openModal('${p.lineUserId}', '${p.ownerName}')">💬 LINE個別送信</button>
+            <button class="btn-sm btn-sm-line" style="width:auto; padding:8px 14px; font-size:0.95rem;" onclick="openModal('${p.ownerName}')">💬 無料チャット</button>
           </td>
         </tr>
       `).join('');
@@ -453,34 +779,30 @@
       document.getElementById('symptomModal').style.display = 'none';
     }
 
-    function openModal(userId, name) {
-      currentTargetUserId = userId;
-      document.getElementById('modalTargetName').innerText = `💬 ${name} 様へのメッセージ`;
+    function openModal(name) {
+      currentTargetName = name;
+      document.getElementById('modalCopyName').innerText = `${name}`;
       document.getElementById('msgModal').style.display = 'flex';
     }
 
     function closeModal() {
       document.getElementById('msgModal').style.display = 'none';
-      document.getElementById('individualMsg').value = '';
     }
 
-    function submitIndividualMsg() {
-      const msg = document.getElementById('individualMsg').value;
-      if (!msg) return alert('メッセージを入力してください');
-
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "sendIndividual", lineUserId: currentTargetUserId, message: msg, pass: adminPass })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.status === 'success') {
-          alert('LINEメッセージを送信しました！');
+    function copyAndOpenLine() {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(currentTargetName).then(() => {
+          alert(`「${currentTargetName}」をコピーしました！\nLINE画面の検索窓に貼り付けてください。`);
+          window.open("https://chat.line.biz/", "_blank");
           closeModal();
-        } else {
-          alert('送信エラー: ' + data.message);
-        }
-      });
+        }).catch(() => {
+          window.open("https://chat.line.biz/", "_blank");
+          closeModal();
+        });
+      } else {
+        window.open("https://chat.line.biz/", "_blank");
+        closeModal();
+      }
     }
 
     function sendBroadcast() {
