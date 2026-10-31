@@ -74,7 +74,7 @@
     
     .cell-ok { color: #0284c7; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: block; width: 100%; height: 100%; }
     .cell-ok:active { background: #e0f2fe; }
-    .cell-ng { color: #94a3b8; font-size: 0.9rem; }
+    .cell-ng { color: #dc2626; font-size: 0.95rem; font-weight: bold; background: #fef2f2; }
     .cell-none { color: #cbd5e0; font-size: 0.8rem; }
 
     .selected-slot-box { background: #e0f2fe; border: 1px solid #7dd3fc; color: #0369a1; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 0.95rem; margin-top: 12px; }
@@ -313,7 +313,6 @@
     let selectedDateStr = "";
     let selectedTimeStr = "";
 
-    // 9:00~, 10:00~, 11:00~, 16:00~, 17:00~, 18:00~ の6枠
     const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
 
     liff.init({ liffId: LIFF_ID }).then(() => {
@@ -412,6 +411,7 @@
         .then(res => res.json())
         .then(data => {
           if (Array.isArray(data)) {
+            // キャンセルされた予約以外を全取得（通常予約 ＋ 休診設定データ）
             existingReservations = data.filter(r => r.status !== 'キャンセル');
           }
           renderCalendar();
@@ -476,11 +476,12 @@
           let dateStr = `${yyyy}-${mm}-${dd}`;
 
           let isPast = d < today;
-          let isBooked = existingReservations.some(r => normalizeDateStr(r.date) === dateStr && r.time === time);
+          // 通常予約が入っているか、または管理者が休診に設定しているか判定
+          let isOccupied = existingReservations.some(r => normalizeDateStr(r.date) === dateStr && r.time === time);
 
           if (isPast) {
             bodyHtml += `<td><span class="cell-none">-</span></td>`;
-          } else if (isBooked) {
+          } else if (isOccupied) {
             bodyHtml += `<td><span class="cell-ng">✕</span></td>`;
           } else {
             let isSelected = (selectedDateStr === dateStr && selectedTimeStr === time);
