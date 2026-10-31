@@ -26,6 +26,7 @@
     .header { background: var(--card-bg); padding: 20px 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); position: relative; }
     h1 { margin: 0 0 16px 0; font-size: 1.6rem; color: var(--primary-dark); font-weight: 800; }
     
+    /* ベルマーク通知スタイル */
     .notice-bell-wrap { position: relative; cursor: pointer; }
     .notice-bell-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; position: relative; }
     .notice-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; border-radius: 50%; font-size: 0.75rem; font-weight: 900; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #fff; }
@@ -49,9 +50,30 @@
     .btn-filter { background: #e5e7eb; color: #374151; border: 1.5px solid #d1d5db; }
     .btn-filter.active { background: #0284c7; color: #fff; border-color: #0284c7; }
 
-    .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
+    /* ★画面内に収まる高さ制限＋スクロールバー固定 */
+    .table-container { 
+      background: var(--card-bg); 
+      border-radius: 12px; 
+      overflow: auto; 
+      max-height: 70vh; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+      border: 1px solid var(--border-color); 
+    }
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1rem; min-width: 1350px; }
-    th { background: #f3f4f6; color: #111827; padding: 14px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; font-size: 1.05rem; }
+    
+    /* ★見出し行（th）の固定化 */
+    th { 
+      position: sticky; 
+      top: 0; 
+      z-index: 10; 
+      background: #f3f4f6; 
+      color: #111827; 
+      padding: 14px; 
+      font-weight: 800; 
+      border-bottom: 3px solid #d1d5db; 
+      white-space: nowrap; 
+      font-size: 1.05rem; 
+    }
     td { padding: 14px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
     tr:hover { background: #f9fafb; }
 
@@ -151,11 +173,11 @@
           
           <div class="notice-popover" id="noticePopover">
             <div class="notice-popover-header">
-              <strong>🔔 本日の通知履歴</strong>
+              <strong>🔔 新着・未読通知</strong>
               <span style="font-size:0.75rem; color:#64748b;">(確認済み)</span>
             </div>
             <div class="notice-popover-body" id="noticeListContainer">
-              <div style="padding:16px; text-align:center; color:#94a3b8;">本日の通知はありません</div>
+              <div style="padding:16px; text-align:center; color:#94a3b8;">新着通知はありません</div>
             </div>
           </div>
         </div>
@@ -171,6 +193,7 @@
       <button class="tab-btn" onclick="switchTab('holiday')">⚙️ 休業・受付枠設定</button>
       <button class="tab-btn" onclick="switchTab('patients')">🐾 患者名簿</button>
       <button class="tab-btn" onclick="switchTab('broadcast')">📢 一括LINE</button>
+      <button class="tab-btn" onclick="switchTab('announcement')">📢 画面アナウンス</button>
     </div>
   </div>
 
@@ -194,6 +217,17 @@
           <div class="info">
             <h3>事前問診一覧・詳細</h3>
             <p>患者様が事前入力した症状・相談メモの全文と病院メモを確認できます。</p>
+          </div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <div class="portal-card" onclick="switchTab('announcement')">
+        <div style="display:flex; align-items:center;">
+          <div class="icon">📢</div>
+          <div class="info">
+            <h3>予約画面アナウンス設定</h3>
+            <p>予約画面（index.html）の一番最初に出す警告文や注意事項を編集できます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -406,6 +440,18 @@
     </div>
   </div>
 
+  <!-- TAB 7: 予約画面アナウンス編集 -->
+  <div id="tab-announcement" class="tab-content">
+    <div style="background:#fff; padding:28px; border-radius:12px; max-width:680px; border:2px solid #d1d5db;">
+      <h3 style="margin-top:0; color:var(--primary-dark); font-size:1.3rem; font-weight:900;">📢 予約画面アナウンス（注意文・メッセージ）の設定</h3>
+      <p style="font-size:0.95rem; color:#4b5563; line-height:1.4;">
+        患者様の予約画面（`index.html`）の一番最初（Step 1の前）に表示されるアナウンス文章を設定できます。改行もそのまま画面に反映されます。
+      </p>
+      <textarea id="announcementInput" rows="8" style="width:100%; margin-top:10px; font-size:1rem; padding:12px;" placeholder="【ご来院の際のお願い】&#10;・初診のお客様は10分前にお越しください。&#10;・キャンセルの場合はお早めにご連絡ください。"></textarea>
+      <button class="btn-action btn-green" style="width:100%; margin-top:16px; padding:14px; font-size:1.1rem;" onclick="saveAnnouncement()">💾 アナウンス文章を更新保存する</button>
+    </div>
+  </div>
+
   <!-- キャンセルモーダル -->
   <div id="cancelModal" class="modal">
     <div class="modal-content">
@@ -506,7 +552,11 @@
           sessionStorage.setItem('adminPass', adminPass);
           document.getElementById('loginOverlay').style.display = 'none';
 
-          allReservations = Array.isArray(data) ? data : [];
+          allReservations = Array.isArray(data) ? data : (data.reservations || []);
+          if (data.announcement) {
+            document.getElementById('announcementInput').value = data.announcement;
+          }
+
           filterReservations();
           renderInterviewList();
           renderTimeline();
@@ -520,6 +570,22 @@
         });
     }
 
+    function saveAnnouncement() {
+      const text = document.getElementById('announcementInput').value;
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "updateAnnouncement", announcement: text, pass: adminPass })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert('予約画面のアナウンス文章を更新しました！');
+        } else {
+          alert('保存エラー: ' + (data.message || ''));
+        }
+      });
+    }
+
     function normalizeDateStr(str) {
       if (!str) return '';
       const matched = String(str).match(/(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/);
@@ -527,18 +593,14 @@
       return `${matched[1]}-${matched[2].padStart(2, '0')}-${matched[3].padStart(2, '0')}`;
     }
 
-    // 選択症状の解析（長文・備考メモを一切排除し、選択タグのみを抽出）
     function parseSymptoms(fullText) {
       if (!fullText) return { chipsHtml: '<span style="color:#9ca3af;">選択なし</span>', detailText: '記入なし' };
 
       let text = fullText.replace(/^\[(?:症状|受取品)\]\s*/, '');
-
-      // '/' または '／' で選択項目と備考メモ部分を分割
       const parts = text.split(/\s*[\/／]\s*/);
       const chipsPart = parts[0] ? parts[0].trim() : '';
       const detailPart = parts.slice(1).join(' / ').trim();
 
-      // (30日分/個) 等のカッコ表記を除外して選択チップ名だけ抽出
       let cleanChipsPart = chipsPart.replace(/\([^)]*\)/g, '').trim();
       const items = cleanChipsPart.split(/[,、]/).map(s => s.trim()).filter(Boolean);
 
@@ -549,7 +611,6 @@
         chipsHtml = '<span style="color:#9ca3af;">選択なし</span>';
       }
 
-      // 事前問診用の詳細文章（選択内容＋具体的メモ全文）
       let fullDetailText = '';
       if (detailPart) {
         fullDetailText = `【選択・数量】${chipsPart}\n【具体的な様子・備考メモ】\n${detailPart}`;
@@ -563,7 +624,7 @@
       };
     }
 
-    // --- 新着通知 ベルマーク処理（履歴保持 ＋ 開いたら数字バッジ消去） ---
+    // --- 新着通知 ベルマーク処理（作成日での判定＋未読件数計算） ---
     function updateNoticeBell() {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -571,32 +632,30 @@
       const dd = String(now.getDate()).padStart(2, '0');
       const todayStr = `${yyyy}-${mm}-${dd}`;
 
-      // 本日の予約・キャンセル通知のみを抽出（過去分は自動整理）
-      const todayReservations = allReservations.filter(r => 
-        r.status !== '休診' && 
-        r.lineUserId !== 'SYSTEM_HOLIDAY' && 
-        normalizeDateStr(r.date) === todayStr
-      );
-      
       const notices = [];
-      todayReservations.forEach(r => {
+      allReservations.forEach(r => {
+        if (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY') return;
+
+        const createdDateStr = normalizeDateStr(r.createdAt);
         const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
         const isRead = readNoticeIds.has(id);
         const isCancel = r.status === 'キャンセル';
-        
-        notices.push({
-          id: id,
-          rowIndex: r.rowIndex,
-          date: r.date,
-          time: r.time,
-          name: r.lineUserName,
-          pet: r.petName,
-          type: isCancel ? 'キャンセル' : '新規受付',
-          isRead: isRead
-        });
+
+        // 作成日(createdAt)が本日、または未読の通知を対象に保持
+        if (createdDateStr === todayStr || !isRead) {
+          notices.push({
+            id: id,
+            rowIndex: r.rowIndex,
+            date: r.date,
+            time: r.time,
+            name: r.lineUserName,
+            pet: r.petName,
+            type: isCancel ? 'キャンセル' : '新規受付',
+            isRead: isRead
+          });
+        }
       });
 
-      // 未読件数の計算（未読があれば赤数字バッジ表示、無ければ非表示）
       const unreadCount = notices.filter(n => !n.isRead).length;
       const badge = document.getElementById('noticeBadge');
       if (unreadCount > 0) {
@@ -608,11 +667,10 @@
 
       const container = document.getElementById('noticeListContainer');
       if (notices.length === 0) {
-        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">本日の通知はありません</div>`;
+        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">新着通知はありません</div>`;
         return;
       }
 
-      // 履歴一覧としてリスト自体は常に表示できるように残す
       container.innerHTML = notices.map(n => `
         <div class="notice-item ${n.isRead ? '' : 'unread'}" onclick="clickNoticeItem('${n.id}', ${n.rowIndex})">
           <div style="font-weight:bold; color:${n.type === 'キャンセル' ? '#dc2626' : '#0369a1'}; font-size:0.85rem;">
@@ -628,14 +686,13 @@
       `).join('');
     }
 
-    // ベルマーククリック時：ポップアップを開いた時点で全既読化し、バッジの数字を消す
     function toggleNoticePopover() {
       const popover = document.getElementById('noticePopover');
       const isOpening = (popover.style.display !== 'block');
       popover.style.display = isOpening ? 'block' : 'none';
 
       if (isOpening) {
-        markAllNoticesAsRead(); // ポップアップを開いた時点で未読数字を消去
+        markAllNoticesAsRead();
       }
     }
 
@@ -649,13 +706,7 @@
     }
 
     function markAllNoticesAsRead() {
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const dd = String(now.getDate()).padStart(2, '0');
-      const todayStr = `${yyyy}-${mm}-${dd}`;
-
-      allReservations.filter(r => normalizeDateStr(r.date) === todayStr).forEach(r => {
+      allReservations.forEach(r => {
         const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
         readNoticeIds.add(id);
       });
