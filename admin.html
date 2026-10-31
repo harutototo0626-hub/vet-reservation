@@ -83,7 +83,6 @@
     .portal-card .info p { margin: 0; font-size: 0.85rem; color: #6b7280; }
     .portal-card .arrow { font-size: 1.4rem; color: #9ca3af; font-weight: bold; }
 
-    /* タイル表示用スタイル */
     .tile-grid-wrap { overflow-x: auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; }
     .tile-table { width: 100%; border-collapse: collapse; min-width: 900px; text-align: center; font-size: 0.85rem; }
     .tile-table th, .tile-table td { border: 1px solid #cbd5e0; padding: 8px 4px; vertical-align: top; }
@@ -92,7 +91,6 @@
     .tile-cell-item.item-受取 { background: #fef3c7; border-color: #d97706; }
     .tile-cell-item.item-休診 { background: #f1f5f9; border-color: #94a3b8; color: #64748b; text-align: center; font-weight: bold; }
 
-    /* 休日設定用スタイル */
     .holiday-cell { cursor: pointer; transition: background 0.2s; height: 42px; vertical-align: middle !important; font-weight: bold; }
     .holiday-cell.is-open { background: #f0fdf4; color: #166534; }
     .holiday-cell.is-open:hover { background: #dcfce7; }
@@ -155,7 +153,7 @@
           <div class="icon">🕒</div>
           <div class="info">
             <h3>1日のタイムライン</h3>
-            <p>9:00〜18:00の時系列で本日の流れを一覧確認できます。</p>
+            <p>午前・午後の枠ごとの流れを時系列で一覧確認できます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -207,7 +205,7 @@
     </div>
   </div>
 
-  <!-- TAB 1: 予約一覧（種別フィルター付き） -->
+  <!-- TAB 1: 予約一覧 -->
   <div id="tab-reservations" class="tab-content">
     <div class="filter-box">
       <label style="font-weight:900;">絞り込み:</label>
@@ -255,9 +253,7 @@
 
     <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:16px;">
       <h3 style="margin-top:0; color:var(--primary-dark);" id="timelineTitle">1日のタイムライン</h3>
-      <div id="timelineBody" style="display:flex; flex-direction:column; gap:12px;">
-        <!-- タイムライン項目が挿入されます -->
-      </div>
+      <div id="timelineBody" style="display:flex; flex-direction:column; gap:12px;"></div>
     </div>
   </div>
 
@@ -279,7 +275,7 @@
     </div>
   </div>
 
-  <!-- TAB 4: 休業・受付枠設定（タイル状で簡単タップ設定） -->
+  <!-- TAB 4: 休業・受付枠設定 -->
   <div id="tab-holiday" class="tab-content">
     <div style="background:#fff3cd; border:1px solid #ffeba2; padding:12px; border-radius:8px; margin-bottom:14px; font-size:0.95rem; color:#856404;">
       💡 <strong>休み設定の使い方</strong>：<br>
@@ -308,522 +304,15 @@
     <div class="filter-box">
       <label style="font-weight:900;">並べ替え（ソート）:</label>
       <select id="patientSortSelect" onchange="renderPatientTable()">
-        <option value="lastDate_desc">最終受診日（新しい順）</option>
-        <option value="owner_asc">飼い主名（五十音順）</option>
-        <option value="ticket_asc">診察券番号（昇順）</option>
-        <option value="count_desc">受診回数（多い順）</option>
+        <option value="lastDate_desc">📅 最終受診日（新しい順）</option>
+        <option value="lastDate_asc">📅 最終受診日（古い順）</option>
+        <option value="owner_asc">👤 飼い主名（五十音あ〜ん）</option>
+        <option value="owner_desc">👤 飼い主名（五十音ん〜あ）</option>
+        <option value="ticket_asc">🎫 診察券番号（昇順 1➔）</option>
+        <option value="ticket_desc">🎫 診察券番号（降順 99➔）</option>
+        <option value="count_desc">🔢 受診回数（多い順）</option>
+        <option value="count_asc">🔢 受診回数（少ない順）</option>
       </select>
     </div>
 
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>診察券番号</th>
-            <th>飼い主名</th>
-            <th>ペット名</th>
-            <th>LINE ID</th>
-            <th>受診回数</th>
-            <th>最終受診日</th>
-            <th>個別連絡</th>
-          </tr>
-        </thead>
-        <tbody id="patientTableBody">
-          <tr><td colspan="7" style="text-align:center; padding:40px; font-size:1.1rem; font-weight:bold;">患者データを集計中...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- TAB 6: 一括LINE配信 -->
-  <div id="tab-broadcast" class="tab-content">
-    <div style="background:#fff; padding:28px; border-radius:12px; max-width:640px; border:2px solid #d1d5db;">
-      <h3 style="margin-top:0; color:var(--primary-dark); font-size:1.3rem; font-weight:900;">📢 全員への一括LINE配信</h3>
-      <textarea id="broadcastMsg" rows="5" style="width:100%; margin-top:10px; font-size:1.05rem;" placeholder="【お知らせ】休診日案内など..."></textarea>
-      <button class="btn-action btn-green" style="width:100%; margin-top:16px; padding:14px; font-size:1.1rem;" onclick="sendBroadcast()">一括配信を実行する</button>
-    </div>
-  </div>
-
-  <!-- 症状・メモ詳細閲覧モーダル -->
-  <div id="symptomModal" class="modal">
-    <div class="modal-content">
-      <h3 style="margin-top:0; font-size:1.3rem; font-weight:900; color:var(--primary-dark);">📝 症状・相談内容の詳細</h3>
-      <div id="symptomModalText" style="white-space: pre-wrap; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 14px 0; font-size: 1.05rem; line-height: 1.5;">-</div>
-      <button class="btn-action btn-dark" style="width:100%;" onclick="closeSymptomModal()">閉じる</button>
-    </div>
-  </div>
-
-  <!-- 名前自動コピー付きチャットモーダル -->
-  <div id="msgModal" class="modal">
-    <div class="modal-content">
-      <h3 id="modalTargetName" style="margin-top:0; font-size:1.3rem; font-weight:900; color:var(--primary-dark);">💬 LINE個別チャット（完全無料）</h3>
-      <p style="font-size:0.95rem; color:#4b5563; margin-bottom:12px; line-height:1.4;">
-        下のボタンを押すと<strong>お名前がコピーされ、LINEチャットが開きます</strong>。<br>チャット画面の検索欄に貼り付けて（ペーストして）検索してください。
-      </p>
-      <div style="background:#f0fff4; border:1px solid #c6f6d5; padding:12px; border-radius:8px; margin-bottom:16px;">
-        <span style="font-size:0.85rem; color:#047857; font-weight:bold; display:block; margin-bottom:4px;">コピー対象のお名前:</span>
-        <strong id="modalCopyName" style="font-size:1.2rem; color:#111827;">-</strong>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <button class="btn-action btn-green" style="width:100%; padding:14px; font-size:1.1rem; font-weight:900;" onclick="copyAndOpenLine()">📋 名前をコピーしてLINEを開く (0円)</button>
-        <button class="btn-action" style="background:#6b7280;" onclick="closeModal()">閉じる</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
-    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "12:00~", "13:00~", "14:00~", "15:00~", "16:00~", "17:00~", "18:00~"];
-
-    let allReservations = [];
-    let adminPass = sessionStorage.getItem('adminPass') || '';
-    let autoRefreshTimer = null;
-    let currentTargetName = '';
-    
-    let currentCategoryFilter = 'all'; // all, medical, pickup
-    let tileWeekStart = new Date();
-    let holidayWeekStart = new Date();
-
-    window.onload = () => {
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const dd = String(now.getDate()).padStart(2, '0');
-      const todayStr = `${yyyy}-${mm}-${dd}`;
-
-      document.getElementById('datePicker').value = todayStr;
-      document.getElementById('timelineDatePicker').value = todayStr;
-      
-      if (adminPass) {
-        document.getElementById('loginOverlay').style.display = 'none';
-        loadData();
-      }
-
-      autoRefreshTimer = setInterval(() => {
-        if (adminPass) loadData(false);
-      }, 30000);
-    };
-
-    function verifyPass() {
-      const inputPass = document.getElementById('adminPassInput').value;
-      if (!inputPass) return alert('パスワードを入力してください');
-      adminPass = inputPass;
-      loadData(true);
-    }
-
-    function loadData(showErrorAlert = false) {
-      fetch(`${GAS_URL}?pass=${encodeURIComponent(adminPass)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === 'unauthorized') {
-            if (showErrorAlert) alert('パスワードが正しくありません');
-            sessionStorage.removeItem('adminPass');
-            document.getElementById('loginOverlay').style.display = 'flex';
-            return;
-          }
-
-          sessionStorage.setItem('adminPass', adminPass);
-          document.getElementById('loginOverlay').style.display = 'none';
-
-          allReservations = Array.isArray(data) ? data : [];
-          filterReservations();
-          renderTimeline();
-          renderTileView();
-          renderHolidayView();
-          renderPatientTable();
-        })
-        .catch(() => {});
-    }
-
-    function normalizeDateStr(str) {
-      if (!str) return '';
-      const matched = String(str).match(/(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/);
-      if (!matched) return '';
-      return `${matched[1]}-${matched[2].padStart(2, '0')}-${matched[3].padStart(2, '0')}`;
-    }
-
-    /* カテゴリ切り替え（診療等 vs 薬・フード等） */
-    function setCategoryFilter(type) {
-      currentCategoryFilter = type;
-      document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(`f-${type}`).classList.add('active');
-      filterReservations();
-    }
-
-    function filterReservations() {
-      const selectedDate = document.getElementById('datePicker').value;
-      let filtered = allReservations;
-
-      if (selectedDate) {
-        filtered = filtered.filter(r => normalizeDateStr(r.date) === selectedDate);
-      }
-
-      if (currentCategoryFilter === 'medical') {
-        filtered = filtered.filter(r => !r.menu.includes('薬・フード'));
-      } else if (currentCategoryFilter === 'pickup') {
-        filtered = filtered.filter(r => r.menu.includes('薬・フード'));
-      }
-
-      renderReservationTable(filtered);
-    }
-
-    function showAllReservations() {
-      document.getElementById('datePicker').value = '';
-      filterReservations();
-    }
-
-    function renderReservationTable(list) {
-      const tbody = document.getElementById('reservationTableBody');
-      if (!list || list.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='10' style='text-align:center; color:#6b7280; padding:40px; font-size:1.1rem; font-weight:bold;'>該当する予約はありません</td></tr>";
-        return;
-      }
-
-      tbody.innerHTML = list.map(r => {
-        const isFirst = r.visitType && r.visitType.includes('初診');
-        const visitClass = isFirst ? 'visit-初診' : 'visit-再診';
-        const isPickup = r.menu && r.menu.includes('薬・フード');
-        const menuClass = isPickup ? 'menu-受取' : 'menu-診療';
-
-        const fullMemo = r.symptoms || 'なし';
-        let shortMemo = fullMemo;
-        let hasMore = false;
-        if (fullMemo.length > 22) {
-          shortMemo = fullMemo.substring(0, 22) + '...';
-          hasMore = true;
-        }
-
-        return `
-          <tr>
-            <td class="time-cell">
-              ${r.time}
-              <small>${r.date}</small>
-            </td>
-            <td><div class="owner-name">👤 ${r.lineUserName || '不明'}</div></td>
-            <td><div class="phone-badge">📞 ${r.phoneNo || '-'}</div></td>
-            <td><span class="visit-badge ${visitClass}">${r.visitType || '-'}</span></td>
-            <td><div class="pet-name-box">🐾 ${r.petName}</div></td>
-            <td><div class="pet-info-box">${r.petInfo || '-'}</div></td>
-            <td><span class="menu-badge ${menuClass}">${r.menu}</span></td>
-            <td>
-              <div class="memo-preview">${shortMemo}</div>
-              ${hasMore ? `<span class="btn-detail-view" onclick="openSymptomModal('${escapeHtml(fullMemo)}')">🔍 全文表示</span>` : ''}
-            </td>
-            <td><span class="badge badge-${r.status}">${r.status}</span></td>
-            <td>
-              <div class="btn-group-sm">
-                <button class="btn-sm btn-sm-check" onclick="updateStatus(${r.rowIndex}, '受付済')">受付</button>
-                <button class="btn-sm btn-sm-complete" onclick="updateStatus(${r.rowIndex}, '診察完了')">完了</button>
-                <button class="btn-sm btn-sm-reset" onclick="updateStatus(${r.rowIndex}, '予約受付')">戻す</button>
-                <button class="btn-sm btn-sm-cancel" onclick="updateStatus(${r.rowIndex}, 'キャンセル')">取消</button>
-                <button class="btn-sm btn-sm-line" onclick="openModal('${r.lineUserName || r.petName}')">💬 無料チャット</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    /* --- TAB 2: 1日タイムライン表示 --- */
-    function renderTimeline() {
-      const selectedDate = document.getElementById('timelineDatePicker').value;
-      const container = document.getElementById('timelineBody');
-      document.getElementById('timelineTitle').innerText = `🕒 ${selectedDate} のタイムラインスケジュール`;
-
-      const dayReservations = allReservations.filter(r => normalizeDateStr(r.date) === selectedDate && r.status !== 'キャンセル');
-
-      let html = "";
-      TIME_SLOTS.forEach(time => {
-        const slots = dayReservations.filter(r => r.time === time);
-        html += `<div style="border-left: 4px solid var(--primary); padding-left: 12px; margin-bottom: 8px;">`;
-        html += `<strong style="font-size: 1.15rem; color: var(--primary-dark);">${time}</strong>`;
-        
-        if (slots.length === 0) {
-          html += `<div style="color:#94a3b8; font-size:0.95rem; margin-top:2px;">（予約なし・空き）</div>`;
-        } else {
-          slots.forEach(r => {
-            const isPickup = r.menu.includes('薬・フード');
-            const bg = isPickup ? '#fffbebf5' : '#f0f9ff';
-            const border = isPickup ? '#fcd34d' : '#bae6fd';
-            html += `
-              <div style="background:${bg}; border:1px solid ${border}; border-radius:8px; padding:8px 12px; margin-top:4px; display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                  <strong style="font-size:1.05rem;">👤 ${r.lineUserName} 様 (${r.petName})</strong>
-                  <span class="menu-badge ${isPickup ? 'menu-受取' : 'menu-診療'}" style="margin-left:8px;">${r.menu}</span>
-                  <div style="font-size:0.85rem; color:#4b5563; margin-top:2px;">メモ: ${r.symptoms || 'なし'}</div>
-                </div>
-                <div><span class="badge badge-${r.status}">${r.status}</span></div>
-              </div>
-            `;
-          });
-        }
-        html += `</div>`;
-      });
-
-      container.innerHTML = html;
-    }
-
-    /* --- TAB 3: 週間予約タイル表示 --- */
-    function changeTileWeek(offset) {
-      tileWeekStart.setDate(tileWeekStart.getDate() + offset);
-      renderTileView();
-    }
-
-    function renderTileView() {
-      const dates = [];
-      for (let i = 0; i < 7; i++) {
-        let d = new Date(tileWeekStart);
-        d.setDate(d.getDate() + i);
-        dates.push(d);
-      }
-
-      let m1 = `${dates[0].getFullYear()}年 ${dates[0].getMonth() + 1}月`;
-      let m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
-      document.getElementById('tileWeekTitle').innerText = m1 === m2 ? m1 : `${m1} / ${m2}`;
-
-      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-      let headerHtml = `<th style="width:80px;">時間</th>`;
-      dates.forEach(d => {
-        headerHtml += `<th>${d.getDate()}<br>(${dayNames[d.getDay()]})</th>`;
-      });
-      document.getElementById('tileHeaderRow').innerHTML = headerHtml;
-
-      let bodyHtml = "";
-      TIME_SLOTS.forEach(time => {
-        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc;">${time}</td>`;
-        dates.forEach(d => {
-          let yyyy = d.getFullYear();
-          let mm = String(d.getMonth() + 1).padStart(2, '0');
-          let dd = String(d.getDate()).padStart(2, '0');
-          let dateStr = `${yyyy}-${mm}-${dd}`;
-
-          const matches = allReservations.filter(r => normalizeDateStr(r.date) === dateStr && r.time === time && r.status !== 'キャンセル');
-
-          bodyHtml += `<td>`;
-          if (matches.length === 0) {
-            bodyHtml += `<span style="color:#cbd5e0; font-size:0.8rem;">-</span>`;
-          } else {
-            matches.forEach(r => {
-              if (r.status === '休診') {
-                bodyHtml += `<div class="tile-cell-item item-休診">休診枠</div>`;
-              } else {
-                const isPickup = r.menu.includes('薬・フード');
-                bodyHtml += `<div class="tile-cell-item ${isPickup ? 'item-受取' : ''}">
-                  <strong>${r.lineUserName}</strong><br><small>${r.petName}</small>
-                </div>`;
-              }
-            });
-          }
-          bodyHtml += `</td>`;
-        });
-        bodyHtml += `</tr>`;
-      });
-
-      document.getElementById('tileBodyRow').innerHTML = bodyHtml;
-    }
-
-    /* --- TAB 4: 休業・受付枠設定（簡単タップ設定） --- */
-    function changeHolidayWeek(offset) {
-      holidayWeekStart.setDate(holidayWeekStart.getDate() + offset);
-      renderHolidayView();
-    }
-
-    function renderHolidayView() {
-      const dates = [];
-      for (let i = 0; i < 7; i++) {
-        let d = new Date(holidayWeekStart);
-        d.setDate(d.getDate() + i);
-        dates.push(d);
-      }
-
-      let m1 = `${dates[0].getFullYear()}年 ${dates[0].getMonth() + 1}月`;
-      let m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
-      document.getElementById('holidayWeekTitle').innerText = m1 === m2 ? m1 : `${m1} / ${m2}`;
-
-      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-      let headerHtml = `<th style="width:80px;">時間</th>`;
-      dates.forEach(d => {
-        let yyyy = d.getFullYear();
-        let mm = String(d.getMonth() + 1).padStart(2, '0');
-        let dd = String(d.getDate()).padStart(2, '0');
-        let dateStr = `${yyyy}-${mm}-${dd}`;
-
-        headerHtml += `<th class="th-day-toggle" onclick="toggleDayHoliday('${dateStr}')" title="1日まとめて休止/解除">
-          ${d.getDate()} (${dayNames[d.getDay()]})<br><span style="font-size:0.75rem; color:#0284c7;">[1日切替]</span>
-        </th>`;
-      });
-      document.getElementById('holidayHeaderRow').innerHTML = headerHtml;
-
-      let bodyHtml = "";
-      TIME_SLOTS.forEach(time => {
-        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc;">${time}</td>`;
-        dates.forEach(d => {
-          let yyyy = d.getFullYear();
-          let mm = String(d.getMonth() + 1).padStart(2, '0');
-          let dd = String(d.getDate()).padStart(2, '0');
-          let dateStr = `${yyyy}-${mm}-${dd}`;
-
-          const isOff = allReservations.some(r => normalizeDateStr(r.date) === dateStr && r.time === time && r.status === '休診');
-
-          bodyHtml += `<td class="holiday-cell ${isOff ? 'is-off' : 'is-open'}" onclick="toggleHolidaySlot('${dateStr}', '${time}')">
-            ${isOff ? '休診 (受付不可)' : '受付中 (〇)'}
-          </td>`;
-        });
-        bodyHtml += `</tr>`;
-      });
-
-      document.getElementById('holidayBodyRow').innerHTML = bodyHtml;
-    }
-
-    function toggleHolidaySlot(dateStr, timeStr) {
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "toggleHoliday", date: dateStr, time: timeStr, pass: adminPass })
-      }).then(() => loadData());
-    }
-
-    function toggleDayHoliday(dateStr) {
-      const isSet = confirm(`${dateStr} を1日まとめて「休診」に切り替えますか？（既に全休の場合は解除されます）`);
-      if (!isSet) return;
-
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "toggleDayHoliday", date: dateStr, isSet: true, pass: adminPass })
-      }).then(() => loadData());
-    }
-
-    /* --- TAB 5: 患者名簿 --- */
-    function renderPatientTable() {
-      const tbody = document.getElementById('patientTableBody');
-      const sortType = document.getElementById('patientSortSelect').value;
-      const patientsMap = {};
-
-      allReservations.forEach(r => {
-        if (!r.petName || r.status === '休診') return;
-        const key = `${r.lineUserName}_${r.petName}`;
-        
-        let ticketNo = '';
-        if (r.visitType && r.visitType.includes('券No:')) {
-          const match = r.visitType.match(/券No:([^\s]+)/);
-          if (match) ticketNo = match[1];
-        }
-
-        if (!patientsMap[key]) {
-          patientsMap[key] = {
-            ownerName: r.lineUserName || '不明',
-            petName: r.petName,
-            ticketNo: ticketNo,
-            lineUserId: r.lineUserId,
-            count: 0,
-            lastDate: r.date
-          };
-        }
-        patientsMap[key].count += 1;
-        if (r.date > patientsMap[key].lastDate) patientsMap[key].lastDate = r.date;
-        if (ticketNo && !patientsMap[key].ticketNo) patientsMap[key].ticketNo = ticketNo;
-      });
-
-      let list = Object.values(patientsMap);
-
-      list.sort((a, b) => {
-        if (sortType === 'lastDate_desc') return b.lastDate.localeCompare(a.lastDate);
-        if (sortType === 'owner_asc') return a.ownerName.localeCompare(b.ownerName, 'ja');
-        if (sortType === 'ticket_asc') return (a.ticketNo || '99999').localeCompare(b.ticketNo || '99999', undefined, {numeric: true});
-        if (sortType === 'count_desc') return b.count - a.count;
-        return 0;
-      });
-
-      if (list.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#6b7280; padding:40px; font-weight:bold;'>患者データがありません</td></tr>";
-        return;
-      }
-
-      tbody.innerHTML = list.map(p => `
-        <tr>
-          <td><strong style="font-size:1.05rem; color:#047857;">🎫 ${p.ticketNo || '-'}</strong></td>
-          <td><strong style="font-size:1.15rem; font-weight:900;">👤 ${p.ownerName}</strong></td>
-          <td><strong style="font-size:1.15rem; font-weight:900;">🐾 ${p.petName}</strong></td>
-          <td style="font-size:0.95rem; color:#4b5563; font-weight:700;">${p.lineUserId}</td>
-          <td><strong style="font-size:1.15rem; font-weight:900;">${p.count}</strong> 回</td>
-          <td><strong style="font-size:1.05rem;">${p.lastDate}</strong></td>
-          <td>
-            <button class="btn-sm btn-sm-line" style="width:auto; padding:8px 14px; font-size:0.95rem;" onclick="openModal('${p.ownerName}')">💬 無料チャット</button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function updateStatus(rowIndex, newStatus) {
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "updateStatus", rowIndex: rowIndex, status: newStatus, pass: adminPass })
-      }).then(() => loadData());
-    }
-
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      
-      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabName));
-      if (activeBtn) activeBtn.classList.add('active');
-      
-      document.getElementById(`tab-${tabName}`).classList.add('active');
-    }
-
-    function openSymptomModal(text) {
-      document.getElementById('symptomModalText').innerText = text;
-      document.getElementById('symptomModal').style.display = 'flex';
-    }
-
-    function closeSymptomModal() {
-      document.getElementById('symptomModal').style.display = 'none';
-    }
-
-    function openModal(name) {
-      currentTargetName = name;
-      document.getElementById('modalCopyName').innerText = `${name}`;
-      document.getElementById('msgModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('msgModal').style.display = 'none';
-    }
-
-    function copyAndOpenLine() {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(currentTargetName).then(() => {
-          alert(`「${currentTargetName}」をコピーしました！\nLINE画面の検索窓に貼り付けてください。`);
-          window.open("https://chat.line.biz/", "_blank");
-          closeModal();
-        }).catch(() => {
-          window.open("https://chat.line.biz/", "_blank");
-          closeModal();
-        });
-      } else {
-        window.open("https://chat.line.biz/", "_blank");
-        closeModal();
-      }
-    }
-
-    function sendBroadcast() {
-      const msg = document.getElementById('broadcastMsg').value;
-      if (!msg) return alert('一括配信メッセージを入力してください');
-      if (!confirm('登録者全員に一斉配信します。よろしいですか？')) return;
-
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "sendBroadcast", message: msg, pass: adminPass })
-      })
-      .then(res => res.json())
-      .then(data => {
-        alert('一括配信を実行しました！');
-        document.getElementById('broadcastMsg').value = '';
-      });
-    }
-
-    function escapeHtml(str) {
-      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
-    }
-  </script>
-</body>
-</html>
+    <div class="table
