@@ -8,63 +8,59 @@
     :root {
       --primary: #06C755;
       --primary-dark: #047857;
-      --primary-light: #e8f9ee;
       --bg-color: #f4f6f8;
       --card-bg: #ffffff;
       --text-main: #111827;
-      --text-sub: #4b5563;
       --border-color: #d1d5db;
     }
 
     * { box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 20px; color: var(--text-main); font-size: 18px; font-weight: 500; }
     
-    /* ヘッダー */
+    .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111827; display: flex; justify-content: center; align-items: center; z-index: 1000; }
+    .login-card { background: #fff; padding: 32px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    .login-card h2 { margin-top: 0; color: var(--primary-dark); font-size: 1.4rem; font-weight: 900; }
+    .login-card input { width: 100%; padding: 14px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 1.1rem; margin: 16px 0; text-align: center; }
+    .login-card button { width: 100%; padding: 14px; background: var(--primary-dark); color: #fff; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 900; cursor: pointer; }
+
     .header { background: var(--card-bg); padding: 20px 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
     h1 { margin: 0 0 16px 0; font-size: 1.6rem; color: var(--primary-dark); font-weight: 800; }
-    .nav-tabs { display: flex; gap: 12px; border-bottom: 3px solid #e5e7eb; padding-bottom: 10px; }
-    .tab-btn { padding: 12px 22px; border: none; background: none; font-size: 1.1rem; font-weight: 800; color: var(--text-sub); cursor: pointer; border-radius: 8px; }
+    .nav-tabs { display: flex; gap: 10px; border-bottom: 3px solid #e5e7eb; padding-bottom: 10px; flex-wrap: wrap; }
+    .tab-btn { padding: 10px 18px; border: none; background: none; font-size: 1.05rem; font-weight: 800; color: #4b5563; cursor: pointer; border-radius: 8px; }
     .tab-btn.active { background: var(--primary-dark); color: #fff; }
 
-    /* フィルター */
     .filter-box { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; font-size: 1.1rem; font-weight: 700; }
-    input[type="date"], textarea { padding: 12px 16px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 1.05rem; font-weight: 700; }
-    .btn-action { padding: 12px 20px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 1.05rem; }
+    input[type="date"], select, textarea { padding: 10px 14px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 1.05rem; font-weight: 700; }
+    .btn-action { padding: 10px 18px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 1rem; }
     .btn-green { background: var(--primary); }
     .btn-dark { background: var(--primary-dark); }
 
-    /* テーブル */
     .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1.05rem; min-width: 1350px; }
     th { background: #f3f4f6; color: #111827; padding: 16px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; font-size: 1.1rem; }
     td { padding: 16px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
     tr:hover { background: #f9fafb; }
 
-    /* 各セル用スタイル（極太字＆拡大） */
     .time-cell { font-weight: 900; color: var(--primary-dark); font-size: 1.25rem; line-height: 1.3; }
     .time-cell small { color: #374151; font-size: 0.95rem; font-weight: 700; display: block; margin-top: 4px; }
-    
     .owner-name { font-weight: 900; color: #111827; font-size: 1.15rem; }
     .phone-badge { display: inline-block; background: #e5e7eb; color: #111827; font-size: 1rem; padding: 6px 10px; border-radius: 6px; font-weight: 800; border: 1px solid #d1d5db; }
-
     .visit-badge { display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 0.95rem; font-weight: 900; }
     .visit-初診 { background: #fee2e2; color: #991b1b; border: 1.5px solid #f87171; }
     .visit-再診 { background: #dcfce7; color: #166534; border: 1.5px solid #4ade80; }
-
     .pet-name-box { font-size: 1.2rem; font-weight: 900; color: #111827; }
     .pet-info-box { color: #374151; font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
-
     .menu-badge { font-weight: 900; color: #047857; font-size: 1.1rem; }
-    .memo-text { font-size: 1rem; color: #111827; font-weight: 600; line-height: 1.45; max-width: 300px; word-break: break-word; }
 
-    /* ステータスバッジ */
+    .memo-preview { max-width: 250px; font-size: 0.95rem; line-height: 1.4; color: #1f2937; }
+    .btn-detail-view { display: inline-block; margin-top: 4px; color: #0284c7; font-weight: bold; cursor: pointer; text-decoration: underline; font-size: 0.88rem; }
+
     .badge { padding: 8px 14px; border-radius: 16px; font-size: 0.95rem; font-weight: 900; display: inline-block; white-space: nowrap; }
     .badge-予約受付 { background: #bae6fd; color: #0369a1; }
     .badge-受付済 { background: #fde68a; color: #92400e; }
     .badge-診察完了 { background: #bbf7d0; color: #15803d; }
     .badge-キャンセル { background: #fca5a5; color: #991b1b; }
 
-    /* 操作ボタン */
     .btn-group-sm { display: flex; flex-wrap: wrap; gap: 6px; width: 170px; }
     .btn-sm { padding: 8px 10px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 800; cursor: pointer; }
     .btn-sm-check { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
@@ -73,32 +69,91 @@
     .btn-sm-cancel { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
     .btn-sm-line { background: var(--primary); color: #fff; width: 100%; margin-top: 4px; font-size: 0.95rem; padding: 8px; font-weight: 900; }
 
+    .menu-portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 10px; }
+    .portal-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 14px; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; }
+    .portal-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .portal-card .icon { font-size: 2.2rem; margin-right: 16px; }
+    .portal-card .info h3 { margin: 0 0 6px 0; font-size: 1.2rem; color: #111827; }
+    .portal-card .info p { margin: 0; font-size: 0.9rem; color: #6b7280; }
+    .portal-card .arrow { font-size: 1.5rem; color: #9ca3af; font-weight: bold; }
+
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* モーダル */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; }
     .modal-content { background: #fff; padding: 28px; border-radius: 14px; width: 90%; max-width: 520px; font-size: 1.1rem; font-weight: 700; }
   </style>
 </head>
 <body>
 
+  <!-- ログイン画面 -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+      <h2>🔒 管理者認証</h2>
+      <p style="font-size:0.95rem; color:#4b5563; margin-bottom:0;">管理者パスワードを入力してください</p>
+      <input type="password" id="adminPassInput" placeholder="パスワード" onkeydown="if(event.key==='Enter') verifyPass()">
+      <button onclick="verifyPass()">ログイン</button>
+    </div>
+  </div>
+
   <div class="header">
-    <h1>🏥 アルブル動物病院 予約・患者管理</h1>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h1>🏥 アルブル動物病院 管理ポータル</h1>
+      <span id="autoRefreshNotice" style="font-size:0.85rem; color:#047857; font-weight:bold; background:#e8f9ee; padding:4px 10px; border-radius:12px;">🔄 自動更新中 (30秒)</span>
+    </div>
     <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('reservations')">📅 予約一覧</button>
+      <button class="tab-btn active" onclick="switchTab('menu')">📱 メニュー画面</button>
+      <button class="tab-btn" onclick="switchTab('reservations')">📅 予約一覧</button>
       <button class="tab-btn" onclick="switchTab('patients')">🐾 患者名簿</button>
       <button class="tab-btn" onclick="switchTab('broadcast')">📢 一括LINE配信</button>
     </div>
   </div>
 
+  <!-- TAB 0: メニューポータル画面 -->
+  <div id="tab-menu" class="tab-content active">
+    <div class="menu-portal-grid">
+      <div class="portal-card" onclick="switchTab('reservations')">
+        <div style="display:flex; align-items:center;">
+          <div class="icon">📅</div>
+          <div class="info">
+            <h3>予約状況の確認・受付</h3>
+            <p>本日の診察予約の一覧表示、ステータス変更ができます。</p>
+          </div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <div class="portal-card" onclick="switchTab('patients')">
+        <div style="display:flex; align-items:center;">
+          <div class="icon">🐾</div>
+          <div class="info">
+            <h3>患者様名簿・カルテ参照</h3>
+            <p>診察券番号順・五十音順での並べ替えや個別LINE連絡ができます。</p>
+          </div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <div class="portal-card" onclick="switchTab('broadcast')">
+        <div style="display:flex; align-items:center;">
+          <div class="icon">📢</div>
+          <div class="info">
+            <h3>一括LINEお知らせ配信</h3>
+            <p>休診日や予防接種の案内を登録者全員へ送信できます。</p>
+          </div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+    </div>
+  </div>
+
   <!-- TAB 1: 予約一覧 -->
-  <div id="tab-reservations" class="tab-content active">
+  <div id="tab-reservations" class="tab-content">
     <div class="filter-box">
       <label style="font-weight:900;">日付絞り込み:</label>
       <input type="date" id="datePicker" onchange="filterReservations()">
       <button class="btn-action btn-dark" onclick="showAllReservations()">全件表示</button>
-      <button class="btn-action" onclick="loadData()">🔄 データ更新</button>
+      <button class="btn-action" onclick="loadData()">🔄 手動更新</button>
     </div>
 
     <div class="table-container">
@@ -110,9 +165,9 @@
             <th style="width: 150px;">電話番号</th>
             <th style="width: 130px;">診察区分</th>
             <th style="width: 140px;">ペット名</th>
-            <th style="width: 140px;">ペット情報</th>
+            <th style="width: 150px;">ペット情報</th>
             <th style="width: 130px;">メニュー</th>
-            <th>症状・メモ</th>
+            <th>症状・メモ（詳細確認可）</th>
             <th style="width: 110px;">状態</th>
             <th style="width: 175px;">操作 / LINE</th>
           </tr>
@@ -126,10 +181,21 @@
 
   <!-- TAB 2: 患者名簿 -->
   <div id="tab-patients" class="tab-content">
+    <div class="filter-box">
+      <label style="font-weight:900;">並べ替え（ソート）:</label>
+      <select id="patientSortSelect" onchange="renderPatientTable()">
+        <option value="lastDate_desc">最終受診日（新しい順）</option>
+        <option value="owner_asc">飼い主名（五十音順）</option>
+        <option value="ticket_asc">診察券番号（昇順）</option>
+        <option value="count_desc">受診回数（多い順）</option>
+      </select>
+    </div>
+
     <div class="table-container">
       <table>
         <thead>
           <tr>
+            <th>診察券番号</th>
             <th>飼い主名</th>
             <th>ペット名</th>
             <th>LINE ID</th>
@@ -139,7 +205,7 @@
           </tr>
         </thead>
         <tbody id="patientTableBody">
-          <tr><td colspan="6" style="text-align:center; padding:40px; font-size:1.1rem; font-weight:bold;">患者データを集計中...</td></tr>
+          <tr><td colspan="7" style="text-align:center; padding:40px; font-size:1.1rem; font-weight:bold;">患者データを集計中...</td></tr>
         </tbody>
       </table>
     </div>
@@ -151,6 +217,15 @@
       <h3 style="margin-top:0; color:var(--primary-dark); font-size:1.3rem; font-weight:900;">📢 全員への一括LINE配信</h3>
       <textarea id="broadcastMsg" rows="5" style="width:100%; margin-top:10px; font-size:1.05rem;" placeholder="【お知らせ】休診日案内など..."></textarea>
       <button class="btn-action btn-green" style="width:100%; margin-top:16px; padding:14px; font-size:1.1rem;" onclick="sendBroadcast()">一括配信を実行する</button>
+    </div>
+  </div>
+
+  <!-- 症状・メモ詳細閲覧モーダル -->
+  <div id="symptomModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-top:0; font-size:1.3rem; font-weight:900; color:var(--primary-dark);">📝 症状・相談内容の詳細</h3>
+      <div id="symptomModalText" style="white-space: pre-wrap; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 14px 0; font-size: 1.05rem; line-height: 1.5;">-</div>
+      <button class="btn-action btn-dark" style="width:100%;" onclick="closeSymptomModal()">閉じる</button>
     </div>
   </div>
 
@@ -171,6 +246,8 @@
     
     let allReservations = [];
     let currentTargetUserId = '';
+    let adminPass = sessionStorage.getItem('adminPass') || '';
+    let autoRefreshTimer = null;
 
     window.onload = () => {
       const now = new Date();
@@ -179,20 +256,42 @@
       const dd = String(now.getDate()).padStart(2, '0');
       document.getElementById('datePicker').value = `${yyyy}-${mm}-${dd}`;
       
-      loadData();
+      if (adminPass) {
+        document.getElementById('loginOverlay').style.display = 'none';
+        loadData();
+      }
+
+      autoRefreshTimer = setInterval(() => {
+        if (adminPass) loadData(false);
+      }, 30000);
     };
 
-    function loadData() {
-      fetch(GAS_URL)
+    function verifyPass() {
+      const inputPass = document.getElementById('adminPassInput').value;
+      if (!inputPass) return alert('パスワードを入力してください');
+      adminPass = inputPass;
+      loadData(true);
+    }
+
+    function loadData(showErrorAlert = false) {
+      fetch(`${GAS_URL}?pass=${encodeURIComponent(adminPass)}`)
         .then(res => res.json())
         .then(data => {
-          allReservations = data;
+          if (data.status === 'unauthorized') {
+            if (showErrorAlert) alert('パスワードが正しくありません');
+            sessionStorage.removeItem('adminPass');
+            document.getElementById('loginOverlay').style.display = 'flex';
+            return;
+          }
+
+          sessionStorage.setItem('adminPass', adminPass);
+          document.getElementById('loginOverlay').style.display = 'none';
+
+          allReservations = Array.isArray(data) ? data : [];
           filterReservations();
           renderPatientTable();
         })
-        .catch(err => {
-          document.getElementById('reservationTableBody').innerHTML = "<tr><td colspan='10' style='color:red; text-align:center; font-weight:bold;'>データ読み込みエラー</td></tr>";
-        });
+        .catch(() => {});
     }
 
     function normalizeDateStr(str) {
@@ -229,6 +328,14 @@
         const isFirst = r.visitType && r.visitType.includes('初診');
         const visitClass = isFirst ? 'visit-初診' : 'visit-再診';
 
+        const fullMemo = r.symptoms || 'なし';
+        let shortMemo = fullMemo;
+        let hasMore = false;
+        if (fullMemo.length > 25) {
+          shortMemo = fullMemo.substring(0, 25) + '...';
+          hasMore = true;
+        }
+
         return `
           <tr>
             <td class="time-cell">
@@ -241,7 +348,10 @@
             <td><div class="pet-name-box">🐾 ${r.petName}</div></td>
             <td><div class="pet-info-box">${r.petInfo || '-'}</div></td>
             <td><span class="menu-badge">${r.menu}</span></td>
-            <td><div class="memo-text">${r.symptoms || 'なし'}</div></td>
+            <td>
+              <div class="memo-preview">${shortMemo}</div>
+              ${hasMore ? `<span class="btn-detail-view" onclick="openSymptomModal('${escapeHtml(fullMemo)}')">🔍 全文表示</span>` : ''}
+            </td>
             <td><span class="badge badge-${r.status}">${r.status}</span></td>
             <td>
               <div class="btn-group-sm">
@@ -259,26 +369,52 @@
 
     function renderPatientTable() {
       const tbody = document.getElementById('patientTableBody');
+      const sortType = document.getElementById('patientSortSelect').value;
       const patientsMap = {};
 
       allReservations.forEach(r => {
         if (!r.petName) return;
         const key = `${r.lineUserName}_${r.petName}`;
+        
+        let ticketNo = '';
+        if (r.visitType && r.visitType.includes('券No:')) {
+          const match = r.visitType.match(/券No:([^\s]+)/);
+          if (match) ticketNo = match[1];
+        }
+
         if (!patientsMap[key]) {
-          patientsMap[key] = { ownerName: r.lineUserName || '不明', petName: r.petName, lineUserId: r.lineUserId, count: 0, lastDate: r.date };
+          patientsMap[key] = {
+            ownerName: r.lineUserName || '不明',
+            petName: r.petName,
+            ticketNo: ticketNo,
+            lineUserId: r.lineUserId,
+            count: 0,
+            lastDate: r.date
+          };
         }
         patientsMap[key].count += 1;
-        patientsMap[key].lastDate = r.date;
+        if (r.date > patientsMap[key].lastDate) patientsMap[key].lastDate = r.date;
+        if (ticketNo && !patientsMap[key].ticketNo) patientsMap[key].ticketNo = ticketNo;
       });
 
-      const patientList = Object.values(patientsMap);
-      if (patientList.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#6b7280; padding:40px; font-weight:bold;'>患者データがありません</td></tr>";
+      let list = Object.values(patientsMap);
+
+      list.sort((a, b) => {
+        if (sortType === 'lastDate_desc') return b.lastDate.localeCompare(a.lastDate);
+        if (sortType === 'owner_asc') return a.ownerName.localeCompare(b.ownerName, 'ja');
+        if (sortType === 'ticket_asc') return (a.ticketNo || '99999').localeCompare(b.ticketNo || '99999', undefined, {numeric: true});
+        if (sortType === 'count_desc') return b.count - a.count;
+        return 0;
+      });
+
+      if (list.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#6b7280; padding:40px; font-weight:bold;'>患者データがありません</td></tr>";
         return;
       }
 
-      tbody.innerHTML = patientList.map(p => `
+      tbody.innerHTML = list.map(p => `
         <tr>
+          <td><strong style="font-size:1.05rem; color:#047857;">🎫 ${p.ticketNo || '-'}</strong></td>
           <td><strong style="font-size:1.15rem; font-weight:900;">👤 ${p.ownerName}</strong></td>
           <td><strong style="font-size:1.15rem; font-weight:900;">🐾 ${p.petName}</strong></td>
           <td style="font-size:0.95rem; color:#4b5563; font-weight:700;">${p.lineUserId}</td>
@@ -294,7 +430,7 @@
     function updateStatus(rowIndex, newStatus) {
       fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "updateStatus", rowIndex: rowIndex, status: newStatus })
+        body: JSON.stringify({ action: "updateStatus", rowIndex: rowIndex, status: newStatus, pass: adminPass })
       }).then(() => loadData());
     }
 
@@ -302,8 +438,19 @@
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       
-      event.target.classList.add('active');
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabName));
+      if (activeBtn) activeBtn.classList.add('active');
+      
       document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    function openSymptomModal(text) {
+      document.getElementById('symptomModalText').innerText = text;
+      document.getElementById('symptomModal').style.display = 'flex';
+    }
+
+    function closeSymptomModal() {
+      document.getElementById('symptomModal').style.display = 'none';
     }
 
     function openModal(userId, name) {
@@ -323,7 +470,7 @@
 
       fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "sendIndividual", lineUserId: currentTargetUserId, message: msg })
+        body: JSON.stringify({ action: "sendIndividual", lineUserId: currentTargetUserId, message: msg, pass: adminPass })
       })
       .then(res => res.json())
       .then(data => {
@@ -343,13 +490,17 @@
 
       fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "sendBroadcast", message: msg })
+        body: JSON.stringify({ action: "sendBroadcast", message: msg, pass: adminPass })
       })
       .then(res => res.json())
       .then(data => {
         alert('一括配信を実行しました！');
         document.getElementById('broadcastMsg').value = '';
       });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
     }
   </script>
 </body>
