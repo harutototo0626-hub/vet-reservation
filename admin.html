@@ -38,7 +38,7 @@
     .btn-filter.active { background: #0284c7; color: #fff; border-color: #0284c7; }
 
     .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1rem; min-width: 1300px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1rem; min-width: 1350px; }
     th { background: #f3f4f6; color: #111827; padding: 14px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; font-size: 1.05rem; }
     td { padding: 14px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
     tr:hover { background: #f9fafb; }
@@ -69,12 +69,13 @@
     .badge-キャンセル { background: #fca5a5; color: #991b1b; }
     .badge-休診 { background: #e2e8f0; color: #64748b; }
 
-    .btn-group-sm { display: flex; flex-wrap: wrap; gap: 4px; width: 160px; }
+    .btn-group-sm { display: flex; flex-wrap: wrap; gap: 4px; width: 180px; }
     .btn-sm { padding: 6px 8px; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; }
     .btn-sm-check { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
     .btn-sm-complete { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .btn-sm-reset { background: #e5e7eb; color: #374151; border: 1px solid #d1d5db; }
     .btn-sm-cancel { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .btn-sm-call { background: #f97316; color: #fff; border: 1px solid #ea580c; }
     .btn-sm-line { background: var(--primary); color: #fff; width: 100%; margin-top: 4px; font-size: 0.9rem; padding: 6px; font-weight: 900; }
 
     .menu-portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 10px; }
@@ -85,7 +86,6 @@
     .portal-card .info p { margin: 0; font-size: 0.85rem; color: #6b7280; }
     .portal-card .arrow { font-size: 1.4rem; color: #9ca3af; font-weight: bold; }
 
-    /* 事前問診カード専用スタイル */
     .interview-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 12px; padding: 18px; margin-bottom: 16px; transition: border-color 0.3s; }
     .interview-card.highlight { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2); }
     .interview-card.checked { background: #f8fafc; border-color: #94a3b8; opacity: 0.8; }
@@ -139,7 +139,7 @@
     </div>
   </div>
 
-  <!-- TAB 0: メニューポータル画面 -->
+  <!-- TAB 0 -->
   <div id="tab-menu" class="tab-content active">
     <div class="menu-portal-grid">
       <div class="portal-card" onclick="switchTab('reservations')">
@@ -221,7 +221,7 @@
     </div>
   </div>
 
-  <!-- TAB 1: 予約一覧 -->
+  <!-- TAB 1 -->
   <div id="tab-reservations" class="tab-content">
     <div class="filter-box">
       <label style="font-weight:900;">絞り込み:</label>
@@ -250,7 +250,7 @@
             <th style="width: 150px;">メニュー</th>
             <th style="width: 220px;">選択症状（簡易表示）</th>
             <th style="width: 100px;">状態</th>
-            <th style="width: 165px;">操作 / LINE</th>
+            <th style="width: 180px;">操作 / LINE</th>
           </tr>
         </thead>
         <tbody id="reservationTableBody">
@@ -260,7 +260,7 @@
     </div>
   </div>
 
-  <!-- TAB 1.5: 新設 事前問診一覧 -->
+  <!-- TAB 1.5 -->
   <div id="tab-interview" class="tab-content">
     <div class="filter-box">
       <label style="font-weight:900;">対象日付で絞り込み:</label>
@@ -268,12 +268,10 @@
       <button class="btn-action btn-dark" onclick="showAllInterviews()">全日付表示</button>
     </div>
 
-    <div id="interviewListContainer" style="max-width:900px;">
-      <!-- 動的カード注入 -->
-    </div>
+    <div id="interviewListContainer" style="max-width:900px;"></div>
   </div>
 
-  <!-- TAB 2: 1日スケジュール表示 -->
+  <!-- TAB 2 -->
   <div id="tab-timeline" class="tab-content">
     <div class="filter-box">
       <label style="font-weight:900;">対象日付:</label>
@@ -286,7 +284,7 @@
     </div>
   </div>
 
-  <!-- TAB 3: 週間予約タイル表示 -->
+  <!-- TAB 3 -->
   <div id="tab-tile" class="tab-content">
     <div class="filter-box">
       <button class="btn-action" onclick="changeTileWeek(-7)">‹ 前の週</button>
@@ -304,7 +302,7 @@
     </div>
   </div>
 
-  <!-- TAB 4: 休業・受付枠設定 -->
+  <!-- TAB 4 -->
   <div id="tab-holiday" class="tab-content">
     <div style="background:#fff3cd; border:1px solid #ffeba2; padding:12px; border-radius:8px; margin-bottom:14px; font-size:0.95rem; color:#856404;">
       💡 <strong>休み設定の使い方</strong>：<br>
@@ -328,7 +326,7 @@
     </div>
   </div>
 
-  <!-- TAB 5: 患者名簿 -->
+  <!-- TAB 5 -->
   <div id="tab-patients" class="tab-content">
     <div class="filter-box">
       <label style="font-weight:900;">並べ替え（ソート）:</label>
@@ -364,7 +362,7 @@
     </div>
   </div>
 
-  <!-- TAB 6: 一括LINE配信 -->
+  <!-- TAB 6 -->
   <div id="tab-broadcast" class="tab-content">
     <div style="background:#fff; padding:28px; border-radius:12px; max-width:640px; border:2px solid #d1d5db;">
       <h3 style="margin-top:0; color:var(--primary-dark); font-size:1.3rem; font-weight:900;">📢 全員への一括LINE配信</h3>
@@ -373,7 +371,28 @@
     </div>
   </div>
 
-  <!-- 名前自動コピー付きチャットモーダル -->
+  <!-- キャンセルモーダル -->
+  <div id="cancelModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-top:0; font-size:1.2rem; font-weight:900; color:#991b1b;">⚠️ 予約取り消しとLINE通知</h3>
+      <label style="font-size:0.9rem; margin-top:8px;">キャンセル理由の選択</label>
+      <select id="cancelReasonSelect" style="width:100%; margin-top:4px;">
+        <option value="ご不在・ご連絡なしのため">ご不在・ご連絡なしのため</option>
+        <option value="急患対応・病院都合のため">急患対応・病院都合のため</option>
+        <option value="患者様からのキャンセルのため">患者様からのキャンセルのため</option>
+        <option value="その他">その他（下に詳細入力）</option>
+      </select>
+      <label style="font-size:0.9rem; margin-top:12px;">詳細理由・メッセージ（お施主様のLINEに送信されます）</label>
+      <textarea id="cancelReasonDetail" rows="3" style="width:100%; margin-top:4px; font-size:0.95rem;" placeholder="例: お時間にご不在だったため、申し訳ございませんが一度キャンセルとさせていただきます。"></textarea>
+      
+      <div style="display:flex; gap:8px; margin-top:16px;">
+        <button class="btn-action btn-dark" style="flex:1;" onclick="closeCancelModal()">閉じる</button>
+        <button class="btn-action" style="flex:1; background:#dc2626;" id="confirmCancelBtn">取り消して通知送信</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- チャットモーダル -->
   <div id="msgModal" class="modal">
     <div class="modal-content">
       <h3 id="modalTargetName" style="margin-top:0; font-size:1.3rem; font-weight:900; color:var(--primary-dark);">💬 LINE個別チャット（完全無料）</h3>
@@ -394,10 +413,12 @@
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
     
-    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
+    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~", "午前 (09:00~12:00)", "午後 (16:00~19:00)"];
 
     let allReservations = [];
-    let checkedInterviews = new Set(); // 問診チェック済みローカル管理
+    let checkedInterviews = new Set();
+    let callCounts = {};
+    let pendingCancelRowIndex = null;
     let adminPass = sessionStorage.getItem('adminPass') || '';
     let autoRefreshTimer = null;
     let currentTargetName = '';
@@ -436,10 +457,7 @@
 
     function loadData(showErrorAlert = false) {
       fetch(`${GAS_URL}?pass=${encodeURIComponent(adminPass)}`)
-        .then(res => {
-          if (!res.ok) throw new Error("サーバー通信エラー (HTTP " + res.status + ")");
-          return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
           if (data.status === 'unauthorized') {
             alert('管理者パスワードが正しくありません');
@@ -460,10 +478,7 @@
           renderPatientTable();
         })
         .catch(err => {
-          console.error(err);
-          if (showErrorAlert) {
-            alert('読み込みエラーが発生しました:\n' + err.message + '\n\n※GASの「新バージョン」デプロイ漏れがないか確認してください。');
-          }
+          if (showErrorAlert) alert('エラーが発生しました: ' + err);
         });
     }
 
@@ -474,18 +489,16 @@
       return `${matched[1]}-${matched[2].padStart(2, '0')}-${matched[3].padStart(2, '0')}`;
     }
 
-    // 症状テキストから [症状] 食欲がない、嘔吐・下痢 と 具体例・備考メモ を分離
     function parseSymptoms(fullText) {
       if (!fullText) return { chipsHtml: '<span style="color:#9ca3af;">なし</span>', detailText: '記入なし' };
 
-      const match = fullText.match(/^\[症状\]\s*([^/]+)(?:\s*\/\s*([\s\S]*))?$/);
+      const match = fullText.match(/^\[(?:症状|受取品)\]\s*([^/]+)(?:\s*\/\s*([\s\S]*))?$/);
       if (match) {
         const chipsList = match[1].split('、').map(s => `<span class="chip-simple">${s.trim()}</span>`).join('');
         const detailText = match[2] ? match[2].trim() : '記入なし';
         return { chipsHtml: chipsList || '<span style="color:#9ca3af;">なし</span>', detailText };
       }
 
-      // 従来の形式など
       return { chipsHtml: `<span class="chip-simple">${fullText.substring(0, 15)}...</span>`, detailText: fullText };
     }
 
@@ -532,6 +545,8 @@
         const menuClass = isPickup ? 'menu-受取' : 'menu-診療';
 
         const parsed = parseSymptoms(r.symptoms);
+        const count = callCounts[r.rowIndex] || 0;
+        const callLabel = count > 0 ? `呼出(${count})` : '📢 呼出';
 
         return `
           <tr>
@@ -555,7 +570,8 @@
                 <button class="btn-sm btn-sm-check" onclick="updateStatus(${r.rowIndex}, '受付済')">受付</button>
                 <button class="btn-sm btn-sm-complete" onclick="updateStatus(${r.rowIndex}, '診察完了')">完了</button>
                 <button class="btn-sm btn-sm-reset" onclick="updateStatus(${r.rowIndex}, '予約受付')">戻す</button>
-                <button class="btn-sm btn-sm-cancel" onclick="updateStatus(${r.rowIndex}, 'キャンセル')">取消</button>
+                <button class="btn-sm btn-sm-call" onclick="callPatient(${r.rowIndex})">${callLabel}</button>
+                <button class="btn-sm btn-sm-cancel" onclick="openCancelModal(${r.rowIndex})">取消</button>
                 <button class="btn-sm btn-sm-line" onclick="openModal('${r.lineUserName || r.petName}')">💬 無料チャット</button>
               </div>
             </td>
@@ -564,7 +580,65 @@
       }).join('');
     }
 
-    /* --- 事前問診一覧レンダリング --- */
+    function callPatient(rowIndex) {
+      const r = allReservations.find(item => item.rowIndex === rowIndex);
+      if (!r) return;
+
+      if (!confirm(`【呼出の警告】\n${r.lineUserName} 様（${r.petName}）へ呼出のLINE通知を送信しますか？`)) {
+        return;
+      }
+
+      callCounts[rowIndex] = (callCounts[rowIndex] || 0) + 1;
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "callPatient", rowIndex: rowIndex, pass: adminPass })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert(`「${r.lineUserName} 様」へ呼び出しLINEを送信しました。`);
+        } else {
+          alert(`送信エラー: ${data.message}`);
+        }
+        filterReservations();
+      });
+    }
+
+    function openCancelModal(rowIndex) {
+      pendingCancelRowIndex = rowIndex;
+      document.getElementById('cancelModal').style.display = 'flex';
+    }
+
+    function closeCancelModal() {
+      document.getElementById('cancelModal').style.display = 'none';
+      pendingCancelRowIndex = null;
+    }
+
+    document.getElementById('confirmCancelBtn').onclick = () => {
+      if (!pendingCancelRowIndex) return;
+
+      const reasonType = document.getElementById('cancelReasonSelect').value;
+      const reasonDetail = document.getElementById('cancelReasonDetail').value;
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "cancelWithNotice",
+          rowIndex: pendingCancelRowIndex,
+          reasonType: reasonType,
+          reasonDetail: reasonDetail,
+          pass: adminPass
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert("取り消し処理とLINE通知を送信しました。");
+        closeCancelModal();
+        loadData();
+      });
+    };
+
     function renderInterviewList() {
       const container = document.getElementById('interviewListContainer');
       const selectedDate = document.getElementById('interviewDatePicker').value;
@@ -603,7 +677,7 @@
             </div>
 
             <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; margin-top:8px;">
-              <div style="font-size:0.85rem; color:#64748b; font-weight:bold; margin-bottom:4px;">【選択症状】</div>
+              <div style="font-size:0.85rem; color:#64748b; font-weight:bold; margin-bottom:4px;">【選択症状・受取品】</div>
               <div style="margin-bottom:8px;">${parsed.chipsHtml}</div>
               <div style="font-size:0.85rem; color:#64748b; font-weight:bold; margin-bottom:4px;">【具体的な様子・備考メモ全文】</div>
               <div style="white-space:pre-wrap; font-weight:600; font-size:1rem; line-height:1.5; color:#1e293b;">${parsed.detailText}</div>
@@ -627,7 +701,6 @@
       renderInterviewList();
     }
 
-    // 予約一覧から事前問診タブへジャンプ
     function jumpToInterview(rowIndex) {
       document.getElementById('interviewDatePicker').value = '';
       renderInterviewList();
