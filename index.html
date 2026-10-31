@@ -30,6 +30,9 @@
     .card { background: var(--card-bg); border-radius: 16px; padding: 16px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border); }
     .notice-box { background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; color: #276749; margin-bottom: 16px; }
 
+    .saved-select-box { background: #eef2ff; border: 1px solid #c7d2fe; padding: 10px; border-radius: 10px; margin-bottom: 14px; }
+    .saved-select-box label { margin-top: 0; color: #3730a3; font-size: 0.85rem; }
+
     .step-bar { display: flex; justify-content: space-between; margin-bottom: 20px; position: relative; padding: 0 8px; }
     .step-bar::before { content: ''; position: absolute; top: 14px; left: 15%; right: 15%; height: 2px; background: #e2e8f0; z-index: 1; }
     .step-dot { position: relative; z-index: 2; background: #fff; border: 2px solid #cbd5e0; color: #a0aec0; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
@@ -44,7 +47,7 @@
     .req { background: #fed7d7; color: #9b2c2c; font-size: 0.7rem; padding: 1px 5px; border-radius: 4px; margin-left: 4px; font-weight: normal; }
     .opt { background: #edf2f7; color: #718096; font-size: 0.7rem; padding: 1px 5px; border-radius: 4px; margin-left: 4px; font-weight: normal; }
 
-    input[type="text"], input[type="tel"], select, textarea {
+    input[type="text"], input[type="tel"], input[type="date"], select, textarea {
       width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.95rem; background: #fff; outline: none;
     }
 
@@ -61,7 +64,6 @@
     .chip { border: 1px solid #cbd5e0; padding: 6px 10px; border-radius: 16px; font-size: 0.82rem; background: #fff; color: #4a5568; cursor: pointer; }
     .chip.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); font-weight: bold; }
 
-    /* 週間カレンダー用スタイル */
     .cal-nav { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
     .btn-cal-week { flex: 1; padding: 8px; border: 1.5px solid var(--cal-blue); background: #fff; color: var(--cal-blue); font-weight: bold; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
     
@@ -111,7 +113,58 @@
       <form id="reserveForm">
         <!-- STEP 1 -->
         <div class="step-content active" id="step1">
-          <h2>1. 受診者・ペットの情報</h2>
+          <h2>1. ペット・飼い主様の情報</h2>
+
+          <!-- 端末保存ペット選択ドロップダウン -->
+          <div id="savedPetBox" class="saved-select-box" style="display:none;">
+            <label for="savedPetSelect">🐾 保存済みのペットから選ぶ</label>
+            <select id="savedPetSelect" onchange="loadSavedPetData()">
+              <option value="">-- 新しいペットを入力 --</option>
+            </select>
+          </div>
+
+          <!-- ペットの名前（一番先頭） -->
+          <label for="petName">ペットのお名前 <span class="req">必須</span></label>
+          <input type="text" id="petName" placeholder="例: チョコ" required>
+
+          <label>ペットの種類 <span class="req">必須</span></label>
+          <div class="grid-3" id="petTypeGrid">
+            <label class="btn-tile selected">
+              <input type="radio" name="petType" value="犬" checked> 🐶 犬
+            </label>
+            <label class="btn-tile">
+              <input type="radio" name="petType" value="猫"> 🐱 猫
+            </label>
+            <label class="btn-tile">
+              <input type="radio" name="petType" value="その他"> 🐰 その他
+            </label>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <div style="flex:1;">
+              <label for="petBreed">品種 <span class="opt">任意</span></label>
+              <input type="text" id="petBreed" placeholder="トイプードル等">
+            </div>
+            <div style="flex:1;">
+              <label for="petSex">性別 <span class="opt">任意</span></label>
+              <select id="petSex">
+                <option value="">未選択</option>
+                <option value="オス（未去勢）">オス（未去勢）</option>
+                <option value="オス（去勢済）">オス（去勢済）</option>
+                <option value="メス（未避妊）">メス（未避妊）</option>
+                <option value="メス（避妊済）">メス（避妊済）</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 生年月日（不明対応） -->
+          <label for="petBirth">ペットの生年月日 <span class="opt">任意</span></label>
+          <input type="date" id="petBirth">
+          <label style="font-weight:normal; font-size:0.8rem; margin-top:4px; display:flex; align-items:center; gap:6px;">
+            <input type="checkbox" id="petBirthUnknown" onchange="toggleBirthUnknown(this)"> 生年月日がわからない・不明
+          </label>
+
+          <hr style="border:none; border-top:1px dashed #e2e8f0; margin:18px 0 10px 0;">
 
           <label for="ownerName">飼い主様のお名前 <span class="req">必須</span></label>
           <input type="text" id="ownerName" placeholder="例: 山田 太郎" required>
@@ -133,39 +186,6 @@
 
           <label for="phoneNo">ご連絡先電話番号 <span class="req">必須</span></label>
           <input type="tel" id="phoneNo" placeholder="例: 09012345678" required>
-
-          <label>ペットの種類 <span class="req">必須</span></label>
-          <div class="grid-3">
-            <label class="btn-tile selected">
-              <input type="radio" name="petType" value="犬" checked> 🐶 犬
-            </label>
-            <label class="btn-tile">
-              <input type="radio" name="petType" value="猫"> 🐱 猫
-            </label>
-            <label class="btn-tile">
-              <input type="radio" name="petType" value="その他"> 🐰 その他
-            </label>
-          </div>
-
-          <label for="petName">ペットのお名前 <span class="req">必須</span></label>
-          <input type="text" id="petName" placeholder="例: チョコ" required>
-
-          <div style="display: flex; gap: 8px;">
-            <div style="flex:1;">
-              <label for="petBreed">品種 <span class="opt">任意</span></label>
-              <input type="text" id="petBreed" placeholder="トイプードル等">
-            </div>
-            <div style="flex:1;">
-              <label for="petSex">性別 <span class="opt">任意</span></label>
-              <select id="petSex">
-                <option value="">未選択</option>
-                <option value="オス（未去勢）">オス（未去勢）</option>
-                <option value="オス（去勢済）">オス（去勢済）</option>
-                <option value="メス（未避妊）">メス（未避妊）</option>
-                <option value="メス（避妊済）">メス（避妊済）</option>
-              </select>
-            </div>
-          </div>
 
           <div class="btn-area">
             <button type="button" class="btn btn-primary" onclick="nextStep(1)">次へ：メニュー選択 ➔</button>
@@ -221,7 +241,7 @@
           </div>
         </div>
 
-        <!-- STEP 4: 週間カレンダー日時選択 -->
+        <!-- STEP 4 -->
         <div class="step-content" id="step4">
           <h2>4. 時間帯の選択</h2>
 
@@ -257,12 +277,12 @@
           <h2>📋 予約内容の確認</h2>
 
           <div class="conf-box">
-            <span>診察区分・お名前</span>
-            <div id="confOwner">-</div>
-          </div>
-          <div class="conf-box">
             <span>ペット情報</span>
             <div id="confPet">-</div>
+          </div>
+          <div class="conf-box">
+            <span>診察区分・飼い主様お名前</span>
+            <div id="confOwner">-</div>
           </div>
           <div class="conf-box">
             <span>診療内容</span>
@@ -300,7 +320,6 @@
 
     const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "15:00~", "16:00~", "17:00~"];
 
-    // LIFF初期化
     liff.init({ liffId: LIFF_ID }).then(() => {
       if (liff.isLoggedIn()) {
         liff.getProfile().then(p => {
@@ -316,8 +335,81 @@
     });
 
     window.onload = () => {
+      initSavedPetDropdown();
       fetchExistingReservations();
     };
+
+    function getStoredPets() {
+      try {
+        return JSON.parse(localStorage.getItem('arbre_pets') || '{}');
+      } catch (e) { return {}; }
+    }
+
+    function savePetToStorage(data) {
+      const pets = getStoredPets();
+      pets[data.petName] = data;
+      localStorage.setItem('arbre_pets', JSON.stringify(pets));
+    }
+
+    function initSavedPetDropdown() {
+      const pets = getStoredPets();
+      const keys = Object.keys(pets);
+      const box = document.getElementById('savedPetBox');
+      const select = document.getElementById('savedPetSelect');
+
+      if (keys.length > 0) {
+        box.style.display = 'block';
+        select.innerHTML = '<option value="">-- 新しいペットを入力 --</option>' +
+          keys.map(k => `<option value="${k}">🐾 ${k} ちゃん (${pets[k].ownerName}様)</option>`).join('');
+      } else {
+        box.style.display = 'none';
+      }
+    }
+
+    function loadSavedPetData() {
+      const selectedName = document.getElementById('savedPetSelect').value;
+      if (!selectedName) return;
+
+      const pets = getStoredPets();
+      const p = pets[selectedName];
+      if (!p) return;
+
+      document.getElementById('petName').value = p.petName || '';
+      document.getElementById('petBreed').value = p.petBreed || '';
+      document.getElementById('petSex').value = p.petSex || '';
+      document.getElementById('ownerName').value = p.ownerName || '';
+      document.getElementById('ticketNo').value = p.ticketNo || '';
+      document.getElementById('phoneNo').value = p.phoneNo || '';
+
+      if (p.petBirth === '不明') {
+        document.getElementById('petBirthUnknown').checked = true;
+        toggleBirthUnknown(document.getElementById('petBirthUnknown'));
+      } else {
+        document.getElementById('petBirthUnknown').checked = false;
+        toggleBirthUnknown(document.getElementById('petBirthUnknown'));
+        document.getElementById('petBirth').value = p.petBirth || '';
+      }
+
+      if (p.petType) {
+        document.querySelectorAll('input[name="petType"]').forEach(r => {
+          const isMatch = r.value === p.petType;
+          r.checked = isMatch;
+          r.closest('.btn-tile').classList.toggle('selected', isMatch);
+        });
+      }
+    }
+
+    function toggleBirthUnknown(cb) {
+      const birthInput = document.getElementById('petBirth');
+      if (cb.checked) {
+        birthInput.value = '';
+        birthInput.disabled = true;
+        birthInput.style.backgroundColor = '#edf2f7';
+      } else {
+        birthInput.disabled = false;
+        birthInput.style.backgroundColor = '#fff';
+      }
+    }
 
     function fetchExistingReservations() {
       fetch(GAS_URL)
@@ -331,7 +423,7 @@
         .catch(() => renderCalendar());
     }
 
-    document.querySelectorAll('.grid-2, .grid-3').forEach(container => {
+    document.querySelectorAll('.grid-2, #petTypeGrid').forEach(container => {
       container.addEventListener('click', (e) => {
         const target = e.target.closest('.btn-tile');
         if (!target) return;
@@ -350,7 +442,6 @@
 
     function toggleChip(el) { el.classList.toggle('selected'); }
 
-    // カレンダー描画処理
     function renderCalendar() {
       const monthHeader = document.getElementById('calMonthHeader');
       const dateHeader = document.getElementById('calDateHeader');
@@ -366,12 +457,10 @@
         dates.push(d);
       }
 
-      // 年月ヘッダー
       let m1 = `${dates[0].getFullYear()}年 ${dates[0].getMonth() + 1}月`;
       let m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
       monthHeader.innerHTML = `<th colspan="1" style="background:#fff;"></th><th colspan="7">${m1 === m2 ? m1 : m1 + ' / ' + m2}</th>`;
 
-      // 曜日ヘッダー
       const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
       let dhHtml = `<th style="width:50px;">時間</th>`;
       dates.forEach(d => {
@@ -380,7 +469,6 @@
       });
       dateHeader.innerHTML = dhHtml;
 
-      // タイムスロット行
       let bodyHtml = "";
       TIME_SLOTS.forEach(time => {
         bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.75rem;">${time.replace('~','')}</td>`;
@@ -436,9 +524,9 @@
 
     function nextStep(step) {
       if (step === 1) {
+        if (!document.getElementById('petName').value.trim()) return alert('ペットのお名前を入力してください');
         if (!document.getElementById('ownerName').value.trim()) return alert('飼い主様のお名前を入力してください');
         if (!document.getElementById('phoneNo').value.trim()) return alert('電話番号を入力してください');
-        if (!document.getElementById('petName').value.trim()) return alert('ペット名を入力してください');
       }
 
       if (step === 4) {
@@ -450,6 +538,8 @@
         const petName = document.getElementById('petName').value;
         const petBreed = document.getElementById('petBreed').value;
         const petSex = document.getElementById('petSex').value;
+        const isUnknown = document.getElementById('petBirthUnknown').checked;
+        const petBirth = isUnknown ? '不明' : (document.getElementById('petBirth').value || '未設定');
         const menu = document.querySelector('input[name="menu"]:checked').value;
 
         const chips = Array.from(document.querySelectorAll('.chip.selected')).map(c => c.innerText);
@@ -457,8 +547,8 @@
         let symptoms = chips.join('、');
         if (detail) symptoms += (symptoms ? ' / ' : '') + detail;
 
+        document.getElementById('confPet').innerText = `${petName} ちゃん（${petType}） ${petBreed} ${petSex} [生年月日: ${petBirth}]`;
         document.getElementById('confOwner').innerText = `${ownerName} 様 (${visitType}${ticketNo ? ' 券:' + ticketNo : ''}) TEL: ${phoneNo}`;
-        document.getElementById('confPet').innerText = `${petName} ちゃん（${petType}） ${petBreed} ${petSex}`;
         document.getElementById('confMenu').innerText = menu;
         document.getElementById('confDate').innerText = `${selectedDateStr} ${selectedTimeStr}`;
         document.getElementById('confSymptoms').innerText = symptoms || '特になし';
@@ -493,9 +583,11 @@
       const ticketNo = document.getElementById('ticketNo').value;
       const phoneNo = document.getElementById('phoneNo').value;
       const petType = document.querySelector('input[name="petType"]:checked').value;
-      const petName = document.getElementById('petName').value;
+      const petName = document.getElementById('petName').value.trim();
       const petBreed = document.getElementById('petBreed').value;
       const petSex = document.getElementById('petSex').value;
+      const isUnknown = document.getElementById('petBirthUnknown').checked;
+      const petBirth = isUnknown ? '不明' : (document.getElementById('petBirth').value || '未設定');
       const menu = document.querySelector('input[name="menu"]:checked').value;
 
       const chips = Array.from(document.querySelectorAll('.chip.selected')).map(c => c.innerText);
@@ -508,11 +600,15 @@
       let visitTypeStr = visitType;
       if (ticketNo) visitTypeStr += ` 券No:${ticketNo}`;
 
-      let petInfoStr = `${petBreed} ${petSex}`.trim();
+      let petInfoStr = `${petBreed} ${petSex} (生年月日:${petBirth})`.trim();
+
+      savePetToStorage({
+        petName, petType, petBreed, petSex, petBirth, ownerName, ticketNo, phoneNo
+      });
 
       const payload = {
         lineUserId: lineUserId,
-        lineUserName: ownerName, // 手入力された飼い主様のお名前を送信
+        lineUserName: ownerName,
         phoneNo: phoneNo,
         visitType: visitTypeStr,
         petName: `${petName}（${petType}）`,
