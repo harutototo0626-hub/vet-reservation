@@ -26,6 +26,7 @@
     .header { background: var(--card-bg); padding: 20px 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); position: relative; }
     h1 { margin: 0 0 16px 0; font-size: 1.6rem; color: var(--primary-dark); font-weight: 800; }
     
+    /* ベルマーク通知スタイル */
     .notice-bell-wrap { position: relative; cursor: pointer; }
     .notice-bell-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; position: relative; }
     .notice-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; border-radius: 50%; font-size: 0.75rem; font-weight: 900; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #fff; }
@@ -33,9 +34,12 @@
     .notice-popover { display: none; position: absolute; top: 54px; right: 0; width: 340px; background: #fff; border: 2px solid #cbd5e0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 500; font-size: 0.9rem; }
     .notice-popover-header { background: #f8fafc; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 10px; border-top-right-radius: 10px; }
     .notice-popover-body { max-height: 320px; overflow-y: auto; }
-    .notice-item { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; }
+    
+    /* 未読・既読の区別用スタイル */
+    .notice-item { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: all 0.2s; }
     .notice-item:hover { background: #f0f9ff; }
-    .notice-item.unread { background: #fefce8; }
+    .notice-item.unread { background: #fefce8; border-left: 4px solid #f59e0b; }
+    .notice-item.read { background: #f8fafc; opacity: 0.55; }
 
     .nav-tabs { display: flex; gap: 8px; border-bottom: 3px solid #e5e7eb; padding-bottom: 10px; flex-wrap: wrap; }
     .tab-btn { padding: 8px 14px; border: none; background: none; font-size: 1rem; font-weight: 800; color: #4b5563; cursor: pointer; border-radius: 8px; }
@@ -170,11 +174,11 @@
           
           <div class="notice-popover" id="noticePopover">
             <div class="notice-popover-header">
-              <strong>🔔 新着・未読通知</strong>
+              <strong>🔔 新着通知</strong>
               <button onclick="markAllNoticesAsRead()" style="background:none; border:none; color:#0284c7; font-size:0.75rem; font-weight:bold; cursor:pointer;">すべて既読にする</button>
             </div>
             <div class="notice-popover-body" id="noticeListContainer">
-              <div style="padding:16px; text-align:center; color:#94a3b8;">未読の新着通知はありません</div>
+              <div style="padding:16px; text-align:center; color:#94a3b8;">新着通知はありません</div>
             </div>
           </div>
         </div>
@@ -621,18 +625,25 @@
       };
     }
 
-    // --- 新着通知 ベルマーク処理（未読のものだけをカウント・リスト表示） ---
+    // --- 新着通知 ベルマーク処理（本日作成の通知は既読後も薄くして保持） ---
     function updateNoticeBell() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+
       const notices = [];
       allReservations.forEach(r => {
         if (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY') return;
 
+        const createdDateStr = normalizeDateStr(r.createdAt);
         const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
         const isRead = readNoticeIds.has(id);
         const isCancel = r.status === 'キャンセル';
 
-        // 未読の通知のみ対象
-        if (!isRead) {
+        // 本日作成された通知、または未読の通知を保持
+        if (createdDateStr === todayStr || !isRead) {
           notices.push({
             id: id,
             rowIndex: r.rowIndex,
@@ -640,12 +651,14 @@
             time: r.time,
             name: r.lineUserName,
             pet: r.petName,
-            type: isCancel ? 'キャンセル' : '新規受付'
+            type: isCancel ? 'キャンセル' : '新規受付',
+            isRead: isRead
           });
         }
       });
 
-      const unreadCount = notices.length;
+      // 赤丸バッジは「未読件数」だけをカウント
+      const unreadCount = notices.filter(n => !n.isRead).length;
       const badge = document.getElementById('noticeBadge');
       if (unreadCount > 0) {
         badge.innerText = unreadCount;
@@ -656,14 +669,17 @@
 
       const container = document.getElementById('noticeListContainer');
       if (notices.length === 0) {
-        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">未読の新着通知はありません</div>`;
+        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">新着通知はありません</div>`;
         return;
       }
 
       container.innerHTML = notices.map(n => `
-        <div class="notice-item unread" onclick="clickNoticeItem('${n.id}', ${n.rowIndex})">
-          <div style="font-weight:bold; color:${n.type === 'キャンセル' ? '#dc2626' : '#0369a1'}; font-size:0.85rem;">
-            ${n.type === 'キャンセル' ? '❌ キャンセル通知' : '🆕 新規受付'}
+        <div class="notice-item ${n.isRead ? 'read' : 'unread'}" onclick="clickNoticeItem('${n.id}', ${n.rowIndex})">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-weight:bold; color:${n.type === 'キャンセル' ? '#dc2626' : '#0369a1'}; font-size:0.85rem;">
+              ${n.type === 'キャンセル' ? '❌ キャンセル通知' : '🆕 新規受付'}
+            </div>
+            ${n.isRead ? '<span style="font-size:0.75rem; color:#94a3b8; font-weight:bold;">[既読]</span>' : '<span style="font-size:0.75rem; color:#d97706; font-weight:bold;">● 未読</span>'}
           </div>
           <div style="font-size:0.95rem; font-weight:bold; color:#111827; margin-top:2px;">
             ${n.name} 様 (${n.pet})
@@ -681,7 +697,6 @@
       popover.style.display = isOpening ? 'block' : 'none';
     }
 
-    // 個別の通知を押した時だけ既読にして対象画面へジャンプ
     function clickNoticeItem(noticeId, rowIndex) {
       readNoticeIds.add(noticeId);
       localStorage.setItem('arbre_read_notices', JSON.stringify(Array.from(readNoticeIds)));
