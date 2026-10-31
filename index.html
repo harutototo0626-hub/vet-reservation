@@ -23,7 +23,6 @@
     
     .container { max-width: 480px; margin: 0 auto; position: relative; }
     
-    /* 右上ベルマーク通知 */
     .notification-bell { position: absolute; top: 4px; right: 8px; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; z-index: 10; }
     .bell-badge { position: absolute; top: -4px; right: -6px; background: #ef4444; color: #fff; border-radius: 50%; font-size: 0.75rem; font-weight: bold; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
 
@@ -81,6 +80,11 @@
     .cell-ok:active { background: #e0f2fe; }
     .cell-ng { color: #dc2626; font-size: 0.95rem; font-weight: bold; background: #fef2f2; }
     .cell-none { color: #cbd5e0; font-size: 0.8rem; }
+
+    .pickup-date-select-box { background: #fffbebf5; border: 1.5px solid #fcd34d; padding: 12px; border-radius: 10px; margin-top: 10px; }
+    .pickup-time-btn { padding: 12px; border: 2px solid #cbd5e0; border-radius: 8px; background: #fff; font-weight: bold; text-align: center; cursor: pointer; margin-top: 8px; }
+    .pickup-time-btn.selected { border-color: var(--primary-dark); background: var(--primary-light); color: var(--primary-dark); }
+    .pickup-time-btn.disabled { opacity: 0.4; cursor: not-allowed; background: #f1f5f9; border-color: #cbd5e0; }
 
     .selected-slot-box { background: #e0f2fe; border: 1px solid #7dd3fc; color: #0369a1; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 0.95rem; margin-top: 12px; }
 
@@ -240,7 +244,7 @@
             <textarea id="symptomsDetail" rows="3" placeholder="いつ頃からの症状か等をご記入ください"></textarea>
           </div>
 
-          <!-- B: 薬・フード受取用入力 -->
+          <!-- B: 薬・フード受取用詳細入力 -->
           <div id="sectionPickupDetail" style="display:none;">
             <h2>3. 受け取り品目の選択</h2>
             <label>受取対象の選択（複数選択可） <span class="req">必須</span></label>
@@ -265,23 +269,42 @@
 
         <!-- STEP 4 -->
         <div class="step-content" id="step4">
-          <h2 id="step4Title">4. 希望日時の選択</h2>
+          <h2>4. 希望日時の選択</h2>
 
-          <div class="cal-nav">
-            <button type="button" class="btn-cal-week" onclick="changeWeek(-7)">‹ 前の週</button>
-            <button type="button" class="btn-cal-week" onclick="changeWeek(7)">次の週 ›</button>
+          <!-- A: 通常診療用カレンダー (細かな時間指定) -->
+          <div id="medicalCalendarArea">
+            <div class="cal-nav">
+              <button type="button" class="btn-cal-week" onclick="changeWeek(-7)">‹ 前の週</button>
+              <button type="button" class="btn-cal-week" onclick="changeWeek(7)">次の週 ›</button>
+            </div>
+
+            <div class="cal-table-wrap">
+              <table class="cal-table">
+                <thead>
+                  <tr id="calMonthHeader"></tr>
+                  <tr id="calDateHeader"></tr>
+                </thead>
+                <tbody id="calBody">
+                  <tr><td colspan="8" style="padding:20px; color:#888;">空き状況を読み込み中...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <div class="cal-table-wrap">
-            <table class="cal-table">
-              <thead>
-                <tr id="calMonthHeader"></tr>
-                <tr id="calDateHeader"></tr>
-              </thead>
-              <tbody id="calBody">
-                <tr><td colspan="8" style="padding:20px; color:#888;">空き状況を読み込み中...</td></tr>
-              </tbody>
-            </table>
+          <!-- B: 薬・フード受取用 (日付選択＋午前/午後ブロック) -->
+          <div id="pickupCalendarArea" style="display:none;">
+            <label for="pickupDatePicker">受取希望日を選択 <span class="req">必須</span></label>
+            <input type="date" id="pickupDatePicker" onchange="onPickupDateChange()">
+
+            <div id="pickupTimeOptions" class="pickup-date-select-box" style="display:none;">
+              <div style="font-size:0.85rem; font-weight:bold; color:#856404; margin-bottom:8px;">ご希望の時間帯を選択してください:</div>
+              <div id="btnPickupAm" class="pickup-time-btn" onclick="selectPickupBlock('AM')">
+                🌅 午前枠 (<span id="pickupAmLabel">09:00~12:00</span>)
+              </div>
+              <div id="btnPickupPm" class="pickup-time-btn" onclick="selectPickupBlock('PM')">
+                🌇 午後枠 (<span id="pickupPmLabel">16:00~19:00</span>)
+              </div>
+            </div>
           </div>
 
           <div id="selectedSlotNotice" class="selected-slot-box" style="display:none;">
@@ -341,8 +364,7 @@
     let selectedTimeStr = "";
     let isPickupMode = false;
 
-    const MEDICAL_TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
-    const PICKUP_TIME_SLOTS = ["午前 (09:00~12:00)", "午後 (16:00~19:00)"];
+    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
 
     liff.init({ liffId: LIFF_ID }).then(() => {
       if (liff.isLoggedIn()) {
@@ -362,6 +384,12 @@
     window.onload = () => {
       initSavedPetDropdown();
       fetchExistingReservations();
+
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById('pickupDatePicker').min = `${yyyy}-${mm}-${dd}`;
     };
 
     function checkUserNotifications() {
@@ -458,6 +486,10 @@
       isPickupMode = (type === 'pickup');
       document.getElementById('sectionMedicalSymptoms').style.display = isPickupMode ? 'none' : 'block';
       document.getElementById('sectionPickupDetail').style.display = isPickupMode ? 'block' : 'none';
+      
+      document.getElementById('medicalCalendarArea').style.display = isPickupMode ? 'none' : 'block';
+      document.getElementById('pickupCalendarArea').style.display = isPickupMode ? 'block' : 'none';
+
       selectedDateStr = "";
       selectedTimeStr = "";
       document.getElementById('selectedSlotNotice').style.display = 'none';
@@ -522,13 +554,9 @@
       });
       dateHeader.innerHTML = dhHtml;
 
-      const currentSlots = isPickupMode ? PICKUP_TIME_SLOTS : MEDICAL_TIME_SLOTS;
-      document.getElementById('step4Title').innerText = isPickupMode ? "4. 受け取り希望日時の選択 (午前/午後)" : "4. 時間帯の選択 (時間指定枠)";
-
       let bodyHtml = "";
-      currentSlots.forEach(time => {
-        let label = isPickupMode ? (time.includes('午前') ? '午前' : '午後') : time.replace('~','');
-        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.75rem;">${label}</td>`;
+      TIME_SLOTS.forEach(time => {
+        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.75rem;">${time.replace('~','')}</td>`;
         
         dates.forEach(d => {
           let yyyy = d.getFullYear();
@@ -570,6 +598,78 @@
       document.getElementById('btnToStep5').disabled = false;
 
       renderCalendar();
+    }
+
+    // 薬・フード受取時の日付選択＋時間帯（午前/午後）動的判定
+    function onPickupDateChange() {
+      const dateVal = document.getElementById('pickupDatePicker').value;
+      if (!dateVal) return;
+
+      selectedDateStr = dateVal;
+      selectedTimeStr = "";
+      document.getElementById('selectedSlotNotice').style.display = 'none';
+      document.getElementById('btnToStep5').disabled = true;
+
+      // その日の休診設定を検索
+      const dayHolidays = existingReservations.filter(r => normalizeDateStr(r.date) === dateVal && r.status === '休診');
+      const offTimes = dayHolidays.map(r => r.time);
+
+      const amSlots = ["09:00~", "10:00~", "11:00~"];
+      const pmSlots = ["16:00~", "17:00~", "18:00~"];
+
+      const amAvailable = amSlots.filter(t => !offTimes.includes(t));
+      const pmAvailable = pmSlots.filter(t => !offTimes.includes(t));
+
+      const btnAm = document.getElementById('btnPickupAm');
+      const btnPm = document.getElementById('btnPickupPm');
+      const lblAm = document.getElementById('pickupAmLabel');
+      const lblPm = document.getElementById('pickupPmLabel');
+
+      btnAm.classList.remove('selected', 'disabled');
+      btnPm.classList.remove('selected', 'disabled');
+
+      // 午前の可能時間判定
+      if (amAvailable.length === 0) {
+        btnAm.classList.add('disabled');
+        lblAm.innerText = "受付不可・休診";
+      } else {
+        const startAm = amAvailable[0].replace('~','');
+        lblAm.innerText = `${startAm}~12:00`;
+      }
+
+      // 午後の可能時間判定
+      if (pmAvailable.length === 0) {
+        btnPm.classList.add('disabled');
+        lblPm.innerText = "受付不可・休診";
+      } else {
+        const startPm = pmAvailable[0].replace('~','');
+        lblPm.innerText = `${startPm}~19:00`;
+      }
+
+      document.getElementById('pickupTimeOptions').style.display = 'block';
+    }
+
+    function selectPickupBlock(blockType) {
+      const btnAm = document.getElementById('btnPickupAm');
+      const btnPm = document.getElementById('btnPickupPm');
+      const lblAm = document.getElementById('pickupAmLabel').innerText;
+      const lblPm = document.getElementById('pickupPmLabel').innerText;
+
+      if (blockType === 'AM') {
+        if (btnAm.classList.contains('disabled')) return;
+        btnAm.classList.add('selected');
+        btnPm.classList.remove('selected');
+        selectedTimeStr = `午前 (${lblAm})`;
+      } else {
+        if (btnPm.classList.contains('disabled')) return;
+        btnPm.classList.add('selected');
+        btnAm.classList.remove('selected');
+        selectedTimeStr = `午後 (${lblPm})`;
+      }
+
+      document.getElementById('selectedSlotNotice').style.display = 'block';
+      document.getElementById('selectedSlotText').innerText = `${selectedDateStr} ${selectedTimeStr}`;
+      document.getElementById('btnToStep5').disabled = false;
     }
 
     function normalizeDateStr(str) {
@@ -625,7 +725,7 @@
         document.getElementById('confSymptoms').innerText = symptomsText || '特になし';
       }
 
-      if (step === 3) {
+      if (step === 3 && !isPickupMode) {
         renderCalendar();
       }
 
