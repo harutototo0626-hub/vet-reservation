@@ -769,7 +769,7 @@
         select.innerHTML = '<option value="">-- 新しいペットを入力 --</option>' +
           pets.map((p, idx) => `<option value="${idx}">🐾 ${p.petName} ちゃん (${p.petType || '犬'})</option>`).join('');
         
-        // 1頭目を初期選択し、自動読み込みを実行
+        // 1頭目を初期選択し、自動入力連動を実行
         select.value = "0";
         loadSavedPetData();
       } else {
@@ -777,7 +777,7 @@
       }
     }
 
-    // 🐾 【連動修復】登録済みペット選択時の全自動フォーム入力処理
+    // 🐾 【連動修復・動作保護版】登録済みペット選択時の全自動フォーム入力処理
     function loadSavedPetData() {
       const val = document.getElementById('savedPetSelect').value;
       const birthInput = document.getElementById('petBirth');
@@ -788,15 +788,18 @@
         document.getElementById('petName').value = '';
         document.getElementById('petBreed').value = '';
         document.getElementById('petSex').value = '';
-        birthInput.value = '';
-        birthInput.disabled = false;
-        birthInput.style.backgroundColor = '#fff';
-        birthUnknownCb.checked = false;
+        if (birthInput) {
+          birthInput.value = '';
+          birthInput.disabled = false;
+          birthInput.style.backgroundColor = '#fff';
+        }
+        if (birthUnknownCb) birthUnknownCb.checked = false;
 
         document.querySelectorAll('input[name="petType"]').forEach(r => {
           const isMatch = (r.value === '犬');
           r.checked = isMatch;
-          r.closest('.btn-tile').classList.toggle('selected', isMatch);
+          const tile = r.closest('.btn-tile');
+          if (tile) tile.classList.toggle('selected', isMatch);
         });
         return;
       }
@@ -808,25 +811,29 @@
 
       // 生年月日の連動処理
       if (p.petBirth === '不明') {
-        birthInput.value = '';
-        birthInput.disabled = true;
-        birthInput.style.backgroundColor = '#edf2f7';
-        birthUnknownCb.checked = true;
+        if (birthInput) {
+          birthInput.value = '';
+          birthInput.disabled = true;
+          birthInput.style.backgroundColor = '#edf2f7';
+        }
+        if (birthUnknownCb) birthUnknownCb.checked = true;
       } else {
-        birthInput.value = p.petBirth || '';
-        birthInput.disabled = false;
-        birthInput.style.backgroundColor = '#fff';
-        birthUnknownCb.checked = false;
+        if (birthInput) {
+          birthInput.value = p.petBirth || '';
+          birthInput.disabled = false;
+          birthInput.style.backgroundColor = '#fff';
+        }
+        if (birthUnknownCb) birthUnknownCb.checked = false;
       }
 
       // ペット種別（犬/猫等タイル）の連動処理
-      if (p.petType) {
-        document.querySelectorAll('input[name="petType"]').forEach(r => {
-          const isMatch = (r.value === p.petType);
-          r.checked = isMatch;
-          r.closest('.btn-tile').classList.toggle('selected', isMatch);
-        });
-      }
+      const targetType = p.petType || '犬';
+      document.querySelectorAll('input[name="petType"]').forEach(r => {
+        const isMatch = (r.value === targetType);
+        r.checked = isMatch;
+        const tile = r.closest('.btn-tile');
+        if (tile) tile.classList.toggle('selected', isMatch);
+      });
     }
 
     // 💾 患者・ペット情報の保存処理
@@ -965,7 +972,10 @@
     function toggleMenuType(type) {
       isPickupMode = (type === 'pickup');
       document.getElementById('sectionMedicalSymptoms').style.display = isPickupMode ? 'none' : 'block';
-      document.getElementById('sectionPickupDetail').style.display = isPickupMode ? 'block' : 'none';
+      document.getElementById('sectionPickupDetail').style.display = isPickupMode ? 'none' : 'none'; // pickup用詳細
+      if (isPickupMode) {
+        document.getElementById('sectionPickupDetail').style.display = 'block';
+      }
       
       document.getElementById('medicalCalendarArea').style.display = isPickupMode ? 'none' : 'block';
       document.getElementById('pickupCalendarArea').style.display = isPickupMode ? 'block' : 'none';
@@ -976,13 +986,19 @@
       document.getElementById('btnToStep5').disabled = true;
     }
 
+    // 📅 既存の予約データおよび休診枠を取得
     function fetchExistingReservations() {
       fetch(GAS_URL)
         .then(res => res.json())
         .then(data => {
+          let list = [];
           if (Array.isArray(data)) {
-            existingReservations = data.filter(r => r.status !== 'キャンセル');
+            list = data;
+          } else if (data && Array.isArray(data.reservations)) {
+            list = data.reservations;
           }
+          // キャンセル以外のデータをすべて保持（予約枠＋休診枠）
+          existingReservations = list.filter(r => r && r.status !== 'キャンセル');
           renderCalendar();
         })
         .catch(() => renderCalendar());
@@ -1007,6 +1023,16 @@
 
     function toggleChip(el) { el.classList.toggle('selected'); }
 
+    // 時刻文字列から数字・コロン部分（例: "09:00"）を安全に抽出する関数
+    function extractHourMin(str) {
+      if (!str) return '';
+      const m = String(str).match(/(\d{1,2}:\d{2})/);
+      if (!m) return '';
+      const parts = m[1].split(':');
+      return `${parts[0].padStart(2, '0')}:${parts[1]}`;
+    }
+
+    // 📅 【完全改修版】休診枠および既存予約枠を正しく「✕」として表示するカレンダー描画
     function renderCalendar() {
       const monthHeader = document.getElementById('calMonthHeader');
       const dateHeader = document.getElementById('calDateHeader');
@@ -1047,12 +1073,26 @@
           let isPast = d < today;
           let isWed = d.getDay() === 3;
 
-          let count = existingReservations.filter(r => normalizeDateStr(r.date) === dateStr && r.time === time && r.status !== 'キャンセル').length;
-          let isOccupied = count >= 1;
+          // 該当日の予約・休診データを取得
+          let dayRecords = existingReservations.filter(r => normalizeDateStr(r.date) === dateStr);
+          let targetHm = extractHourMin(time);
+
+          // 当該スロットに休診（1日休診・時間指定休診）または既存の診察予約が存在するか判定
+          let isBlocked = dayRecords.some(r => {
+            const isHolidayRecord = (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY');
+            if (isHolidayRecord) {
+              const isFullDay = (r.time && (r.time.includes('全日') || r.time.includes('1日'))) || (r.symptoms && r.symptoms.includes('1日休診'));
+              if (isFullDay) return true;
+              return extractHourMin(r.time) === targetHm;
+            }
+            // 通常予約の場合
+            return extractHourMin(r.time) === targetHm;
+          });
 
           if (isPast || isWed) {
             bodyHtml += `<td><span class="cell-none">-</span></td>`;
-          } else if (isOccupied) {
+          } else if (isBlocked) {
+            // 休診・予約済みの枠は完全に「✕」にして予約不可とする
             bodyHtml += `<td><span class="cell-ng">✕</span></td>`;
           } else {
             let isSelected = (selectedDateStr === dateStr && selectedTimeStr === time);
@@ -1083,6 +1123,7 @@
       renderCalendar();
     }
 
+    // 💊 【完全改修版】薬・フード受取における休診枠チェック
     function onPickupDateChange() {
       const dateVal = document.getElementById('pickupDatePicker').value;
       if (!dateVal) return;
@@ -1100,14 +1141,21 @@
       document.getElementById('selectedSlotNotice').style.display = 'none';
       document.getElementById('btnToStep5').disabled = true;
 
-      const dayHolidays = existingReservations.filter(r => normalizeDateStr(r.date) === dateVal && r.status === '休診');
-      const offTimes = dayHolidays.map(r => r.time);
+      const dayHolidays = existingReservations.filter(r => 
+        normalizeDateStr(r.date) === dateVal && (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY')
+      );
 
-      const amSlots = ["09:00~", "10:00~", "11:00~"];
-      const pmSlots = ["16:00~", "17:00~", "18:00~"];
+      const isAllDayOff = dayHolidays.some(r => 
+        (r.time && (r.time.includes('全日') || r.time.includes('1日'))) || (r.symptoms && r.symptoms.includes('1日休診'))
+      );
 
-      const amAvailable = amSlots.filter(t => !offTimes.includes(t));
-      const pmAvailable = pmSlots.filter(t => !offTimes.includes(t));
+      const offTimeHms = dayHolidays.map(r => extractHourMin(r.time));
+
+      const amSlots = ["09:00", "10:00", "11:00"];
+      const pmSlots = ["16:00", "17:00", "18:00"];
+
+      const amAvailable = !isAllDayOff && amSlots.some(t => !offTimeHms.includes(t));
+      const pmAvailable = !isAllDayOff && pmSlots.some(t => !offTimeHms.includes(t));
 
       const btnAm = document.getElementById('btnPickupAm');
       const btnPm = document.getElementById('btnPickupPm');
@@ -1117,14 +1165,14 @@
       btnAm.classList.remove('selected', 'disabled');
       btnPm.classList.remove('selected', 'disabled');
 
-      if (amAvailable.length === 0) {
+      if (!amAvailable) {
         btnAm.classList.add('disabled');
         lblAm.innerText = "受付不可・休診";
       } else {
         lblAm.innerText = "09:00~12:00";
       }
 
-      if (pmAvailable.length === 0) {
+      if (!pmAvailable) {
         btnPm.classList.add('disabled');
         lblPm.innerText = "受付不可・休診";
       } else {
