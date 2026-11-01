@@ -25,6 +25,10 @@
 
     .notice-user { text-align: center; font-size: 0.85rem; color: #047857; font-weight: bold; margin-bottom: 16px; background: #e8f9ee; padding: 8px; border-radius: 8px; border: 1px solid #a7f3d0; }
 
+    /* SMS認証エリア */
+    .sms-box { background: #e0f2fe; border: 2px solid #0284c7; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .sms-box h3 { margin: 0 0 8px 0; color: #0369a1; font-size: 1.05rem; font-weight: 800; }
+
     /* メニューカードデザイン */
     .menu-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
     .menu-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 14px; padding: 18px 16px; display: flex; align-items: center; cursor: pointer; transition: all 0.2s; position: relative; text-decoration: none; color: inherit; }
@@ -49,7 +53,9 @@
     input[type="text"], input[type="tel"], input[type="date"], select, textarea { width: 100%; padding: 12px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 1rem; font-weight: 600; }
     
     .btn { width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 900; cursor: pointer; transition: background 0.2s; }
+    .btn:disabled { background: #9ca3af; cursor: not-allowed; }
     .btn-dark { background: var(--primary-dark); }
+    .btn-secondary { background: #0284c7; }
     .btn-danger { background: #ef4444; }
 
     .step-title { font-size: 1.05rem; font-weight: 800; color: var(--primary-dark); border-bottom: 2px solid var(--primary); padding-bottom: 4px; margin: 20px 0 12px 0; }
@@ -119,6 +125,29 @@
         <span style="font-weight:bold; color:var(--primary-dark);">新規予約フォーム</span>
       </div>
 
+      <!-- Webアクセス時のみ表示されるSMS本人確認画面 -->
+      <div id="smsAuthSection" class="sms-box" style="display: none;">
+        <h3>📱 携帯電話番号での本人確認 (SMS認証)</h3>
+        <p style="font-size:0.85rem; color:#0369a1; margin-top:0;">Webからのご予約には電話番号認証が必要です。</p>
+        
+        <div class="form-group">
+          <label>携帯電話番号</label>
+          <div style="display:flex; gap:8px;">
+            <input type="tel" id="smsPhoneInput" placeholder="例: 09012345678">
+            <button type="button" class="btn btn-secondary" style="width:120px; padding:10px; font-size:0.9rem;" onclick="requestSmsCode()">コード送信</button>
+          </div>
+        </div>
+
+        <div class="form-group" id="smsCodeGroup" style="display: none;">
+          <label>SMSに届いた4桁の認証コード</label>
+          <div style="display:flex; gap:8px;">
+            <!-- autocomplete="one-time-code" によりキーボード上部への自動補完が有効化 -->
+            <input type="text" id="smsCodeInput" placeholder="4桁の数字" autocomplete="one-time-code" inputmode="numeric">
+            <button type="button" class="btn" style="width:100px; padding:10px; font-size:0.9rem;" onclick="verifySmsCode()">認証</button>
+          </div>
+        </div>
+      </div>
+
       <div id="announcementDisplay" class="announcement-box" style="display: none;"></div>
 
       <form id="bookingForm">
@@ -178,7 +207,7 @@
           <textarea id="detailInput" rows="3" placeholder="いつ頃からどんな様子か、気になる点を自由にご記入ください。"></textarea>
         </div>
 
-        <button type="submit" class="btn" style="margin-top: 20px;">予約を確定する</button>
+        <button type="submit" class="btn" id="submitBtn" style="margin-top: 20px;">予約を確定する</button>
       </form>
     </div>
 
@@ -253,6 +282,7 @@
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
 
     let lineUserId = "WEB_USER";
+    let isSmsVerified = false;
     let selectedChips = [];
     let currentUserPhone = "";
 
@@ -288,13 +318,80 @@
     };
 
     function setWebUserMode() {
-      document.getElementById('lineUserInfo').innerHTML = `🌐 Webブラウザでご利用中`;
+      document.getElementById('lineUserInfo').innerHTML = `🌐 Webブラウザでご利用中 (SMS認証が必要です)`;
+      document.getElementById('smsAuthSection').style.display = 'block';
       document.getElementById('webSearchBox').style.display = 'block';
+      document.getElementById('submitBtn').disabled = true; // SMS認証完了までボタン無効化
     }
 
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
+    }
+
+    // --- WebOTP API (SMSコード自動取得) の受信待機処理 ---
+    function listenForWebOTP() {
+      if ('OTPCredential' in window) {
+        const ac = new AbortController();
+        navigator.credentials.get({
+          otp: { transport: ['sms'] },
+          signal: ac.signal
+        }).then(otp => {
+          if (otp && otp.code) {
+            document.getElementById('smsCodeInput').value = otp.code;
+            // コードが自動入力されたら自動で認証実行
+            verifySmsCode();
+          }
+        }).catch(err => {
+          console.log("WebOTP待機終了または非対応ブラウザ");
+        });
+      }
+    }
+
+    function requestSmsCode() {
+      const phone = document.getElementById('smsPhoneInput').value;
+      if (!phone || phone.length < 10) return alert('正しい携帯電話番号を入力してください');
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "sendSmsCode", phoneNo: phone })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert('携帯電話番号宛にSMSで認証コードを送信しました。');
+        document.getElementById('smsCodeGroup').style.display = 'block';
+        
+        // WebOTP APIによるSMSコード自動受信待機を開始
+        listenForWebOTP();
+      });
+    }
+
+    function verifySmsCode() {
+      const phone = document.getElementById('smsPhoneInput').value;
+      const code = document.getElementById('smsCodeInput').value;
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "verifySmsCode", phoneNo: phone, code: code })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert('本人確認（SMS認証）が完了しました！');
+          isSmsVerified = true;
+          currentUserPhone = phone;
+          document.getElementById('phoneInput').value = phone;
+          document.getElementById('editPhoneNo').value = phone;
+          document.getElementById('searchPhoneInput').value = phone;
+          
+          document.getElementById('smsAuthSection').style.background = "#f0fdf4";
+          document.getElementById('smsAuthSection').style.borderColor = "#22c55e";
+          document.getElementById('smsAuthSection').innerHTML = "✅ <strong>SMS本人確認済み</strong>";
+          document.getElementById('submitBtn').disabled = false;
+        } else {
+          alert('認証エラー: ' + data.message);
+        }
+      });
     }
 
     function toggleChip(element) {
@@ -328,6 +425,10 @@
     document.getElementById('bookingForm').onsubmit = (e) => {
       e.preventDefault();
 
+      if (!liff.isLoggedIn() && !isSmsVerified) {
+        return alert('SMS認証を完了させてから予約を行ってください');
+      }
+
       const phone = document.getElementById('phoneInput').value;
       currentUserPhone = phone;
       const finalUserId = lineUserId === "WEB_USER" ? ("WEB_" + phone) : lineUserId;
@@ -351,7 +452,7 @@
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
-          alert('ご予約が完了いたしました！ご来院をお待しております。');
+          alert('ご予約が完了いたしました！ご来院をお待ちしております。');
           showScreen('screen-top');
         } else {
           alert('予約エラー: ' + (data.message || '不明なエラー'));
