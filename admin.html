@@ -142,7 +142,6 @@
       <div style="display:flex; align-items:center; gap:16px;">
         <span id="autoRefreshNotice" style="font-size:0.85rem; color:#047857; font-weight:bold; background:#e8f9ee; padding:4px 10px; border-radius:12px;">🔄 自動更新中 (30秒)</span>
         
-        <!-- 新着通知 ベルマーク -->
         <div class="notice-bell-wrap">
           <div class="notice-bell-btn" onclick="toggleNoticePopover()">
             🔔
@@ -162,6 +161,7 @@
       </div>
     </div>
 
+    <!-- 📱 メニュータブ -->
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchTab('menu')">📱 メニュー</button>
       <button class="tab-btn" onclick="switchTab('reservations')">📅 予約一覧</button>
@@ -174,7 +174,7 @@
     </div>
   </div>
 
-  <!-- TAB 0 -->
+  <!-- TAB 0: 初期メニュー画面 -->
   <div id="tab-menu" class="tab-content active">
     <div class="menu-portal-grid">
       <div class="portal-card" onclick="switchTab('reservations')">
