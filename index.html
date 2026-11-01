@@ -16,6 +16,7 @@
       --card-bg: #ffffff;
       --text-main: #2d3748;
       --border: #cbd5e0;
+      --danger: #ef4444;
     }
 
     * { box-sizing: border-box; }
@@ -103,6 +104,7 @@
     .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 0.92rem; font-weight: bold; cursor: pointer; text-align: center; }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-secondary { background: #edf2f7; color: #4a5568; }
+    .btn-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
 
     .conf-box { background: #f7fafc; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #edf2f7; font-size: 0.85rem; }
     .conf-box span { display: block; font-size: 0.75rem; color: var(--primary-dark); font-weight: bold; margin-bottom: 2px; }
@@ -207,7 +209,7 @@
                 <div class="portal-card-icon">👤</div>
                 <div class="portal-card-text">
                   <h3>患者様情報の確認・変更</h3>
-                  <p>オーナー情報、ペット情報などの確認・変更が可能です。</p>
+                  <p>オーナー情報、ペット情報（生年月日など）の確認・変更・削除が可能です。</p>
                 </div>
               </div>
               <div class="portal-card-arrow">›</div>
@@ -279,7 +281,7 @@
               <hr style="border:none; border-top:1px dashed #e2e8f0; margin:18px 0 10px 0;">
 
               <label for="ownerName">飼い主様のお名前 <span class="req">必須</span></label>
-              <input type="text" id="ownerName" placeholder="例: 中川 温仁" autocomplete="name" required>
+              <input type="text" id="ownerName" placeholder="例: 中川太郎" autocomplete="name" required>
 
               <label>診察区分 <span class="req">必須</span></label>
               <div class="grid-2">
@@ -473,7 +475,7 @@
             <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:10px; margin-bottom:14px;">
               <h3 style="margin:0 0 8px 0; font-size:0.95rem; color:var(--primary-dark);">👤 飼い主様情報</h3>
               <label for="profOwnerName" style="margin-top:0;">飼い主様のお名前 <span class="req">必須</span></label>
-              <input type="text" id="profOwnerName" placeholder="例: 中川 温仁" required>
+              <input type="text" id="profOwnerName" placeholder="例: 中川太郎" required>
 
               <label for="profPhoneNo">ご連絡先電話番号 <span class="req">必須</span></label>
               <input type="tel" id="profPhoneNo" placeholder="例: 09012345678" required>
@@ -519,6 +521,10 @@
 
               <label for="profPetMemo">持病・アレルギー・備考メモ <span class="opt">任意</span></label>
               <textarea id="profPetMemo" rows="3" placeholder="かかりつけ・薬のアレルギー・既往症など"></textarea>
+
+              <div id="btnDeletePetArea" style="margin-top:12px; display:none;">
+                <button type="button" class="btn btn-danger" style="width:100%; font-size:0.85rem;" onclick="deleteCurrentPetProfile()">🗑️ 選択中のペット情報を削除する</button>
+              </div>
             </div>
 
             <div class="btn-area">
@@ -531,95 +537,70 @@
 
     </div>
   </div>
-
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
-    const LIFF_ID = "2006687046-Q04fom0s";
-    
-    let lineUserId = "WEB_USER";
-    let lineUserName = "Webユーザー";
-    let isWebVerified = false;
-    let currentUserPhone = "";
-    
-    let currentWeekStart = new Date();
-    let existingReservations = [];
-    let selectedDateStr = "";
-    let selectedTimeStr = "";
-    let isPickupMode = false;
-    let patientPetList = [];
+    const LIFF_ID = "2006323631-J8Z2lyq0";
 
     const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
 
-    window.onload = () => {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      document.getElementById('pickupDatePicker').min = `${yyyy}-${mm}-${dd}`;
+    let userLineId = "";
+    let userDisplayName = "";
+    let isWebMode = false;
+    let webAuthUser = null;
 
-      liff.init({ liffId: LIFF_ID }).then(() => {
+    let currentStep = 1;
+    let selectedSlot = null;
+    let weekStartDate = new Date();
+    let currentCategory = 'medical';
+    let myPetsList = [];
+    let selectedProfPetId = "NEW";
+
+    window.onload = async () => {
+      setupWeekStart();
+      initPickupDefaultDate();
+      
+      try {
+        await liff.init({ liffId: LIFF_ID });
         if (liff.isLoggedIn()) {
-          liff.getProfile().then(p => {
-            lineUserId = p.userId;
-            lineUserName = p.displayName;
-            isWebVerified = true;
-            document.getElementById('lineUserInfo').innerHTML = `✅ LINE連携: <strong>${p.displayName}</strong> 様`;
-            document.getElementById('webAuthContainer').style.display = 'none';
-            document.getElementById('mainPortalApp').style.display = 'block';
-            
-            onUserAuthenticated();
-          });
+          const profile = await liff.getProfile();
+          userLineId = profile.userId;
+          userDisplayName = profile.displayName;
+          document.getElementById('lineUserInfo').innerText = `👤 ${userDisplayName} 様`;
+          checkUserRegistration();
         } else {
-          checkWebAuthSession();
+          enableWebAuthMode();
         }
-      }).catch(() => {
-        checkWebAuthSession();
-      });
+      } catch (err) {
+        console.warn("LIFF初期化スキップ（Web直接利用モード）:", err);
+        enableWebAuthMode();
+      }
 
-      fetchExistingReservations();
+      document.getElementById('reserveForm').onsubmit = handleFormSubmit;
     };
 
-    function checkWebAuthSession() {
-      const savedPhone = localStorage.getItem('arbre_user_saved_phone');
-      const savedPass = localStorage.getItem('arbre_user_saved_pass');
-      const authExpire = localStorage.getItem('arbre_user_auth_expire');
-
-      if (savedPhone) {
-        document.getElementById('loginPhone').value = savedPhone;
-        document.getElementById('regPhone').value = savedPhone;
-      }
-      if (savedPass) {
-        document.getElementById('loginPass').value = savedPass;
-        document.getElementById('regPass').value = savedPass;
-      }
-
-      if (authExpire && parseInt(authExpire) > Date.now() && savedPhone) {
-        isWebVerified = true;
-        currentUserPhone = savedPhone;
-        lineUserId = "WEB_" + savedPhone;
-        document.getElementById('phoneNo').value = savedPhone;
-        document.getElementById('lineUserInfo').innerText = `🌐 Web認証済み (${currentUserPhone})`;
-        document.getElementById('webAuthContainer').style.display = 'none';
-        document.getElementById('mainPortalApp').style.display = 'block';
-        
-        onUserAuthenticated();
+    function enableWebAuthMode() {
+      isWebMode = true;
+      const savedUser = localStorage.getItem('arbre_web_user');
+      if (savedUser) {
+        webAuthUser = JSON.parse(savedUser);
+        userLineId = "WEB_" + webAuthUser.phone;
+        userDisplayName = webAuthUser.phone;
+        document.getElementById('lineUserInfo').innerText = `📱 Web会員: ${webAuthUser.phone}`;
+        checkUserRegistration();
       } else {
-        document.getElementById('lineUserInfo').innerText = `🌐 Webログインが必要です`;
         document.getElementById('webAuthContainer').style.display = 'block';
-        document.getElementById('mainPortalApp').style.display = 'none';
-        showAuthPage('select');
+        document.getElementById('lineUserInfo').innerText = "🔑 ログイン未完了";
       }
-    }
-
-    function onUserAuthenticated() {
-      loadAnnounceAndShowBoard();
-      loadPatientProfileData();
     }
 
     function showAuthPage(page) {
-      document.getElementById('webAuthSelectPage').style.display = (page === 'select') ? 'block' : 'none';
-      document.getElementById('webLoginPage').style.display = (page === 'login') ? 'block' : 'none';
-      document.getElementById('webRegisterPage').style.display = (page === 'register') ? 'block' : 'none';
+      document.getElementById('webAuthSelectPage').style.display = 'none';
+      document.getElementById('webLoginPage').style.display = 'none';
+      document.getElementById('webRegisterPage').style.display = 'none';
+
+      if (page === 'select') document.getElementById('webAuthSelectPage').style.display = 'block';
+      if (page === 'login') document.getElementById('webLoginPage').style.display = 'block';
+      if (page === 'register') document.getElementById('webRegisterPage').style.display = 'block';
     }
 
     function loginUser() {
@@ -627,77 +608,71 @@
       const pass = document.getElementById('loginPass').value.trim();
       if (!phone || !pass) return alert('電話番号とパスワードを入力してください');
 
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "loginUser", phoneNo: phone, userPass: pass, userAgent: navigator.userAgent })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === 'success') {
-          alert('ログインに成功いたしました');
-          isWebVerified = true;
-          currentUserPhone = phone;
-          lineUserId = "WEB_" + phone;
-
-          localStorage.setItem('arbre_user_saved_phone', phone);
-          localStorage.setItem('arbre_user_saved_pass', pass);
-          localStorage.setItem('arbre_user_auth_expire', (Date.now() + (10 * 60 * 1000)).toString());
-
-          document.getElementById('phoneNo').value = phone;
-          document.getElementById('lineUserInfo').innerText = `🌐 Web認証済み (${phone})`;
-          document.getElementById('webAuthContainer').style.display = 'none';
-          document.getElementById('mainPortalApp').style.display = 'block';
-
-          onUserAuthenticated();
-        } else {
-          alert('ログインエラー: ' + data.message);
-        }
-      });
+      fetch(`${GAS_URL}?action=webAuth&phone=${encodeURIComponent(phone)}&pass=${encodeURIComponent(pass)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            webAuthUser = { phone: phone };
+            localStorage.setItem('arbre_web_user', JSON.stringify(webAuthUser));
+            userLineId = "WEB_" + phone;
+            userDisplayName = phone;
+            document.getElementById('webAuthContainer').style.display = 'none';
+            document.getElementById('lineUserInfo').innerText = `📱 Web会員: ${phone}`;
+            checkUserRegistration();
+          } else {
+            alert(data.message || 'ログインに失敗しました。');
+          }
+        })
+        .catch(err => alert('通信エラーが発生しました: ' + err));
     }
 
     function registerUser() {
       const phone = document.getElementById('regPhone').value.trim();
       const pass = document.getElementById('regPass').value.trim();
-      if (!phone || !pass) return alert('電話番号と希望パスワードを入力してください');
+      if (!phone || !pass) return alert('電話番号とパスワードを入力してください');
+      if (pass.length < 8) return alert('パスワードは8文字以上で設定してください');
 
       fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "registerUser", phoneNo: phone, userPass: pass, userAgent: navigator.userAgent })
+        body: JSON.stringify({ action: "webRegister", phone: phone, pass: pass })
       })
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
-          alert('登録が完了しました。ログイン処理を実行します。');
-          document.getElementById('loginPhone').value = phone;
-          document.getElementById('loginPass').value = pass;
-          loginUser();
+          alert('新規会員登録が完了しました！');
+          webAuthUser = { phone: phone };
+          localStorage.setItem('arbre_web_user', JSON.stringify(webAuthUser));
+          userLineId = "WEB_" + phone;
+          userDisplayName = phone;
+          document.getElementById('webAuthContainer').style.display = 'none';
+          document.getElementById('lineUserInfo').innerText = `📱 Web会員: ${phone}`;
+          checkUserRegistration();
         } else {
-          alert('登録エラー: ' + data.message);
+          alert(data.message || '登録に失敗しました。');
         }
-      });
+      })
+      .catch(err => alert('通信エラーが発生しました: ' + err));
     }
 
-    function loadAnnounceAndShowBoard() {
+    function checkUserRegistration() {
+      document.getElementById('mainPortalApp').style.display = 'block';
+      loadAnnounceBoard();
+      loadPatientProfileData();
+    }
+
+    function loadAnnounceBoard() {
       fetch(`${GAS_URL}?action=getAnnounce`)
         .then(res => res.json())
         .then(data => {
-          if (data && data.announce && data.announce.trim()) {
+          if (data && data.announce) {
             document.getElementById('announceContent').innerText = data.announce;
+            document.getElementById('viewAnnounceBoard').style.display = 'block';
+            document.getElementById('viewPortalMenu').style.display = 'none';
           } else {
-            document.getElementById('announceContent').innerText = "現在、病院からの特別なお知らせはありません。";
+            proceedToPortalMenu();
           }
-          showAnnounceBoard();
-        }).catch(()=>{
-          showAnnounceBoard();
-        });
-    }
-
-    function showAnnounceBoard() {
-      document.getElementById('viewAnnounceBoard').style.display = 'block';
-      document.getElementById('viewPortalMenu').style.display = 'none';
-      document.getElementById('viewNewReserve').style.display = 'none';
-      document.getElementById('viewMyReservations').style.display = 'none';
-      document.getElementById('viewPatientProfile').style.display = 'none';
+        })
+        .catch(() => proceedToPortalMenu());
     }
 
     function proceedToPortalMenu() {
@@ -705,138 +680,139 @@
       document.getElementById('viewPortalMenu').style.display = 'block';
     }
 
-    // 👤 患者・ペット情報の取得およびドロップダウン更新
-    function loadPatientProfileData() {
-      const targetPhone = currentUserPhone || localStorage.getItem('arbre_user_saved_phone');
-      if (!targetPhone) return;
-
-      document.getElementById('profPhoneNo').value = targetPhone;
-
-      fetch(`${GAS_URL}?action=getPatientInfo&phone=${encodeURIComponent(targetPhone)}`)
-        .then(res => res.json())
-        .then(data => {
-          patientPetList = (data && data.pets && data.pets.length > 0) ? data.pets : [];
-          
-          if (data && data.ownerName) {
-            document.getElementById('profOwnerName').value = data.ownerName;
-            document.getElementById('ownerName').value = data.ownerName;
-          }
-          document.getElementById('phoneNo').value = targetPhone;
-
-          const petSelect = document.getElementById('profPetSelect');
-          petSelect.innerHTML = '<option value="NEW">＋ 新しいペットを追加する</option>' +
-            patientPetList.map((p, idx) => `<option value="${idx}">🐾 ${p.petName} ちゃん (${p.petType || '犬'})</option>`).join('');
-
-          if (patientPetList.length > 0) {
-            petSelect.value = "0";
-            fillProfPetFields(patientPetList[0]);
-          } else {
-            petSelect.value = "NEW";
-            fillProfPetFields({});
-          }
-
-          // 予約STEP1の登録済みペットドロップダウンを更新＆自動入力連動実行
-          updateSavedPetDropdownFromList(patientPetList);
-        });
+    function returnToPortal() {
+      document.getElementById('viewNewReserve').style.display = 'none';
+      document.getElementById('viewMyReservations').style.display = 'none';
+      document.getElementById('viewPatientProfile').style.display = 'none';
+      document.getElementById('viewPortalMenu').style.display = 'block';
     }
 
-    function fillProfPetFields(p) {
-      document.getElementById('profPetName').value = p.petName || '';
-      document.getElementById('profPetType').value = p.petType || '犬';
-      document.getElementById('profPetBreed').value = p.petBreed || '';
-      document.getElementById('profPetSex').value = p.petSex || '';
-      document.getElementById('profPetBirth').value = p.petBirth || '';
-      document.getElementById('profPetMemo').value = p.petMemo || '';
+    function openNavSection(section) {
+      document.getElementById('viewPortalMenu').style.display = 'none';
+      if (section === 'newReserve') {
+        document.getElementById('viewNewReserve').style.display = 'block';
+        loadCalendar();
+      } else if (section === 'myReservations') {
+        document.getElementById('viewMyReservations').style.display = 'block';
+        loadMyReservations();
+      } else if (section === 'patientProfile') {
+        document.getElementById('viewPatientProfile').style.display = 'block';
+        loadPatientProfileData();
+      }
+    }
+
+    function loadPatientProfileData() {
+      fetch(`${GAS_URL}?action=getPatientRecords&lineUserId=${encodeURIComponent(userLineId)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.records) {
+            if (data.ownerName) document.getElementById('profOwnerName').value = data.ownerName;
+            if (data.phoneNo) document.getElementById('profPhoneNo').value = data.phoneNo;
+
+            if (data.ownerName && !document.getElementById('ownerName').value) {
+              document.getElementById('ownerName').value = data.ownerName;
+            }
+            if (data.phoneNo && !document.getElementById('phoneNo').value) {
+              document.getElementById('phoneNo').value = data.phoneNo;
+            }
+
+            myPetsList = data.records;
+            updatePetSelectDropdowns();
+          }
+        })
+        .catch(err => console.error("患者情報読み込みエラー:", err));
+    }
+
+    function updatePetSelectDropdowns() {
+      const savedPetBox = document.getElementById('savedPetBox');
+      const savedPetSelect = document.getElementById('savedPetSelect');
+      const profPetSelect = document.getElementById('profPetSelect');
+
+      savedPetSelect.innerHTML = '<option value="">-- 新しいペットを入力 --</option>';
+      profPetSelect.innerHTML = '<option value="NEW">＋ 新しいペットを追加する</option>';
+
+      if (myPetsList.length > 0) {
+        savedPetBox.style.display = 'block';
+        myPetsList.forEach((pet, idx) => {
+          const optText = `🐾 ${pet.petName} (${pet.petType || 'ペット'}${pet.petBirth ? ' / ' + pet.petBirth : ''})`;
+          
+          const opt1 = document.createElement('option');
+          opt1.value = idx;
+          opt1.innerText = optText;
+          savedPetSelect.appendChild(opt1);
+
+          const opt2 = document.createElement('option');
+          opt2.value = idx;
+          opt2.innerText = optText;
+          profPetSelect.appendChild(opt2);
+        });
+      } else {
+        savedPetBox.style.display = 'none';
+      }
+    }
+
+    function loadSavedPetData() {
+      const idx = document.getElementById('savedPetSelect').value;
+      if (idx === "" || !myPetsList[idx]) {
+        document.getElementById('petName').value = "";
+        document.getElementById('petBreed').value = "";
+        document.getElementById('petSex').value = "";
+        document.getElementById('petBirth').value = "";
+        document.getElementById('petBirthUnknown').checked = false;
+        document.getElementById('petBirth').disabled = false;
+        return;
+      }
+
+      const pet = myPetsList[idx];
+      document.getElementById('petName').value = pet.petName || "";
+      document.getElementById('petBreed').value = pet.petBreed || "";
+      document.getElementById('petSex').value = pet.petSex || "";
+
+      if (pet.petBirth && pet.petBirth !== "不明") {
+        document.getElementById('petBirth').value = pet.petBirth;
+        document.getElementById('petBirthUnknown').checked = false;
+        document.getElementById('petBirth').disabled = false;
+      } else {
+        document.getElementById('petBirth').value = "";
+        document.getElementById('petBirthUnknown').checked = true;
+        document.getElementById('petBirth').disabled = true;
+      }
+
+      const typeRadios = document.getElementsByName('petType');
+      typeRadios.forEach(r => {
+        if (r.value === pet.petType) r.checked = true;
+      });
+      updateRadioTileStyle(typeRadios[0]);
     }
 
     function onProfPetSelectChange() {
       const val = document.getElementById('profPetSelect').value;
-      if (val === 'NEW') {
-        fillProfPetFields({});
+      selectedProfPetId = val;
+
+      const deleteArea = document.getElementById('btnDeletePetArea');
+
+      if (val === "NEW") {
+        deleteArea.style.display = 'none';
+        document.getElementById('profPetName').value = "";
+        document.getElementById('profPetType').value = "犬";
+        document.getElementById('profPetBreed').value = "";
+        document.getElementById('profPetSex').value = "";
+        document.getElementById('profPetBirth').value = "";
+        document.getElementById('profPetMemo').value = "";
       } else {
-        const p = patientPetList[parseInt(val)];
-        if (p) fillProfPetFields(p);
+        deleteArea.style.display = 'block';
+        const pet = myPetsList[val];
+        if (pet) {
+          document.getElementById('profPetName').value = pet.petName || "";
+          document.getElementById('profPetType').value = pet.petType || "犬";
+          document.getElementById('profPetBreed').value = pet.petBreed || "";
+          document.getElementById('profPetSex').value = pet.petSex || "";
+          document.getElementById('profPetBirth').value = (pet.petBirth && pet.petBirth !== "不明") ? pet.petBirth : "";
+          document.getElementById('profPetMemo').value = pet.memo || "";
+        }
       }
     }
 
-    // STEP1 登録済みペットドロップダウンの更新＆初回自動読み込み
-    function updateSavedPetDropdownFromList(pets) {
-      const box = document.getElementById('savedPetBox');
-      const select = document.getElementById('savedPetSelect');
-
-      if (pets && pets.length > 0) {
-        box.style.display = 'block';
-        select.innerHTML = '<option value="">-- 新しいペットを入力 --</option>' +
-          pets.map((p, idx) => `<option value="${idx}">🐾 ${p.petName} ちゃん (${p.petType || '犬'})</option>`).join('');
-        
-        // 1頭目を初期選択し、自動入力連動を実行
-        select.value = "0";
-        loadSavedPetData();
-      } else {
-        box.style.display = 'none';
-      }
-    }
-
-    // 🐾 【連動修復・動作保護版】登録済みペット選択時の全自動フォーム入力処理
-    function loadSavedPetData() {
-      const val = document.getElementById('savedPetSelect').value;
-      const birthInput = document.getElementById('petBirth');
-      const birthUnknownCb = document.getElementById('petBirthUnknown');
-
-      if (val === "" || !patientPetList[parseInt(val)]) {
-        // 未選択に戻した場合はクリア
-        document.getElementById('petName').value = '';
-        document.getElementById('petBreed').value = '';
-        document.getElementById('petSex').value = '';
-        if (birthInput) {
-          birthInput.value = '';
-          birthInput.disabled = false;
-          birthInput.style.backgroundColor = '#fff';
-        }
-        if (birthUnknownCb) birthUnknownCb.checked = false;
-
-        document.querySelectorAll('input[name="petType"]').forEach(r => {
-          const isMatch = (r.value === '犬');
-          r.checked = isMatch;
-          const tile = r.closest('.btn-tile');
-          if (tile) tile.classList.toggle('selected', isMatch);
-        });
-        return;
-      }
-
-      const p = patientPetList[parseInt(val)];
-      document.getElementById('petName').value = p.petName || '';
-      document.getElementById('petBreed').value = p.petBreed || '';
-      document.getElementById('petSex').value = p.petSex || '';
-
-      // 生年月日の連動処理
-      if (p.petBirth === '不明') {
-        if (birthInput) {
-          birthInput.value = '';
-          birthInput.disabled = true;
-          birthInput.style.backgroundColor = '#edf2f7';
-        }
-        if (birthUnknownCb) birthUnknownCb.checked = true;
-      } else {
-        if (birthInput) {
-          birthInput.value = p.petBirth || '';
-          birthInput.disabled = false;
-          birthInput.style.backgroundColor = '#fff';
-        }
-        if (birthUnknownCb) birthUnknownCb.checked = false;
-      }
-
-      // ペット種別（犬/猫等タイル）の連動処理
-      const targetType = p.petType || '犬';
-      document.querySelectorAll('input[name="petType"]').forEach(r => {
-        const isMatch = (r.value === targetType);
-        r.checked = isMatch;
-        const tile = r.closest('.btn-tile');
-        if (tile) tile.classList.toggle('selected', isMatch);
-      });
-    }
-
-    // 💾 患者・ペット情報の保存処理
     function savePatientProfile() {
       const ownerName = document.getElementById('profOwnerName').value.trim();
       const phoneNo = document.getElementById('profPhoneNo').value.trim();
@@ -845,530 +821,492 @@
       const petBreed = document.getElementById('profPetBreed').value.trim();
       const petSex = document.getElementById('profPetSex').value;
       const petBirth = document.getElementById('profPetBirth').value;
-      const petMemo = document.getElementById('profPetMemo').value.trim();
+      const memo = document.getElementById('profPetMemo').value.trim();
 
-      if (!ownerName || !petName || !phoneNo) {
-        return alert('飼い主様のお名前、ペットのお名前、電話番号は必須項目です');
+      if (!ownerName || !phoneNo || !petName) {
+        return alert("飼い主名・電話番号・ペット名は必須入力です。");
       }
 
       const btn = document.getElementById('btnSaveProfile');
       btn.disabled = true;
-      btn.innerText = '保存中...';
-
-      const payload = {
-        action: "updatePatientInfo",
-        phoneNo: phoneNo,
-        oldPhoneNo: currentUserPhone || phoneNo,
-        ownerName: ownerName,
-        petName: petName,
-        petType: petType,
-        petBreed: petBreed,
-        petSex: petSex,
-        petBirth: petBirth,
-        petMemo: petMemo
-      };
+      btn.innerText = "保存中...";
 
       fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          action: "savePatientProfile",
+          lineUserId: userLineId,
+          ownerName: ownerName,
+          phoneNo: phoneNo,
+          petIndex: selectedProfPetId,
+          petName: petName,
+          petType: petType,
+          petBreed: petBreed,
+          petSex: petSex,
+          petBirth: petBirth || "不明",
+          memo: memo
+        })
       })
       .then(res => res.json())
       .then(data => {
         btn.disabled = false;
-        btn.innerText = '💾 この患者・ペット情報を保存する';
+        btn.innerText = "💾 この患者・ペット情報を保存する";
         if (data.status === 'success') {
-          alert('患者・ペット情報を保存しました！');
-          currentUserPhone = phoneNo;
-          localStorage.setItem('arbre_user_saved_phone', phoneNo);
+          alert("患者・ペット情報を更新・保存しました！");
           loadPatientProfileData();
-          returnToPortal();
         } else {
-          alert('保存エラー: ' + data.message);
+          alert("保存エラー: " + data.message);
         }
       })
       .catch(err => {
         btn.disabled = false;
-        btn.innerText = '💾 この患者・ペット情報を保存する';
-        alert('通信エラーが発生しました');
+        btn.innerText = "💾 この患者・ペット情報を保存する";
+        alert("通信エラーが発生しました: " + err);
       });
     }
 
-    function openNavSection(section) {
-      document.getElementById('viewPortalMenu').style.display = 'none';
-      document.getElementById('viewAnnounceBoard').style.display = 'none';
-      document.getElementById('viewNewReserve').style.display = (section === 'newReserve') ? 'block' : 'none';
-      document.getElementById('viewMyReservations').style.display = (section === 'myReservations') ? 'block' : 'none';
-      document.getElementById('viewPatientProfile').style.display = (section === 'patientProfile') ? 'block' : 'none';
+    function deleteCurrentPetProfile() {
+      if (selectedProfPetId === "NEW" || !myPetsList[selectedProfPetId]) return;
+      const pet = myPetsList[selectedProfPetId];
 
-      if (section === 'myReservations') loadUserReservations();
-      if (section === 'patientProfile') loadPatientProfileData();
-    }
+      if (!confirm(`【削除の確認】\nペット「${pet.petName}」の情報（生年月日など）をマイページから削除してもよろしいですか？`)) {
+        return;
+      }
 
-    function returnToPortal() {
-      document.getElementById('viewPortalMenu').style.display = 'block';
-      document.getElementById('viewAnnounceBoard').style.display = 'none';
-      document.getElementById('viewNewReserve').style.display = 'none';
-      document.getElementById('viewMyReservations').style.display = 'none';
-      document.getElementById('viewPatientProfile').style.display = 'none';
-    }
-
-    function loadUserReservations() {
-      const container = document.getElementById('myReservationList');
-      container.innerHTML = '<div style="text-align:center; padding:20px; color:#64748b;">予約履歴を読み込み中...</div>';
-
-      fetch(`${GAS_URL}?action=getUserReservations&lineUserId=${encodeURIComponent(lineUserId)}&phone=${encodeURIComponent(currentUserPhone)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (!data || data.length === 0) {
-            container.innerHTML = '<div style="text-align:center; padding:30px; color:#94a3b8; font-weight:bold;">現在ご予約はありません</div>';
-            return;
-          }
-
-          container.innerHTML = data.map(r => `
-            <div class="res-card">
-              <header>
-                <span class="res-card-title">📅 ${r.date} ${r.time}</span>
-                <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-weight:bold;">${r.status}</span>
-              </header>
-              <div><strong>ペット:</strong> ${r.petName}</div>
-              <div><strong>メニュー:</strong> ${r.menu}</div>
-              <div style="font-size:0.8rem; color:#64748b; margin-top:4px;">${r.symptoms || ''}</div>
-              
-              ${r.status !== 'キャンセル' ? `
-                <div style="display:flex; gap:6px; margin-top:10px;">
-                  <button type="button" class="btn btn-secondary" style="padding:6px; font-size:0.8rem;" onclick="userCancelRes(${r.rowIndex})">❌ キャンセル</button>
-                </div>
-              ` : ''}
-            </div>
-          `).join('');
-        });
-    }
-
-    function userCancelRes(rowIndex) {
-      if (!confirm('このご予約をキャンセルしますか？')) return;
       fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "userCancelReservation", rowIndex: rowIndex, lineUserId: lineUserId })
+        body: JSON.stringify({
+          action: "deletePatientPet",
+          lineUserId: userLineId,
+          petIndex: selectedProfPetId,
+          petName: pet.petName
+        })
       })
       .then(res => res.json())
       .then(data => {
-        alert('ご予約を取り消しました');
-        loadUserReservations();
-      });
+        if (data.status === 'success') {
+          alert(`「${pet.petName}」の情報を削除しました。`);
+          loadPatientProfileData();
+        } else {
+          alert("削除エラー: " + data.message);
+        }
+      })
+      .catch(err => alert("通信エラーが発生しました: " + err));
     }
 
-    function toggleBirthUnknown(cb) {
+    function toggleBirthUnknown(chk) {
       const birthInput = document.getElementById('petBirth');
-      if (cb.checked) {
-        birthInput.value = '';
+      if (chk.checked) {
+        birthInput.value = "";
         birthInput.disabled = true;
-        birthInput.style.backgroundColor = '#edf2f7';
       } else {
         birthInput.disabled = false;
-        birthInput.style.backgroundColor = '#fff';
       }
+    }
+
+    function toggleTicket(show) {
+      document.getElementById('ticketArea').style.display = show ? 'block' : 'none';
+      updateRadioTileStyle(event.currentTarget.querySelector('input'));
     }
 
     function toggleMenuType(type) {
-      isPickupMode = (type === 'pickup');
-      document.getElementById('sectionMedicalSymptoms').style.display = isPickupMode ? 'none' : 'block';
-      document.getElementById('sectionPickupDetail').style.display = isPickupMode ? 'none' : 'none'; // pickup用詳細
-      if (isPickupMode) {
-        document.getElementById('sectionPickupDetail').style.display = 'block';
-      }
-      
-      document.getElementById('medicalCalendarArea').style.display = isPickupMode ? 'none' : 'block';
-      document.getElementById('pickupCalendarArea').style.display = isPickupMode ? 'block' : 'none';
-
-      selectedDateStr = "";
-      selectedTimeStr = "";
+      currentCategory = type;
+      updateRadioTileStyle(event.currentTarget.querySelector('input'));
+      selectedSlot = null;
       document.getElementById('selectedSlotNotice').style.display = 'none';
       document.getElementById('btnToStep5').disabled = true;
     }
 
-    // 📅 既存の予約データおよび休診枠を取得
-    function fetchExistingReservations() {
-      fetch(GAS_URL)
-        .then(res => res.json())
-        .then(data => {
-          let list = [];
-          if (Array.isArray(data)) {
-            list = data;
-          } else if (data && Array.isArray(data.reservations)) {
-            list = data.reservations;
-          }
-          // キャンセル以外のデータをすべて保持（予約枠＋休診枠）
-          existingReservations = list.filter(r => r && r.status !== 'キャンセル');
-          renderCalendar();
-        })
-        .catch(() => renderCalendar());
+    function toggleChip(el) {
+      el.classList.toggle('selected');
     }
 
-    document.querySelectorAll('.grid-2, #petTypeGrid').forEach(container => {
-      container.addEventListener('click', (e) => {
-        const target = e.target.closest('.btn-tile');
-        if (!target) return;
-        const group = target.querySelector('input').name;
-        container.querySelectorAll(`input[name="${group}"]`).forEach(input => {
-          input.closest('.btn-tile').classList.remove('selected');
-        });
-        target.classList.add('selected');
-        target.querySelector('input').checked = true;
+    function setupWeekStart() {
+      let now = new Date();
+      now.setDate(now.getDate() + 1);
+      weekStartDate = now;
+    }
+
+    function initPickupDefaultDate() {
+      let tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const yyyy = tomorrow.getFullYear();
+      const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const dd = String(tomorrow.getDate()).padStart(2, '0');
+      document.getElementById('pickupDatePicker').value = `${yyyy}-${mm}-${dd}`;
+      document.getElementById('pickupDatePicker').min = `${yyyy}-${mm}-${dd}`;
+    }
+
+    function updateRadioTileStyle(radioInput) {
+      if (!radioInput) return;
+      const name = radioInput.name;
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+        const parent = r.closest('.btn-tile');
+        if (parent) {
+          if (r.checked) parent.classList.add('selected');
+          else parent.classList.remove('selected');
+        }
       });
+    }
+
+    document.querySelectorAll('.btn-tile input').forEach(input => {
+      input.addEventListener('change', (e) => updateRadioTileStyle(e.target));
     });
 
-    function toggleTicket(show) {
-      document.getElementById('ticketArea').style.display = show ? 'block' : 'none';
+    function nextStep(step) {
+      if (!validateStep(step)) return;
+
+      document.getElementById(`step${step}`).classList.remove('active');
+      document.getElementById(`dot${step}`).classList.remove('active');
+      document.getElementById(`dot${step}`).classList.add('finished');
+
+      currentStep = step + 1;
+
+      if (currentStep === 3) {
+        if (currentCategory === 'pickup') {
+          document.getElementById('sectionMedicalSymptoms').style.display = 'none';
+          document.getElementById('sectionPickupDetail').style.display = 'block';
+        } else {
+          document.getElementById('sectionMedicalSymptoms').style.display = 'block';
+          document.getElementById('sectionPickupDetail').style.display = 'none';
+        }
+      }
+
+      if (currentStep === 4) {
+        if (currentCategory === 'pickup') {
+          document.getElementById('medicalCalendarArea').style.display = 'none';
+          document.getElementById('pickupCalendarArea').style.display = 'block';
+          onPickupDateChange();
+        } else {
+          document.getElementById('medicalCalendarArea').style.display = 'block';
+          document.getElementById('pickupCalendarArea').style.display = 'none';
+          loadCalendar();
+        }
+      }
+
+      if (currentStep === 5) {
+        buildConfirmationView();
+      }
+
+      document.getElementById(`step${currentStep}`).classList.add('active');
+      document.getElementById(`dot${currentStep}`).classList.add('active');
+      window.scrollTo(0, 0);
     }
 
-    function toggleChip(el) { el.classList.toggle('selected'); }
+    function prevStep(step) {
+      document.getElementById(`step${step}`).classList.remove('active');
+      document.getElementById(`dot${step}`).classList.remove('active');
 
-    // 時刻文字列から数字・コロン部分（例: "09:00"）を安全に抽出する関数
-    function extractHourMin(str) {
-      if (!str) return '';
-      const m = String(str).match(/(\d{1,2}:\d{2})/);
-      if (!m) return '';
-      const parts = m[1].split(':');
-      return `${parts[0].padStart(2, '0')}:${parts[1]}`;
+      currentStep = step - 1;
+
+      document.getElementById(`step${currentStep}`).classList.add('active');
+      document.getElementById(`dot${currentStep}`).classList.add('active');
+      document.getElementById(`dot${currentStep}`).classList.remove('finished');
+      window.scrollTo(0, 0);
     }
 
-    // 📅 【完全改修版】休診枠および既存予約枠を正しく「✕」として表示するカレンダー描画
-    function renderCalendar() {
-      const monthHeader = document.getElementById('calMonthHeader');
-      const dateHeader = document.getElementById('calDateHeader');
-      const body = document.getElementById('calBody');
+    function validateStep(step) {
+      if (step === 1) {
+        const petName = document.getElementById('petName').value.trim();
+        const ownerName = document.getElementById('ownerName').value.trim();
+        const phoneNo = document.getElementById('phoneNo').value.trim();
+        if (!petName || !ownerName || !phoneNo) {
+          alert('必須項目（ペット名、飼い主名、電話番号）を入力してください。');
+          return false;
+        }
+      }
+      if (step === 3 && currentCategory === 'pickup') {
+        const selectedChips = document.querySelectorAll('#sectionPickupDetail .chip.selected');
+        const days = document.getElementById('pickupDays').value;
+        if (selectedChips.length === 0 || !days) {
+          alert('受取対象の品目と数量を入力してください。');
+          return false;
+        }
+      }
+      if (step === 4 && !selectedSlot) {
+        alert('希望日時を選択してください。');
+        return false;
+      }
+      return true;
+    }
 
-      let dates = [];
-      let today = new Date();
-      today.setHours(0,0,0,0);
+    function changeWeek(offset) {
+      weekStartDate.setDate(weekStartDate.getDate() + offset);
+      loadCalendar();
+    }
 
+    function loadCalendar() {
+      const dates = [];
       for (let i = 0; i < 7; i++) {
-        let d = new Date(currentWeekStart);
+        let d = new Date(weekStartDate);
         d.setDate(d.getDate() + i);
         dates.push(d);
       }
 
-      let m1 = `${dates[0].getFullYear()}年 ${dates[0].getMonth() + 1}月`;
-      let m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
-      monthHeader.innerHTML = `<th colspan="1" style="background:#fff;"></th><th colspan="7">${m1 === m2 ? m1 : m1 + ' / ' + m2}</th>`;
+      let m1 = `${dates[0].getFullYear()}年${dates[0].getMonth() + 1}月`;
+      let m2 = `${dates[6].getFullYear()}年${dates[6].getMonth() + 1}月`;
+      document.getElementById('calMonthHeader').innerHTML = `<th colspan="8" style="background:#e0f2fe; color:#0369a1; padding:6px; font-size:0.9rem;">${m1 === m2 ? m1 : m1 + ' / ' + m2}</th>`;
 
       const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-      let dhHtml = `<th style="width:50px;">時間</th>`;
+      let dateHeaderHtml = `<th style="width:55px; background:#f8fafc;">時間</th>`;
       dates.forEach(d => {
-        let dayClass = d.getDay() === 0 ? 'sun' : (d.getDay() === 6 ? 'sat' : '');
-        dhHtml += `<th class="${dayClass}">${d.getDate()}<br>(${dayNames[d.getDay()]})</th>`;
+        const dayIdx = d.getDay();
+        let cls = dayIdx === 0 ? 'sun' : (dayIdx === 6 ? 'sat' : '');
+        dateHeaderHtml += `<th class="${cls}">${d.getDate()}<br><small>(${dayNames[dayIdx]})</small></th>`;
       });
-      dateHeader.innerHTML = dhHtml;
+      document.getElementById('calDateHeader').innerHTML = dateHeaderHtml;
 
+      const startDateStr = formatDate(dates[0]);
+      const endDateStr = formatDate(dates[6]);
+
+      fetch(`${GAS_URL}?action=getAvailability&startDate=${startDateStr}&endDate=${endDateStr}`)
+        .then(res => res.json())
+        .then(data => renderCalendarGrid(dates, data.booked || []))
+        .catch(err => console.error("カレンダー読み込みエラー:", err));
+    }
+
+    function renderCalendarGrid(dates, bookedSlots) {
       let bodyHtml = "";
+      const now = new Date();
+
       TIME_SLOTS.forEach(time => {
-        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.75rem;">${time.replace('~','')}</td>`;
+        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.75rem;">${time}</td>`;
         
         dates.forEach(d => {
-          let yyyy = d.getFullYear();
-          let mm = String(d.getMonth() + 1).padStart(2, '0');
-          let dd = String(d.getDate()).padStart(2, '0');
-          let dateStr = `${yyyy}-${mm}-${dd}`;
+          const dateStr = formatDate(d);
+          const slotKey = `${dateStr}_${time}`;
+          const isPast = d < new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-          let isPast = d < today;
-          let isWed = d.getDay() === 3;
+          let isBooked = bookedSlots.includes(slotKey);
 
-          // 該当日の予約・休診データを取得
-          let dayRecords = existingReservations.filter(r => normalizeDateStr(r.date) === dateStr);
-          let targetHm = extractHourMin(time);
-
-          // 当該スロットに休診（1日休診・時間指定休診）または既存の診察予約が存在するか判定
-          let isBlocked = dayRecords.some(r => {
-            const isHolidayRecord = (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY');
-            if (isHolidayRecord) {
-              const isFullDay = (r.time && (r.time.includes('全日') || r.time.includes('1日'))) || (r.symptoms && r.symptoms.includes('1日休診'));
-              if (isFullDay) return true;
-              return extractHourMin(r.time) === targetHm;
-            }
-            // 通常予約の場合
-            return extractHourMin(r.time) === targetHm;
-          });
-
-          if (isPast || isWed) {
-            bodyHtml += `<td><span class="cell-none">-</span></td>`;
-          } else if (isBlocked) {
-            // 休診・予約済みの枠は完全に「✕」にして予約不可とする
-            bodyHtml += `<td><span class="cell-ng">✕</span></td>`;
+          if (isPast) {
+            bodyHtml += `<td class="cell-none">-</td>`;
+          } else if (isBooked) {
+            bodyHtml += `<td class="cell-ng">✕</td>`;
           } else {
-            let isSelected = (selectedDateStr === dateStr && selectedTimeStr === time);
-            let mark = isSelected ? '●' : '〇';
-            let style = isSelected ? 'color:#047857; font-weight:900;' : '';
-            bodyHtml += `<td><span class="cell-ok" style="${style}" onclick="selectSlot('${dateStr}', '${time}')">${mark}</span></td>`;
+            bodyHtml += `<td><span class="cell-ok" onclick="selectSlot('${dateStr}', '${time}')">〇</span></td>`;
           }
         });
         bodyHtml += `</tr>`;
       });
 
-      body.innerHTML = bodyHtml;
-    }
-
-    function changeWeek(offsetDays) {
-      currentWeekStart.setDate(currentWeekStart.getDate() + offsetDays);
-      renderCalendar();
+      document.getElementById('calBody').innerHTML = bodyHtml;
     }
 
     function selectSlot(dateStr, timeStr) {
-      selectedDateStr = dateStr;
-      selectedTimeStr = timeStr;
-      
-      document.getElementById('selectedSlotNotice').style.display = 'block';
+      selectedSlot = { date: dateStr, time: timeStr };
       document.getElementById('selectedSlotText').innerText = `${dateStr} ${timeStr}`;
+      document.getElementById('selectedSlotNotice').style.display = 'block';
       document.getElementById('btnToStep5').disabled = false;
-
-      renderCalendar();
     }
 
-    // 💊 【完全改修版】薬・フード受取における休診枠チェック
     function onPickupDateChange() {
-      const dateVal = document.getElementById('pickupDatePicker').value;
-      if (!dateVal) return;
-
-      const d = new Date(dateVal);
-      if (d.getDay() === 3) {
-        alert("水曜日は定休日のため受取予約はできません");
-        document.getElementById('pickupDatePicker').value = "";
-        document.getElementById('pickupTimeOptions').style.display = 'none';
-        return;
-      }
-
-      selectedDateStr = dateVal;
-      selectedTimeStr = "";
-      document.getElementById('selectedSlotNotice').style.display = 'none';
-      document.getElementById('btnToStep5').disabled = true;
-
-      const dayHolidays = existingReservations.filter(r => 
-        normalizeDateStr(r.date) === dateVal && (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY')
-      );
-
-      const isAllDayOff = dayHolidays.some(r => 
-        (r.time && (r.time.includes('全日') || r.time.includes('1日'))) || (r.symptoms && r.symptoms.includes('1日休診'))
-      );
-
-      const offTimeHms = dayHolidays.map(r => extractHourMin(r.time));
-
-      const amSlots = ["09:00", "10:00", "11:00"];
-      const pmSlots = ["16:00", "17:00", "18:00"];
-
-      const amAvailable = !isAllDayOff && amSlots.some(t => !offTimeHms.includes(t));
-      const pmAvailable = !isAllDayOff && pmSlots.some(t => !offTimeHms.includes(t));
-
-      const btnAm = document.getElementById('btnPickupAm');
-      const btnPm = document.getElementById('btnPickupPm');
-      const lblAm = document.getElementById('pickupAmLabel');
-      const lblPm = document.getElementById('pickupPmLabel');
-
-      btnAm.classList.remove('selected', 'disabled');
-      btnPm.classList.remove('selected', 'disabled');
-
-      if (!amAvailable) {
-        btnAm.classList.add('disabled');
-        lblAm.innerText = "受付不可・休診";
-      } else {
-        lblAm.innerText = "09:00~12:00";
-      }
-
-      if (!pmAvailable) {
-        btnPm.classList.add('disabled');
-        lblPm.innerText = "受付不可・休診";
-      } else {
-        lblPm.innerText = "16:00~19:00";
-      }
+      const selectedDate = document.getElementById('pickupDatePicker').value;
+      if (!selectedDate) return;
 
       document.getElementById('pickupTimeOptions').style.display = 'block';
+      
+      document.querySelectorAll('.pickup-time-btn').forEach(b => b.classList.remove('selected'));
+      selectedSlot = null;
+      document.getElementById('selectedSlotNotice').style.display = 'none';
+      document.getElementById('btnToStep5').disabled = true;
     }
 
-    function selectPickupBlock(blockType) {
-      const btnAm = document.getElementById('btnPickupAm');
-      const btnPm = document.getElementById('btnPickupPm');
-      const lblAm = document.getElementById('pickupAmLabel').innerText;
-      const lblPm = document.getElementById('pickupPmLabel').innerText;
+    function selectPickupBlock(block) {
+      const dateStr = document.getElementById('pickupDatePicker').value;
+      if (!dateStr) return;
 
-      if (blockType === 'AM') {
-        if (btnAm.classList.contains('disabled')) return;
-        btnAm.classList.add('selected');
-        btnPm.classList.remove('selected');
-        selectedTimeStr = `午前 (${lblAm})`;
-      } else {
-        if (btnPm.classList.contains('disabled')) return;
-        btnPm.classList.add('selected');
-        btnAm.classList.remove('selected');
-        selectedTimeStr = `午後 (${lblPm})`;
-      }
+      const timeText = block === 'AM' ? '午前 (受取のみ 09:00~12:00)' : '午後 (受取のみ 16:00~19:00)';
+      
+      document.getElementById('btnPickupAm').classList.remove('selected');
+      document.getElementById('btnPickupPm').classList.remove('selected');
 
+      if (block === 'AM') document.getElementById('btnPickupAm').classList.add('selected');
+      if (block === 'PM') document.getElementById('btnPickupPm').classList.add('selected');
+
+      selectedSlot = { date: dateStr, time: timeText };
+      document.getElementById('selectedSlotText').innerText = `${dateStr} ${timeText}`;
       document.getElementById('selectedSlotNotice').style.display = 'block';
-      document.getElementById('selectedSlotText').innerText = `${selectedDateStr} ${selectedTimeStr}`;
       document.getElementById('btnToStep5').disabled = false;
     }
 
-    function normalizeDateStr(str) {
-      if (!str) return '';
-      const matched = String(str).match(/(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/);
-      if (!matched) return '';
-      return `${matched[1]}-${matched[2].padStart(2, '0')}-${matched[3].padStart(2, '0')}`;
-    }
-
-    function nextStep(step) {
-      if (!isWebVerified) {
-        return alert('予約の進展にはログインが必要です。');
-      }
-
-      if (step === 1) {
-        if (!document.getElementById('petName').value.trim()) return alert('ペットのお名前を入力してください');
-        if (!document.getElementById('ownerName').value.trim()) return alert('飼い主様のお名前を入力してください');
-        if (!document.getElementById('phoneNo').value.trim()) return alert('電話番号を入力してください');
-      }
-
-      if (step === 3 && isPickupMode) {
-        const chips = Array.from(document.querySelectorAll('#sectionPickupDetail .chip.selected')).map(c => c.innerText);
-        const days = document.getElementById('pickupDays').value;
-        if (chips.length === 0) return alert('受取対象（薬・フード・サプリメント等）を選択してください');
-        if (!days) return alert('何日分（数量）か入力してください');
-      }
-
-      if (step === 4) {
-        const ownerName = document.getElementById('ownerName').value.trim();
-        const visitType = document.querySelector('input[name="visitType"]:checked').value;
-        const ticketNo = document.getElementById('ticketNo').value;
-        const phoneNo = document.getElementById('phoneNo').value;
-        const petType = document.querySelector('input[name="petType"]:checked').value;
-        const petName = document.getElementById('petName').value;
-        const petBreed = document.getElementById('petBreed').value;
-        const petSex = document.getElementById('petSex').value;
-        const isUnknown = document.getElementById('petBirthUnknown').checked;
-        const petBirth = isUnknown ? '不明' : (document.getElementById('petBirth').value || '未設定');
-        const menu = document.querySelector('input[name="menu"]:checked').value;
-
-        let symptomsText = "";
-        if (isPickupMode) {
-          const items = Array.from(document.querySelectorAll('#sectionPickupDetail .chip.selected')).map(c => c.innerText).join('、');
-          const days = document.getElementById('pickupDays').value;
-          const msg = document.getElementById('pickupMessage').value;
-          symptomsText = `[受取品] ${items} (${days}日分/個) ${msg ? ' / 備考:' + msg : ''}`;
-        } else {
-          const chips = Array.from(document.querySelectorAll('#sectionMedicalSymptoms .chip.selected')).map(c => c.innerText);
-          const detail = document.getElementById('symptomsDetail').value;
-          symptomsText = `[症状] ${chips.join('、')} ${detail ? ' / ' + detail : ''}`;
-        }
-
-        document.getElementById('confPet').innerText = `${petName} ちゃん（${petType}） ${petBreed} ${petSex} [生年月日: ${petBirth}]`;
-        document.getElementById('confOwner').innerText = `${ownerName} 様 (${visitType}${ticketNo ? ' 券:' + ticketNo : ''}) TEL: ${phoneNo}`;
-        document.getElementById('confMenu').innerText = menu;
-        document.getElementById('confDate').innerText = `${selectedDateStr} ${selectedTimeStr}`;
-        document.getElementById('confSymptoms').innerText = symptomsText || '特になし';
-      }
-
-      if (step === 3 && !isPickupMode) {
-        renderCalendar();
-      }
-
-      setStep(step + 1);
-    }
-
-    function prevStep(step) { setStep(step - 1); }
-
-    function setStep(targetStep) {
-      document.querySelectorAll('.step-content').forEach((el, idx) => {
-        el.classList.toggle('active', idx + 1 === targetStep);
-      });
-      for (let i = 1; i <= 4; i++) {
-        const dot = document.getElementById(`dot${i}`);
-        dot.classList.remove('active', 'finished');
-        if (i === targetStep) dot.classList.add('active');
-        else if (i < targetStep) dot.classList.add('finished');
-      }
-      window.scrollTo(0, 0);
-    }
-
-    document.getElementById("reserveForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      if (!isWebVerified) {
-        return alert('ログインを完了させてから予約を行ってください');
-      }
-
-      const btn = document.getElementById("submitBtn");
-      btn.disabled = true;
-      btn.innerText = "送信中...";
-
-      const ownerName = document.getElementById('ownerName').value.trim();
-      const visitType = document.querySelector('input[name="visitType"]:checked').value;
-      const ticketNo = document.getElementById('ticketNo').value;
-      const phoneNo = document.getElementById('phoneNo').value;
+    function buildConfirmationView() {
+      const petName = document.getElementById('petName').value;
       const petType = document.querySelector('input[name="petType"]:checked').value;
-      const petName = document.getElementById('petName').value.trim();
       const petBreed = document.getElementById('petBreed').value;
       const petSex = document.getElementById('petSex').value;
-      const isUnknown = document.getElementById('petBirthUnknown').checked;
-      const petBirth = isUnknown ? '不明' : (document.getElementById('petBirth').value || '未設定');
-      const menu = document.querySelector('input[name="menu"]:checked').value;
+      const petBirthUnknown = document.getElementById('petBirthUnknown').checked;
+      const petBirth = petBirthUnknown ? '不明' : document.getElementById('petBirth').value;
 
-      let symptomsText = "";
-      if (isPickupMode) {
-        const items = Array.from(document.querySelectorAll('#sectionPickupDetail .chip.selected')).map(c => c.innerText).join('、');
+      let petInfoStr = `${petType} / ${petName}`;
+      if (petBreed) petInfoStr += ` (${petBreed})`;
+      if (petSex) petInfoStr += ` / ${petSex}`;
+      petInfoStr += ` / 生年月日: ${petBirth || '未入力'}`;
+
+      document.getElementById('confPet').innerText = petInfoStr;
+
+      const ownerName = document.getElementById('ownerName').value;
+      const phoneNo = document.getElementById('phoneNo').value;
+      const visitType = document.querySelector('input[name="visitType"]:checked').value;
+      const ticketNo = document.getElementById('ticketNo').value;
+
+      document.getElementById('confOwner').innerText = `${visitType} ${ticketNo ? '(券No:' + ticketNo + ')' : ''} / ${ownerName} 様 (TEL: ${phoneNo})`;
+
+      const menu = document.querySelector('input[name="menu"]:checked').value;
+      document.getElementById('confMenu').innerText = menu;
+
+      document.getElementById('confDate').innerText = selectedSlot ? `${selectedSlot.date} ${selectedSlot.time}` : '-';
+
+      let detailsStr = "";
+      if (currentCategory === 'pickup') {
+        const chips = Array.from(document.querySelectorAll('#sectionPickupDetail .chip.selected')).map(c => c.innerText);
         const days = document.getElementById('pickupDays').value;
         const msg = document.getElementById('pickupMessage').value;
-        symptomsText = `[受取品] ${items} (${days}日分/個) ${msg ? ' / 備考:' + msg : ''}`;
+        detailsStr = `【受取品目】${chips.join(', ')}\n【数量】${days} 日分/個\n【伝言】${msg || 'なし'}`;
       } else {
         const chips = Array.from(document.querySelectorAll('#sectionMedicalSymptoms .chip.selected')).map(c => c.innerText);
         const detail = document.getElementById('symptomsDetail').value;
-        symptomsText = `[症状] ${chips.join('、')} ${detail ? ' / ' + detail : ''}`;
+        detailsStr = `【気になる症状】${chips.length > 0 ? chips.join(', ') : '選択なし'}\n【詳細メモ】${detail || 'なし'}`;
       }
 
-      let visitTypeStr = visitType;
-      if (ticketNo) visitTypeStr += ` 券No:${ticketNo}`;
+      document.getElementById('confSymptoms').innerText = detailsStr;
+    }
 
-      let petInfoStr = `${petBreed} ${petSex} (生年月日:${petBirth})`.trim();
+    function handleFormSubmit(e) {
+      e.preventDefault();
 
-      const finalUserId = lineUserId === "WEB_USER" ? ("WEB_" + phoneNo) : lineUserId;
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerText = "予約処理中...";
+
+      const petName = document.getElementById('petName').value;
+      const petType = document.querySelector('input[name="petType"]:checked').value;
+      const petBreed = document.getElementById('petBreed').value;
+      const petSex = document.getElementById('petSex').value;
+      const petBirthUnknown = document.getElementById('petBirthUnknown').checked;
+      const petBirth = petBirthUnknown ? '不明' : document.getElementById('petBirth').value;
+
+      const ownerName = document.getElementById('ownerName').value;
+      const phoneNo = document.getElementById('phoneNo').value;
+      const visitType = document.querySelector('input[name="visitType"]:checked').value;
+      const ticketNo = document.getElementById('ticketNo').value;
+
+      const menu = document.querySelector('input[name="menu"]:checked').value;
+
+      let symptomsText = "";
+      if (currentCategory === 'pickup') {
+        const chips = Array.from(document.querySelectorAll('#sectionPickupDetail .chip.selected')).map(c => c.innerText);
+        const days = document.getElementById('pickupDays').value;
+        const msg = document.getElementById('pickupMessage').value;
+        symptomsText = `[受取品] ${chips.join(', ')} (${days}日分) / ${msg}`;
+      } else {
+        const chips = Array.from(document.querySelectorAll('#sectionMedicalSymptoms .chip.selected')).map(c => c.innerText);
+        const detail = document.getElementById('symptomsDetail').value;
+        symptomsText = `[症状] ${chips.join(', ')} / ${detail}`;
+      }
 
       const payload = {
-        lineUserId: finalUserId,
-        lineUserName: ownerName,
+        lineUserId: userLineId,
+        lineUserName: ownerName || userDisplayName,
+        petName: petName,
+        petInfo: `${petType} ${petBreed} ${petSex} (生年月日:${petBirth || '不明'})`,
+        petType: petType,
+        petBreed: petBreed,
+        petSex: petSex,
+        petBirth: petBirth || '不明',
+        visitType: `${visitType}${ticketNo ? ' (券No:' + ticketNo + ')' : ''}`,
         phoneNo: phoneNo,
-        visitType: visitTypeStr,
-        petName: `${petName}（${petType}）`,
-        petInfo: petInfoStr,
         menu: menu,
-        date: selectedDateStr,
-        time: selectedTimeStr,
-        symptoms: symptomsText || '特になし'
+        symptoms: symptomsText,
+        date: selectedSlot.date,
+        time: selectedSlot.time
       };
-
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "updatePatientInfo",
-          phoneNo: phoneNo,
-          ownerName: ownerName,
-          petName: petName,
-          petType: petType,
-          petBreed: petBreed,
-          petSex: petSex,
-          petBirth: petBirth,
-          petMemo: petInfoStr
-        })
-      });
 
       fetch(GAS_URL, {
         method: "POST",
         body: JSON.stringify(payload)
       })
       .then(res => res.json())
-      .then(() => {
-        alert("予約を受け付けました！ご来院をお待ちしております。");
-        returnToPortal();
+      .then(data => {
+        if (data.status === 'success') {
+          alert('ご予約が完了いたしました！マイページ等で予約履歴をご確認いただけます。');
+          returnToPortal();
+          location.reload();
+        } else {
+          alert(`エラーが発生しました: ${data.message || '予約枠がすでに埋まっている可能性があります。'}`);
+          btn.disabled = false;
+          btn.innerText = "予約を確定する 🐾";
+        }
       })
       .catch(err => {
-        alert("送信エラーが発生しました: " + err);
+        alert("送信中にエラーが発生しました: " + err);
         btn.disabled = false;
         btn.innerText = "予約を確定する 🐾";
       });
-    });
+    }
+
+    function loadMyReservations() {
+      const container = document.getElementById('myReservationList');
+      fetch(`${GAS_URL}?action=getPatientReservations&lineUserId=${encodeURIComponent(userLineId)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.reservations || data.reservations.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:30px; color:#64748b;">現在、予約はありません。</div>`;
+            return;
+          }
+
+          container.innerHTML = data.reservations.map(r => `
+            <div class="res-card">
+              <header>
+                <div class="res-card-title">📅 ${r.date} ${r.time}</div>
+                <span class="badge-user">${r.status}</span>
+              </header>
+              <div><strong>ペット:</strong> ${r.petName} (${r.petInfo})</div>
+              <div><strong>メニュー:</strong> ${r.menu}</div>
+              <div style="font-size:0.8rem; color:#64748b; margin-top:4px;"><strong>受取・症状メモ:</strong> ${r.symptoms || 'なし'}</div>
+              
+              ${r.status !== 'キャンセル' ? `
+                <div class="btn-area" style="margin-top:8px;">
+                  <button class="btn btn-danger" style="padding:6px; font-size:0.8rem;" onclick="cancelMyReservation(${r.rowIndex})">予約をキャンセル</button>
+                </div>
+              ` : ''}
+            </div>
+          `).join('');
+        })
+        .catch(err => {
+          container.innerHTML = `<div style="text-align:center; padding:20px; color:#dc2626;">データの読み込みに失敗しました。</div>`;
+        });
+    }
+
+    function cancelMyReservation(rowIndex) {
+      if (!confirm("この予約をキャンセルしてもよろしいですか？")) return;
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "cancelByPatient",
+          rowIndex: rowIndex,
+          lineUserId: userLineId
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert("予約をキャンセルしました。");
+          loadMyReservations();
+        } else {
+          alert("キャンセル処理に失敗しました: " + data.message);
+        }
+      })
+      .catch(err => alert("通信エラーが発生しました: " + err));
+    }
+
+    function formatDate(d) {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
   </script>
 </body>
 </html>
