@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アルブル動物病院 診察予約</title>
+  <title>アルブル動物病院 診察予約ポータル</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     :root {
@@ -22,15 +22,12 @@
     h1 { text-align: center; color: var(--primary-dark); font-size: 1.4rem; margin-top: 0; font-weight: 800; }
     
     .hospital-title { text-align: center; font-size: 0.85rem; color: #6b7280; font-weight: bold; margin-bottom: 4px; }
-
     .notice-user { text-align: center; font-size: 0.85rem; color: #047857; font-weight: bold; margin-bottom: 16px; background: #e8f9ee; padding: 8px; border-radius: 8px; border: 1px solid #a7f3d0; }
 
-    /* 個人ログインエリア */
     .auth-box { background: #e0f2fe; border: 2px solid #0284c7; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
     .auth-box h3 { margin: 0 0 6px 0; color: #0369a1; font-size: 1.05rem; font-weight: 800; }
     .auth-box.verified { background: #f0fdf4; border-color: #22c55e; color: #15803d; text-align: center; font-weight: bold; padding: 12px; }
 
-    /* メニューカードデザイン */
     .menu-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
     .menu-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 14px; padding: 18px 16px; display: flex; align-items: center; cursor: pointer; transition: all 0.2s; position: relative; text-decoration: none; color: inherit; }
     .menu-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(6, 199, 85, 0.15); }
@@ -41,7 +38,6 @@
     .menu-desc { font-size: 0.85rem; color: #6b7280; font-weight: 500; line-height: 1.3; }
     .menu-arrow { font-size: 1.4rem; color: #9ca3af; font-weight: bold; margin-left: 8px; }
 
-    /* 戻るボタンヘッダー */
     .nav-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 2px solid var(--primary); padding-bottom: 8px; }
     .btn-back { background: #e5e7eb; color: #374151; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
 
@@ -81,21 +77,19 @@
       <h1>🏥 診察予約ポータル</h1>
       <div id="lineUserInfo" class="notice-user">LINE連携確認中...</div>
 
-      <!-- Webアクセス時に表示される個人ログイン・登録セクション -->
+      <!-- Webアクセス時：個人認証フォーム -->
       <div id="passAuthSection" class="auth-box" style="display: none;">
-        <h3 id="authTitle">🔒 マイページログイン（Web利用者様）</h3>
-        <p style="font-size:0.85rem; color:#0369a1; margin:0 0 12px 0;" id="authSubText">ご登録の電話番号とパスワードを入力してください。</p>
+        <h3 id="authTitle">🔒 マイページログイン（Web利用）</h3>
+        <p style="font-size:0.85rem; color:#0369a1; margin:0 0 12px 0;">ご登録の電話番号とパスワードを入力してください。</p>
         
         <form id="loginForm" onsubmit="event.preventDefault(); loginUser();">
           <div class="form-group">
             <label>電話番号</label>
-            <!-- autocomplete="username tel" によりブラウザが自動補完を選択肢に出します -->
             <input type="tel" id="userPhoneInput" name="username" placeholder="例: 09012345678" autocomplete="username tel" required>
           </div>
 
           <div class="form-group">
             <label>個人パスワード</label>
-            <!-- autocomplete="current-password" によりパスワード保存・補完が機能します -->
             <input type="password" id="userPassInput" name="password" placeholder="パスワードを入力" autocomplete="current-password" required>
           </div>
 
@@ -111,7 +105,7 @@
           <div class="menu-icon">📅</div>
           <div class="menu-info">
             <div class="menu-title">新規の予約</div>
-            <div class="menu-desc">新しい予約を入れることができます。</div>
+            <div class="menu-desc">新しい診察予約を入れることができます。</div>
           </div>
           <div class="menu-arrow">›</div>
         </div>
@@ -120,7 +114,7 @@
           <div class="menu-icon">📋</div>
           <div class="menu-info">
             <div class="menu-title">予約内容の確認・変更</div>
-            <div class="menu-desc">現在予約中の内容確認、日時変更・キャンセルが可能です。</div>
+            <div class="menu-desc">予約内容の確認、日時変更・キャンセルが可能です。</div>
           </div>
           <div class="menu-arrow">›</div>
         </div>
@@ -128,8 +122,8 @@
         <div class="menu-card" id="menu-patient" onclick="handleMenuClick('screen-patient-info')">
           <div class="menu-icon">👤</div>
           <div class="menu-info">
-            <div class="menu-title">患者様情報の確認・変更</div>
-            <div class="menu-desc">飼い主様情報、ペット情報の確認・変更が可能です。</div>
+            <div class="menu-title">患者・ペット情報の確認・変更</div>
+            <div class="menu-desc">飼い主様情報、ペットのお名前・カルテ情報の更新が可能です。</div>
           </div>
           <div class="menu-arrow">›</div>
         </div>
@@ -155,7 +149,7 @@
           </select>
         </div>
 
-        <div class="step-title">2. 日時・時間枠の選択</div>
+        <div class="step-title">2. 日時・時間枠の選択（カレンダー連動）</div>
         <div class="form-group">
           <label>ご希望日</label>
           <input type="date" id="dateInput" required onchange="loadAvailableSlots()">
@@ -164,7 +158,7 @@
         <div class="form-group">
           <label>ご希望の時間帯</label>
           <select id="timeSelect" required>
-            <option value="">日を選択してください</option>
+            <option value="">希望日を選択してください</option>
           </select>
         </div>
 
@@ -177,6 +171,11 @@
         <div class="form-group">
           <label>ご連絡先電話番号</label>
           <input type="tel" id="phoneInput" required placeholder="例: 09012345678" autocomplete="tel">
+        </div>
+
+        <div class="form-group">
+          <label>ペットのお名前・種類</label>
+          <input type="text" id="petNameInput" required placeholder="例: ポチ（犬 / チワワ 3歳）">
         </div>
 
         <div class="step-title">4. 事前問診・メモ</div>
@@ -213,17 +212,18 @@
       </div>
     </div>
 
-    <!-- 👤 4. 患者様情報の確認・変更画面 -->
+    <!-- 👤 4. 患者様・ペット情報の確認・変更・保存画面 -->
     <div id="screen-patient-info" class="screen">
       <div class="nav-header">
         <button class="btn-back" onclick="showScreen('screen-top')">‹ トップへ戻る</button>
-        <span style="font-weight:bold; color:var(--primary-dark);">患者情報の確認・変更</span>
+        <span style="font-weight:bold; color:var(--primary-dark);">患者・ペット情報の登録・更新</span>
       </div>
 
       <form id="patientInfoForm">
+        <div class="step-title">👤 飼い主様情報</div>
         <div class="form-group">
           <label>飼い主様のお名前</label>
-          <input type="text" id="editOwnerName" required autocomplete="name">
+          <input type="text" id="editOwnerName" required autocomplete="name" placeholder="例: 山田 太郎">
         </div>
 
         <div class="form-group">
@@ -231,12 +231,28 @@
           <input type="tel" id="editPhoneNo" required readonly style="background:#f3f4f6;" autocomplete="tel">
         </div>
 
+        <div class="step-title">🐾 ペット情報（カルテ連動）</div>
         <div class="form-group">
-          <label>ペットのお名前・情報</label>
-          <input type="text" id="editPetName" required placeholder="例: ポチ（チワワ 3歳）">
+          <label>ペットのお名前</label>
+          <input type="text" id="editPetName" required placeholder="例: ポチ">
         </div>
 
-        <button type="submit" class="btn btn-dark" style="margin-top:16px;">情報を更新・保存する</button>
+        <div class="form-group">
+          <label>ペットの種類・品種</label>
+          <input type="text" id="editPetType" placeholder="例: 犬 (チワワ)">
+        </div>
+
+        <div class="form-group">
+          <label>年齢・生年月日</label>
+          <input type="text" id="editPetAge" placeholder="例: 3歳 (2023年4月生)">
+        </div>
+
+        <div class="form-group">
+          <label>既往症・アレルギー・病院メモ</label>
+          <textarea id="editPetMemo" rows="3" placeholder="過去の病歴、アレルギー、性格などのメモ"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-dark" style="margin-top:16px;">ペット情報を保存・更新する</button>
       </form>
     </div>
 
@@ -256,7 +272,7 @@
       today.setDate(today.getDate() + 1);
       document.getElementById('dateInput').min = today.toISOString().split('T')[0];
 
-      // 画面アナウンス取得
+      // アナウンス取得
       fetch(`${GAS_URL}?action=getAnnouncement`)
         .then(res => res.json())
         .then(data => {
@@ -267,14 +283,13 @@
           }
         });
 
-      // 🔑 1. 端末に保存された前回入力情報（自動セット）を読み込み
+      // 自動補完と10分認証スキップ処理
       const savedPhone = localStorage.getItem('arbre_user_saved_phone');
       const savedPass = localStorage.getItem('arbre_user_saved_pass');
 
       if (savedPhone) document.getElementById('userPhoneInput').value = savedPhone;
       if (savedPass) document.getElementById('userPassInput').value = savedPass;
 
-      // 🔑 2. 10分間の認証キャッシュ確認（有効期限内ならログイン入力自体を自動スキップ）
       const authExpire = localStorage.getItem('arbre_user_auth_expire');
       const now = Date.now();
 
@@ -283,14 +298,14 @@
         currentUserPhone = savedPhone;
         document.getElementById('phoneInput').value = savedPhone;
         document.getElementById('editPhoneNo').value = savedPhone;
+        loadPatientInfo(savedPhone);
       }
 
-      // LIFF初期化
       liff.init({ liffId: LIFF_ID }).then(() => {
         if (liff.isLoggedIn()) {
           liff.getProfile().then(p => {
             lineUserId = p.userId;
-            isWebVerified = true; // LINEアプリ内は認証不要
+            isWebVerified = true;
             document.getElementById('lineUserInfo').innerHTML = `✅ LINE連携中: <strong>${p.displayName}</strong> 様`;
             document.getElementById('ownerNameInput').value = p.displayName;
             document.getElementById('editOwnerName').value = p.displayName;
@@ -306,7 +321,6 @@
 
     function setWebUserMode() {
       if (isWebVerified) {
-        // 10分以内のアクセスで認証が有効な場合
         document.getElementById('lineUserInfo').innerHTML = `🌐 Webブラウザでご利用中 (ログイン済み)`;
         const box = document.getElementById('passAuthSection');
         box.style.display = 'block';
@@ -331,13 +345,10 @@
       });
     }
 
-    // ユーザーログイン処理
     function loginUser() {
       const phone = document.getElementById('userPhoneInput').value;
       const pass = document.getElementById('userPassInput').value;
       if (!phone || !pass) return alert('電話番号とパスワードを入力してください');
-
-      const userAgent = navigator.userAgent;
 
       fetch(GAS_URL, {
         method: "POST",
@@ -345,7 +356,7 @@
           action: "loginUser",
           phoneNo: phone,
           userPass: pass,
-          userAgent: userAgent
+          userAgent: navigator.userAgent
         })
       })
       .then(res => res.json())
@@ -355,17 +366,14 @@
           isWebVerified = true;
           currentUserPhone = phone;
 
-          // 🔑 次回からの自動補完用に端末（localStorage）に保存
           localStorage.setItem('arbre_user_saved_phone', phone);
           localStorage.setItem('arbre_user_saved_pass', pass);
-
-          // 🔑 10分間（600,000ミリ秒）認証を保持する期限を保存
-          const expireTime = Date.now() + (10 * 60 * 1000);
-          localStorage.setItem('arbre_user_auth_expire', expireTime.toString());
+          localStorage.setItem('arbre_user_auth_expire', (Date.now() + (10 * 60 * 1000)).toString());
 
           document.getElementById('phoneInput').value = phone;
           document.getElementById('editPhoneNo').value = phone;
 
+          loadPatientInfo(phone);
           setWebUserMode();
         } else {
           alert('ログインエラー: ' + data.message);
@@ -373,14 +381,10 @@
       });
     }
 
-    // 初回パスワード登録処理
     function registerUser() {
       const phone = document.getElementById('userPhoneInput').value;
       const pass = document.getElementById('userPassInput').value;
-      if (!phone || !pass) return alert('登録する電話番号と希望パスワードを入力してください');
-      if (pass.length < 4) return alert('パスワードは4文字以上で設定してください');
-
-      const userAgent = navigator.userAgent;
+      if (!phone || !pass) return alert('電話番号と希望パスワードを入力してください');
 
       fetch(GAS_URL, {
         method: "POST",
@@ -388,7 +392,7 @@
           action: "registerUser",
           phoneNo: phone,
           userPass: pass,
-          userAgent: userAgent
+          userAgent: navigator.userAgent
         })
       })
       .then(res => res.json())
@@ -407,9 +411,56 @@
       location.reload();
     }
 
+    // 🐾 ペット情報データの読み込み
+    function loadPatientInfo(phone) {
+      fetch(`${GAS_URL}?action=getPatientInfo&phone=${encodeURIComponent(phone)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.patient) {
+            if (data.patient.ownerName) document.getElementById('editOwnerName').value = data.patient.ownerName;
+            if (data.patient.petName) document.getElementById('editPetName').value = data.patient.petName;
+            if (data.patient.petType) document.getElementById('editPetType').value = data.patient.petType;
+            if (data.patient.petAge) document.getElementById('editPetAge').value = data.patient.petAge;
+            if (data.patient.petMemo) document.getElementById('editPetMemo').value = data.patient.petMemo;
+
+            if (data.patient.ownerName) document.getElementById('ownerNameInput').value = data.patient.ownerName;
+            if (data.patient.petName) document.getElementById('petNameInput').value = `${data.patient.petName} (${data.patient.petType || ''})`;
+          }
+        });
+    }
+
+    // 🐾 ペット情報データの保存・更新
+    document.getElementById('patientInfoForm').onsubmit = (e) => {
+      e.preventDefault();
+
+      const payload = {
+        action: "updatePatientInfo",
+        phoneNo: currentUserPhone,
+        ownerName: document.getElementById('editOwnerName').value,
+        petName: document.getElementById('editPetName').value,
+        petType: document.getElementById('editPetType').value,
+        petAge: document.getElementById('editPetAge').value,
+        petMemo: document.getElementById('editPetMemo').value
+      };
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert("ペット情報をスプレッドシートに保存・更新いたしました！");
+          showScreen('screen-top');
+        } else {
+          alert("保存エラー: " + data.message);
+        }
+      });
+    };
+
     function handleMenuClick(targetScreen) {
       if (!isWebVerified) {
-        alert("Webからのご利用にはログイン（または初回登録）が必要です。");
+        alert("Webからのご利用にはログインが必要です。");
         return;
       }
       if (targetScreen === 'screen-my-reservations') {
@@ -433,6 +484,7 @@
       }
     }
 
+    // 📅 休診日・予約枠カレンダー動的取得
     function loadAvailableSlots() {
       const date = document.getElementById('dateInput').value;
       if (!date) return;
@@ -441,16 +493,26 @@
         .then(res => res.json())
         .then(data => {
           const select = document.getElementById('timeSelect');
-          select.innerHTML = '<option value="">-- 時間帯を選択 --</option>';
-          if (data.slots && Array.isArray(data.slots)) {
+          select.innerHTML = '';
+
+          if (data.isClosed) {
+            select.innerHTML = `<option value="">⚠️ 本日は休診日です (${data.closedReason || '受付不可'})</option>`;
+            return;
+          }
+
+          if (data.slots && Array.isArray(data.slots) && data.slots.length > 0) {
+            select.innerHTML = '<option value="">-- 時間帯を選択してください --</option>';
             data.slots.forEach(slot => {
-              select.innerHTML += `<option value="${slot.time}">${slot.time} ${slot.isFull ? '(満席)' : ''}</option>`;
+              const disabledAttr = slot.isFull ? 'disabled' : '';
+              select.innerHTML += `<option value="${slot.time}" ${disabledAttr}>${slot.time} ${slot.isFull ? '(満席)' : ''}</option>`;
             });
+          } else {
+            select.innerHTML = '<option value="">予約可能な枠がありません</option>';
           }
         });
     }
 
-    // --- 予約作成 ---
+    // 新規予約の実行
     document.getElementById('bookingForm').onsubmit = (e) => {
       e.preventDefault();
 
@@ -488,7 +550,7 @@
       });
     };
 
-    // --- 予約一覧取得 ---
+    // 予約一覧取得
     function fetchUserReservations() {
       const searchPhone = currentUserPhone;
       const targetId = lineUserId === "WEB_USER" ? ("WEB_" + searchPhone) : lineUserId;
@@ -551,13 +613,6 @@
         fetchUserReservations();
       });
     }
-
-    // --- 患者情報の更新 ---
-    document.getElementById('patientInfoForm').onsubmit = (e) => {
-      e.preventDefault();
-      alert("患者情報を更新保存いたしました！");
-      showScreen('screen-top');
-    };
   </script>
 </body>
 </html>
