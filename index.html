@@ -105,7 +105,7 @@
           <div class="menu-icon">📅</div>
           <div class="menu-info">
             <div class="menu-title">新規の予約</div>
-            <div class="menu-desc">新しい診察予約を入れることができます。</div>
+            <div class="menu-desc">診察・予防接種、薬・フード受取の予約ができます。</div>
           </div>
           <div class="menu-arrow">›</div>
         </div>
@@ -142,14 +142,14 @@
       <form id="bookingForm">
         <div class="step-title">1. ご来院目的・メニューを選択</div>
         <div class="form-group">
-          <select id="menuSelect" required>
+          <select id="menuSelect" required onchange="loadAvailableSlots()">
             <option value="">-- 選択してください --</option>
             <option value="🩺 診察・健康診断・予防接種">🩺 診察・健康診断・予防接種</option>
             <option value="💊 薬・フード等の受取のみ">💊 薬・フード等の受取のみ</option>
           </select>
         </div>
 
-        <div class="step-title">2. 日時・時間枠の選択（カレンダー連動）</div>
+        <div class="step-title">2. 日時・時間枠の選択（メニュー連動）</div>
         <div class="form-group">
           <label>ご希望日</label>
           <input type="date" id="dateInput" required onchange="loadAvailableSlots()">
@@ -158,7 +158,7 @@
         <div class="form-group">
           <label>ご希望の時間帯</label>
           <select id="timeSelect" required>
-            <option value="">希望日を選択してください</option>
+            <option value="">まずメニューと日付を選択してください</option>
           </select>
         </div>
 
@@ -272,7 +272,6 @@
       today.setDate(today.getDate() + 1);
       document.getElementById('dateInput').min = today.toISOString().split('T')[0];
 
-      // アナウンス取得
       fetch(`${GAS_URL}?action=getAnnouncement`)
         .then(res => res.json())
         .then(data => {
@@ -283,7 +282,6 @@
           }
         });
 
-      // 自動補完と10分認証スキップ処理
       const savedPhone = localStorage.getItem('arbre_user_saved_phone');
       const savedPass = localStorage.getItem('arbre_user_saved_pass');
 
@@ -411,7 +409,6 @@
       location.reload();
     }
 
-    // 🐾 ペット情報データの読み込み
     function loadPatientInfo(phone) {
       fetch(`${GAS_URL}?action=getPatientInfo&phone=${encodeURIComponent(phone)}`)
         .then(res => res.json())
@@ -429,7 +426,6 @@
         });
     }
 
-    // 🐾 ペット情報データの保存・更新
     document.getElementById('patientInfoForm').onsubmit = (e) => {
       e.preventDefault();
 
@@ -450,7 +446,7 @@
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
-          alert("ペット情報をスプレッドシートに保存・更新いたしました！");
+          alert("ペット情報を保存・更新いたしました！");
           showScreen('screen-top');
         } else {
           alert("保存エラー: " + data.message);
@@ -484,12 +480,17 @@
       }
     }
 
-    // 📅 休診日・予約枠カレンダー動的取得
     function loadAvailableSlots() {
+      const menu = document.getElementById('menuSelect').value;
       const date = document.getElementById('dateInput').value;
-      if (!date) return;
 
-      fetch(`${GAS_URL}?action=getAvailableSlots&date=${date}`)
+      if (!menu || !date) {
+        const select = document.getElementById('timeSelect');
+        select.innerHTML = '<option value="">先にメニューとご希望日の両方を選択してください</option>';
+        return;
+      }
+
+      fetch(`${GAS_URL}?action=getAvailableSlots&date=${date}&menu=${encodeURIComponent(menu)}`)
         .then(res => res.json())
         .then(data => {
           const select = document.getElementById('timeSelect');
@@ -512,7 +513,6 @@
         });
     }
 
-    // 新規予約の実行
     document.getElementById('bookingForm').onsubmit = (e) => {
       e.preventDefault();
 
@@ -550,7 +550,6 @@
       });
     };
 
-    // 予約一覧取得
     function fetchUserReservations() {
       const searchPhone = currentUserPhone;
       const targetId = lineUserId === "WEB_USER" ? ("WEB_" + searchPhone) : lineUserId;
