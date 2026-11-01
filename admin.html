@@ -966,4 +966,242 @@
           } else {
             matches.forEach(r => {
               if (r.status === '休診') {
-          ... （残り11 KB）
+                bodyHtml += `<div class="tile-cell-item item-休診">休診枠</div>`;
+              } else {
+                const isPickup = r.menu.includes('薬・フード');
+                bodyHtml += `<div class="tile-cell-item ${isPickup ? 'item-受取' : ''}" onclick="jumpToInterview(${r.rowIndex})">
+                  <strong>${r.lineUserName}</strong><br><small>${r.petName}</small>
+                </div>`;
+              }
+            });
+          }
+          bodyHtml += `</td>`;
+        });
+        bodyHtml += `</tr>`;
+      });
+
+      document.getElementById('tileBodyRow').innerHTML = bodyHtml;
+    }
+
+    function changeHolidayWeek(offset) {
+      holidayWeekStart.setDate(holidayWeekStart.getDate() + offset);
+      renderHolidayView();
+    }
+
+    function renderHolidayView() {
+      const dates = [];
+      for (let i = 0; i < 7; i++) {
+        let d = new Date(holidayWeekStart);
+        d.setDate(d.getDate() + i);
+        dates.push(d);
+      }
+
+      let m1 = `${dates[0].getFullYear()}年 ${dates[0].getMonth() + 1}月`;
+      let m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
+      document.getElementById('holidayWeekTitle').innerText = m1 === m2 ? m1 : `${m1} / ${m2}`;
+
+      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+      let headerHtml = `<th style="width:80px;">時間</th>`;
+      dates.forEach(d => {
+        let yyyy = d.getFullYear();
+        let mm = String(d.getMonth() + 1).padStart(2, '0');
+        let dd = String(d.getDate()).padStart(2, '0');
+        let dateStr = `${yyyy}-${mm}-${dd}`;
+
+        headerHtml += `<th class="th-day-toggle" onclick="toggleDayHoliday('${dateStr}')" title="1日まとめて休止/解除">
+          ${d.getDate()} (${dayNames[d.getDay()]})<br><span style="font-size:0.7rem; color:#0284c7;">[1日切替]</span>
+        </th>`;
+      });
+      document.getElementById('holidayHeaderRow').innerHTML = headerHtml;
+
+      let bodyHtml = "";
+      TIME_SLOTS.forEach(time => {
+        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc;">${time}</td>`;
+        dates.forEach(d => {
+          let yyyy = d.getFullYear();
+          let mm = String(d.getMonth() + 1).padStart(2, '0');
+          let dd = String(d.getDate()).padStart(2, '0');
+          let dateStr = `${yyyy}-${mm}-${dd}`;
+
+          const isOff = allReservations.some(r => normalizeDateStr(r.date) === dateStr && r.time === time && r.status === '休診');
+
+          bodyHtml += `<td class="holiday-cell ${isOff ? 'is-off' : 'is-open'}" onclick="toggleHolidaySlot('${dateStr}', '${time}')">
+            ${isOff ? '休診' : '受付中'}
+          </td>`;
+        });
+        bodyHtml += `</tr>`;
+      });
+
+      document.getElementById('holidayBodyRow').innerHTML = bodyHtml;
+    }
+
+    function toggleHolidaySlot(dateStr, timeStr) {
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "toggleHoliday", date: dateStr, time: timeStr, pass: adminPass })
+      }).then(() => loadData());
+    }
+
+    function toggleDayHoliday(dateStr) {
+      if (!confirm(`${dateStr} を1日まとめて「休診」に切り替えますか？`)) return;
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "toggleDayHoliday", date: dateStr, isSet: true, pass: adminPass })
+      }).then(() => loadData());
+    }
+
+    // 🐾 患者名簿のレンダリング（LINE ID列を削除し「電話番号」を表示・同期）
+    function renderPatientTable() {
+      const tbody = document.getElementById('patientTableBody');
+      const sortType = document.getElementById('patientSortSelect').value;
+      const patientsMap = {};
+
+      allPatientRecords.forEach(pr => {
+        const key = `${pr.phoneNo}_${pr.petName}`;
+        patientsMap[key] = {
+          ownerName: pr.ownerName,
+          phoneNo: pr.phoneNo,
+          petName: pr.petName,
+          petInfo: `${pr.petType || '犬'} ${pr.petBreed || ''} ${pr.petSex || ''} [生年月日: ${pr.petBirth || '未設定'}]`.trim(),
+          ticketNo: pr.ticketNo || '',
+          count: 0,
+          lastDate: '-'
+        };
+      });
+
+      allReservations.forEach(r => {
+        if (!r.petName || r.status === '休診') return;
+        const normPhone = r.phoneNo ? r.phoneNo.replace(/\D/g, '') : '';
+        const cleanPetName = r.petName.replace(/（.*）|\(.*\)/, '').trim();
+        
+        let foundKey = Object.keys(patientsMap).find(k => {
+          const p = patientsMap[k];
+          return p.phoneNo.replace(/\D/g, '') === normPhone && p.petName === cleanPetName;
+        });
+
+        if (!foundKey) {
+          foundKey = `${r.phoneNo}_${cleanPetName}`;
+          patientsMap[foundKey] = {
+            ownerName: r.lineUserName || '不明',
+            phoneNo: r.phoneNo || '-',
+            petName: cleanPetName,
+            petInfo: r.petInfo || '-',
+            ticketNo: '',
+            count: 0,
+            lastDate: r.date
+          };
+        }
+
+        let ticketNo = '';
+        if (r.visitType && r.visitType.includes('券No:')) {
+          const match = r.visitType.match(/券No:([^\s]+)/);
+          if (match) ticketNo = match[1];
+        }
+
+        patientsMap[foundKey].count += 1;
+        if (r.date && (patientsMap[foundKey].lastDate === '-' || r.date > patientsMap[foundKey].lastDate)) {
+          patientsMap[foundKey].lastDate = r.date;
+        }
+        if (ticketNo && !patientsMap[foundKey].ticketNo) {
+          patientsMap[foundKey].ticketNo = ticketNo;
+        }
+      });
+
+      let list = Object.values(patientsMap);
+
+      list.sort((a, b) => {
+        if (sortType === 'lastDate_desc') return b.lastDate.localeCompare(a.lastDate);
+        if (sortType === 'lastDate_asc') return a.lastDate.localeCompare(b.lastDate);
+        if (sortType === 'owner_asc') return a.ownerName.localeCompare(b.ownerName, 'ja');
+        if (sortType === 'owner_desc') return b.ownerName.localeCompare(a.ownerName, 'ja');
+        if (sortType === 'ticket_asc') return (a.ticketNo || '99999').localeCompare(b.ticketNo || '99999', undefined, {numeric: true});
+        if (sortType === 'ticket_desc') return (b.ticketNo || '0').localeCompare(a.ticketNo || '0', undefined, {numeric: true});
+        if (sortType === 'count_desc') return b.count - a.count;
+        if (sortType === 'count_asc') return a.count - b.count;
+        return 0;
+      });
+
+      if (list.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#6b7280; padding:40px; font-weight:bold;'>患者データがありません</td></tr>";
+        return;
+      }
+
+      tbody.innerHTML = list.map(p => `
+        <tr>
+          <td><strong style="font-size:1rem; color:#047857;">🎫 ${p.ticketNo || '-'}</strong></td>
+          <td><strong style="font-size:1.05rem; font-weight:900;">👤 ${p.ownerName}</strong></td>
+          <td><strong style="font-size:1.05rem; font-weight:900; color:#0369a1;">📞 ${p.phoneNo}</strong></td>
+          <td>
+            <div style="font-weight:bold; color:#111827;">🐾 ${p.petName}</div>
+            <div style="font-size:0.8rem; color:#64748b;">${p.petInfo}</div>
+          </td>
+          <td><strong>${p.count}</strong> 回</td>
+          <td><strong>${p.lastDate}</strong></td>
+          <td>
+            <button class="btn-sm btn-sm-line" style="width:auto; padding:6px 12px; font-size:0.85rem;" onclick="openModal('${p.ownerName}')">💬 無料チャット</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function updateStatus(rowIndex, newStatus) {
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "updateStatus", rowIndex: rowIndex, status: newStatus, pass: adminPass })
+      }).then(() => loadData());
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabName));
+      if (activeBtn) activeBtn.classList.add('active');
+      
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    function openModal(name) {
+      currentTargetName = name;
+      document.getElementById('modalCopyName').innerText = `${name}`;
+      document.getElementById('msgModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('msgModal').style.display = 'none';
+    }
+
+    function copyAndOpenLine() {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(currentTargetName).then(() => {
+          alert(`「${currentTargetName}」をコピーしました！\nLINE画面の検索窓に貼り付けてください。`);
+          window.open("https://chat.line.biz/", "_blank");
+          closeModal();
+        }).catch(() => {
+          window.open("https://chat.line.biz/", "_blank");
+          closeModal();
+        });
+      } else {
+        window.open("https://chat.line.biz/", "_blank");
+        closeModal();
+      }
+    }
+
+    function sendBroadcast() {
+      const msg = document.getElementById('broadcastMsg').value;
+      if (!msg) return alert('一括配信メッセージを入力してください');
+      if (!confirm('登録者全員に一斉配信します。よろしいですか？')) return;
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "sendBroadcast", message: msg, pass: adminPass })
+      })
+      .then(res => res.json())
+      .then(() => {
+        alert('一括配信を実行しました！');
+        document.getElementById('broadcastMsg').value = '';
+      });
+    }
+  </script>
+</body>
+</html>
