@@ -15,7 +15,7 @@
     }
 
     * { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 20px; color: var(--text-main); font-size: 18px; font-weight: 500; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 16px; color: var(--text-main); font-size: 16px; font-weight: 500; }
     
     .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111827; display: flex; justify-content: center; align-items: center; z-index: 1000; }
     .login-card { background: #fff; padding: 32px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
@@ -23,85 +23,84 @@
     .login-card input { width: 100%; padding: 14px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 1.1rem; margin: 16px 0; text-align: center; }
     .login-card button { width: 100%; padding: 14px; background: var(--primary-dark); color: #fff; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 900; cursor: pointer; }
 
-    .header { background: var(--card-bg); padding: 20px 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); position: relative; }
-    h1 { margin: 0 0 16px 0; font-size: 1.6rem; color: var(--primary-dark); font-weight: 800; }
+    .header { background: var(--card-bg); padding: 16px 20px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); position: relative; }
+    h1 { margin: 0 0 12px 0; font-size: 1.5rem; color: var(--primary-dark); font-weight: 800; }
     
     .notice-bell-wrap { position: relative; cursor: pointer; }
-    .notice-bell-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; position: relative; }
+    .notice-bell-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; position: relative; }
     .notice-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; border-radius: 50%; font-size: 0.75rem; font-weight: 900; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #fff; }
     
-    .notice-popover { display: none; position: absolute; top: 54px; right: 0; width: 340px; background: #fff; border: 2px solid #cbd5e0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 500; font-size: 0.9rem; }
+    .notice-popover { display: none; position: absolute; top: 52px; right: 0; width: 340px; background: #fff; border: 2px solid #cbd5e0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 500; font-size: 0.9rem; }
     .notice-popover-header { background: #f8fafc; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 10px; border-top-right-radius: 10px; }
     .notice-popover-body { max-height: 320px; overflow-y: auto; }
     .notice-item { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; }
     .notice-item:hover { background: #f0f9ff; }
-    .notice-item.unread { background: #fefce8; }
+    .notice-item.unread { background: #fefce8; border-left: 4px solid #f59e0b; }
 
-    .nav-tabs { display: flex; gap: 8px; border-bottom: 3px solid #e5e7eb; padding-bottom: 10px; flex-wrap: wrap; }
-    .tab-btn { padding: 8px 14px; border: none; background: none; font-size: 1rem; font-weight: 800; color: #4b5563; cursor: pointer; border-radius: 8px; }
+    .nav-tabs { display: flex; gap: 6px; border-bottom: 3px solid #e5e7eb; padding-bottom: 8px; flex-wrap: wrap; }
+    .tab-btn { padding: 8px 12px; border: none; background: none; font-size: 0.95rem; font-weight: 800; color: #4b5563; cursor: pointer; border-radius: 8px; }
     .tab-btn.active { background: var(--primary-dark); color: #fff; }
 
-    .filter-box { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; font-size: 1rem; font-weight: 700; }
-    input[type="date"], select, textarea { padding: 10px 14px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 1rem; font-weight: 700; }
-    .btn-action { padding: 10px 16px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.95rem; }
+    .filter-box { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; font-size: 0.95rem; font-weight: 700; }
+    input[type="date"], select, textarea { padding: 8px 12px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 0.95rem; font-weight: 700; }
+    .btn-action { padding: 8px 14px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.9rem; }
     .btn-green { background: var(--primary); }
     .btn-dark { background: var(--primary-dark); }
     .btn-filter { background: #e5e7eb; color: #374151; border: 1.5px solid #d1d5db; }
     .btn-filter.active { background: #0284c7; color: #fff; border-color: #0284c7; }
 
-    .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1rem; min-width: 1350px; }
-    th { background: #f3f4f6; color: #111827; padding: 14px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; font-size: 1.05rem; }
-    td { padding: 14px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+    /* 📌 テーブル全域で下部に固定の横スクロールバーを表示（Scrollable Sticky Wrapper） */
+    .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; max-height: 70vh; overflow-y: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border-color); position: relative; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; min-width: 1350px; }
+    th { position: sticky; top: 0; background: #f3f4f6; color: #111827; padding: 12px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; z-index: 10; }
+    td { padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
     tr:hover { background: #f9fafb; }
 
-    .time-cell { font-weight: 900; color: var(--primary-dark); font-size: 1.2rem; line-height: 1.3; }
-    .time-cell small { color: #374151; font-size: 0.9rem; font-weight: 700; display: block; margin-top: 2px; }
-    .owner-name { font-weight: 900; color: #111827; font-size: 1.1rem; }
-    .phone-badge { display: inline-block; background: #e5e7eb; color: #111827; font-size: 0.95rem; padding: 4px 8px; border-radius: 6px; font-weight: 800; border: 1px solid #d1d5db; }
-    .visit-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; font-weight: 900; }
+    .time-cell { font-weight: 900; color: var(--primary-dark); font-size: 1.1rem; line-height: 1.3; }
+    .time-cell small { color: #374151; font-size: 0.85rem; font-weight: 700; display: block; margin-top: 2px; }
+    .owner-name { font-weight: 900; color: #111827; font-size: 1rem; }
+    .phone-badge { display: inline-block; background: #e5e7eb; color: #111827; font-size: 0.85rem; padding: 3px 6px; border-radius: 6px; font-weight: 800; border: 1px solid #d1d5db; }
+    .visit-badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.85rem; font-weight: 900; }
     .visit-初診 { background: #fee2e2; color: #991b1b; border: 1.5px solid #f87171; }
     .visit-再診 { background: #dcfce7; color: #166534; border: 1.5px solid #4ade80; }
-    .pet-name-box { font-size: 1.15rem; font-weight: 900; color: #111827; }
-    .pet-info-box { color: #374151; font-size: 0.9rem; font-weight: 700; margin-top: 2px; }
+    .pet-name-box { font-size: 1.05rem; font-weight: 900; color: #111827; }
+    .pet-info-box { color: #374151; font-size: 0.85rem; font-weight: 700; margin-top: 2px; }
     
-    .menu-badge { font-weight: 900; padding: 4px 10px; border-radius: 6px; font-size: 0.95rem; display: inline-block; }
+    .menu-badge { font-weight: 900; padding: 3px 8px; border-radius: 6px; font-size: 0.85rem; display: inline-block; }
     .menu-診療 { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
     .menu-受取 { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
 
-    .chip-simple { display: inline-block; background: #f3f4f6; color: #1f2937; border: 1px solid #d1d5db; padding: 3px 8px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; margin: 2px; }
+    .chip-simple { display: inline-block; background: #f3f4f6; color: #1f2937; border: 1px solid #d1d5db; padding: 2px 6px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; margin: 2px; }
+    .btn-goto-interview { display: inline-block; margin-top: 4px; padding: 4px 8px; background: #0284c7; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.8rem; border: none; }
 
-    .btn-goto-interview { display: inline-block; margin-top: 4px; padding: 4px 10px; background: #0284c7; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; }
-    .btn-goto-interview:hover { background: #0369a1; }
-
-    .badge { padding: 6px 12px; border-radius: 16px; font-size: 0.9rem; font-weight: 900; display: inline-block; white-space: nowrap; }
+    .badge { padding: 4px 10px; border-radius: 16px; font-size: 0.85rem; font-weight: 900; display: inline-block; white-space: nowrap; }
     .badge-予約受付 { background: #bae6fd; color: #0369a1; }
     .badge-受付済 { background: #fde68a; color: #92400e; }
     .badge-診察完了 { background: #bbf7d0; color: #15803d; }
     .badge-キャンセル { background: #fca5a5; color: #991b1b; }
     .badge-休診 { background: #e2e8f0; color: #64748b; }
 
-    .btn-group-sm { display: flex; flex-wrap: wrap; gap: 4px; width: 180px; }
-    .btn-sm { padding: 6px 8px; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; }
+    .btn-group-sm { display: flex; flex-wrap: wrap; gap: 4px; width: 170px; }
+    .btn-sm { padding: 5px 7px; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 800; cursor: pointer; }
     .btn-sm-check { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
     .btn-sm-complete { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .btn-sm-reset { background: #e5e7eb; color: #374151; border: 1px solid #d1d5db; }
     .btn-sm-cancel { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
     .btn-sm-call { background: #f97316; color: #fff; border: 1px solid #ea580c; }
-    .btn-sm-line { background: var(--primary); color: #fff; width: 100%; margin-top: 4px; font-size: 0.9rem; padding: 6px; font-weight: 900; }
+    .btn-sm-line { background: var(--primary); color: #fff; width: 100%; margin-top: 4px; font-size: 0.85rem; padding: 5px; font-weight: 900; }
 
-    .menu-portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 10px; }
-    .portal-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 14px; padding: 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; }
+    .menu-portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; margin-top: 8px; }
+    .portal-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; }
     .portal-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    .portal-card .icon { font-size: 2rem; margin-right: 14px; }
-    .portal-card .info h3 { margin: 0 0 4px 0; font-size: 1.15rem; color: #111827; }
-    .portal-card .info p { margin: 0; font-size: 0.85rem; color: #6b7280; }
-    .portal-card .arrow { font-size: 1.4rem; color: #9ca3af; font-weight: bold; }
+    .portal-card .icon { font-size: 2rem; margin-right: 12px; }
+    .portal-card .info h3 { margin: 0 0 4px 0; font-size: 1.05rem; color: #111827; }
+    .portal-card .info p { margin: 0; font-size: 0.8rem; color: #6b7280; }
+    .portal-card .arrow { font-size: 1.3rem; color: #9ca3af; font-weight: bold; }
 
-    .interview-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 12px; padding: 18px; margin-bottom: 16px; transition: border-color 0.3s; }
+    .interview-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
     .interview-card.highlight { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2); }
     .interview-card.checked { background: #f8fafc; border-color: #94a3b8; opacity: 0.8; }
-    .interview-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 12px; }
+    .interview-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 10px; }
 
     .tile-grid-wrap { overflow-x: auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; }
     .tile-table { width: 100%; border-collapse: collapse; min-width: 900px; text-align: center; font-size: 0.85rem; }
@@ -120,7 +119,7 @@
     .tab-content.active { display: block; }
 
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-    .modal-content { background: #fff; padding: 28px; border-radius: 14px; width: 90%; max-width: 580px; font-size: 1.05rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal-content { background: #fff; padding: 24px; border-radius: 14px; width: 90%; max-width: 560px; font-size: 1rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
   </style>
 </head>
 <body>
@@ -142,6 +141,7 @@
       <div style="display:flex; align-items:center; gap:16px;">
         <span id="autoRefreshNotice" style="font-size:0.85rem; color:#047857; font-weight:bold; background:#e8f9ee; padding:4px 10px; border-radius:12px;">🔄 自動更新中 (30秒)</span>
         
+        <!-- 🔔 新着通知 1件ずつ個別確認バッジ -->
         <div class="notice-bell-wrap">
           <div class="notice-bell-btn" onclick="toggleNoticePopover()">
             🔔
@@ -150,8 +150,7 @@
           
           <div class="notice-popover" id="noticePopover">
             <div class="notice-popover-header">
-              <strong>🔔 本日の通知履歴</strong>
-              <span style="font-size:0.75rem; color:#64748b;">(確認済み)</span>
+              <strong>🔔 本日の通知（1件ずつタップで既読）</strong>
             </div>
             <div class="notice-popover-body" id="noticeListContainer">
               <div style="padding:16px; text-align:center; color:#94a3b8;">本日の通知はありません</div>
@@ -161,7 +160,6 @@
       </div>
     </div>
 
-    <!-- 📱 メニュータブ -->
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchTab('menu')">📱 メニュー</button>
       <button class="tab-btn" onclick="switchTab('reservations')">📅 予約一覧</button>
@@ -170,11 +168,11 @@
       <button class="tab-btn" onclick="switchTab('tile')">🔲 週間タイル表示</button>
       <button class="tab-btn" onclick="switchTab('holiday')">⚙️ 休業・受付枠設定</button>
       <button class="tab-btn" onclick="switchTab('patients')">🐾 患者名簿</button>
-      <button class="tab-btn" onclick="switchTab('broadcast')">📢 一括LINE</button>
+      <button class="tab-btn" onclick="switchTab('broadcast')">📢 お知らせ・一括LINE</button>
     </div>
   </div>
 
-  <!-- TAB 0: 初期メニュー画面 -->
+  <!-- TAB 0 -->
   <div id="tab-menu" class="tab-content active">
     <div class="menu-portal-grid">
       <div class="portal-card" onclick="switchTab('reservations')">
@@ -247,8 +245,8 @@
         <div style="display:flex; align-items:center;">
           <div class="icon">📢</div>
           <div class="info">
-            <h3>一括LINEお知らせ配信</h3>
-            <p>休診日や予防接種の案内を登録者全員へ送信できます。</p>
+            <h3>患者用お知らせ・一括LINE</h3>
+            <p>患者画面トップのアナウンス編集や登録者全員への一括配信を行えます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -272,6 +270,7 @@
       <button class="btn-action" onclick="loadData()">🔄 手動更新</button>
     </div>
 
+    <!-- 📌 横スクロールバーが常に画面下にフィットするラッパー -->
     <div class="table-container">
       <table>
         <thead>
@@ -397,16 +396,29 @@
     </div>
   </div>
 
-  <!-- TAB 6 -->
+  <!-- TAB 6: 患者画面用アナウンス設定 & 一括LINE -->
   <div id="tab-broadcast" class="tab-content">
-    <div style="background:#fff; padding:28px; border-radius:12px; max-width:640px; border:2px solid #d1d5db;">
-      <h3 style="margin-top:0; color:var(--primary-dark); font-size:1.3rem; font-weight:900;">📢 全員への一括LINE配信</h3>
-      <textarea id="broadcastMsg" rows="5" style="width:100%; margin-top:10px; font-size:1.05rem;" placeholder="【お知らせ】休診日案内など..."></textarea>
-      <button class="btn-action btn-green" style="width:100%; margin-top:16px; padding:14px; font-size:1.1rem;" onclick="sendBroadcast()">一括配信を実行する</button>
+    <div style="display:flex; flex-direction:column; gap:20px; max-width:680px;">
+      
+      <!-- 患者画面用お知らせの編集 -->
+      <div style="background:#fff; padding:24px; border-radius:12px; border:2px solid #3b82f6;">
+        <h3 style="margin-top:0; color:#1d4ed8; font-size:1.2rem; font-weight:900;">📢 患者画面用「病院からのお知らせ」編集</h3>
+        <p style="font-size:0.85rem; color:#475569; margin-bottom:8px;">ここで設定した内容が、患者様画面（LINE/Web）のトップポータル上部に青枠で表示されます。</p>
+        <textarea id="patientAnnounceText" rows="4" style="width:100%; font-size:1rem;" placeholder="例: 狂犬病予防注射の予約受付を開始しました。"></textarea>
+        <button class="btn-action btn-dark" style="margin-top:10px; width:100%; padding:10px;" onclick="saveAnnounceText()">💾 お知らせを保存して更新</button>
+      </div>
+
+      <!-- 全員への一括LINE配信 -->
+      <div style="background:#fff; padding:24px; border-radius:12px; border:2px solid #d1d5db;">
+        <h3 style="margin-top:0; color:var(--primary-dark); font-size:1.2rem; font-weight:900;">📢 全員への一括LINE配信</h3>
+        <textarea id="broadcastMsg" rows="4" style="width:100%; font-size:1rem;" placeholder="【お知らせ】休診日案内など..."></textarea>
+        <button class="btn-action btn-green" style="width:100%; margin-top:10px; padding:12px; font-size:1rem;" onclick="sendBroadcast()">一括配信を実行する</button>
+      </div>
+
     </div>
   </div>
 
-  <!-- キャンセルモーダル -->
+  <!-- モーダル各種 -->
   <div id="cancelModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-top:0; font-size:1.2rem; font-weight:900; color:#991b1b;">⚠️ 予約取り消しとLINE通知</h3>
@@ -427,19 +439,18 @@
     </div>
   </div>
 
-  <!-- チャットモーダル -->
   <div id="msgModal" class="modal">
     <div class="modal-content">
-      <h3 id="modalTargetName" style="margin-top:0; font-size:1.3rem; font-weight:900; color:var(--primary-dark);">💬 LINE個別チャット（完全無料）</h3>
-      <p style="font-size:0.95rem; color:#4b5563; margin-bottom:12px; line-height:1.4;">
+      <h3 id="modalTargetName" style="margin-top:0; font-size:1.2rem; font-weight:900; color:var(--primary-dark);">💬 LINE個別チャット（完全無料）</h3>
+      <p style="font-size:0.9rem; color:#4b5563; margin-bottom:12px; line-height:1.4;">
         下のボタンを押すと<strong>お名前がコピーされ、LINEチャットが開きます</strong>。<br>チャット画面の検索欄に貼り付けて（ペーストして）検索してください。
       </p>
-      <div style="background:#f0fff4; border:1px solid #c6f6d5; padding:12px; border-radius:8px; margin-bottom:16px;">
-        <span style="font-size:0.85rem; color:#047857; font-weight:bold; display:block; margin-bottom:4px;">コピー対象のお名前:</span>
-        <strong id="modalCopyName" style="font-size:1.2rem; color:#111827;">-</strong>
+      <div style="background:#f0fff4; border:1px solid #c6f6d5; padding:10px; border-radius:8px; margin-bottom:14px;">
+        <span style="font-size:0.8rem; color:#047857; font-weight:bold; display:block;">コピー対象のお名前:</span>
+        <strong id="modalCopyName" style="font-size:1.1rem; color:#111827;">-</strong>
       </div>
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <button class="btn-action btn-green" style="width:100%; padding:14px; font-size:1.1rem; font-weight:900;" onclick="copyAndOpenLine()">📋 名前をコピーしてLINEを開く (0円)</button>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="btn-action btn-green" style="width:100%; padding:12px; font-size:1rem; font-weight:900;" onclick="copyAndOpenLine()">📋 名前をコピーしてLINEを開く (0円)</button>
         <button class="btn-action" style="background:#6b7280;" onclick="closeModal()">閉じる</button>
       </div>
     </div>
@@ -453,7 +464,7 @@
 
     let allReservations = [];
     let checkedInterviews = new Set();
-    let readNoticeIds = new Set(JSON.parse(localStorage.getItem('arbre_read_notices') || '[]'));
+    let readNoticeIds = new Set(JSON.parse(localStorage.getItem('arbre_admin_read_notices') || '[]'));
     let callCounts = {};
     let pendingCancelRowIndex = null;
     let adminPass = sessionStorage.getItem('adminPass') || '';
@@ -514,10 +525,31 @@
           renderHolidayView();
           renderPatientTable();
           updateNoticeBell();
+          loadAnnounceSetting();
         })
         .catch(err => {
           if (showErrorAlert) alert('エラーが発生しました: ' + err);
         });
+    }
+
+    function loadAnnounceSetting() {
+      fetch(`${GAS_URL}?action=getAnnounce`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.announce) {
+            document.getElementById('patientAnnounceText').value = data.announce;
+          }
+        });
+    }
+
+    function saveAnnounceText() {
+      const text = document.getElementById('patientAnnounceText').value;
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "updateAnnounce", announce: text, pass: adminPass })
+      })
+      .then(res => res.json())
+      .then(() => alert('患者用お知らせを更新しました！'));
     }
 
     function normalizeDateStr(str) {
@@ -531,7 +563,6 @@
       if (!fullText) return { chipsHtml: '<span style="color:#9ca3af;">選択なし</span>', detailText: '記入なし' };
 
       let text = fullText.replace(/^\[(?:症状|受取品)\]\s*/, '');
-
       const parts = text.split(/\s*[\/／]\s*/);
       const chipsPart = parts[0] ? parts[0].trim() : '';
       const detailPart = parts.slice(1).join(' / ').trim();
@@ -546,19 +577,11 @@
         chipsHtml = '<span style="color:#9ca3af;">選択なし</span>';
       }
 
-      let fullDetailText = '';
-      if (detailPart) {
-        fullDetailText = `【選択・数量】${chipsPart}\n【具体的な様子・備考メモ】\n${detailPart}`;
-      } else {
-        fullDetailText = chipsPart || '記入なし';
-      }
-
-      return {
-        chipsHtml: chipsHtml,
-        detailText: fullDetailText
-      };
+      let fullDetailText = detailPart ? `【選択・数量】${chipsPart}\n【詳細メモ】\n${detailPart}` : (chipsPart || '記入なし');
+      return { chipsHtml, detailText: fullDetailText };
     }
 
+    // 🔔 通知ベル（1件タップごとに個別既読化）
     function updateNoticeBell() {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -606,52 +629,29 @@
       }
 
       container.innerHTML = notices.map(n => `
-        <div class="notice-item ${n.isRead ? '' : 'unread'}" onclick="clickNoticeItem('${n.id}', ${n.rowIndex})">
-          <div style="font-weight:bold; color:${n.type === 'キャンセル' ? '#dc2626' : '#0369a1'}; font-size:0.85rem;">
-            ${n.type === 'キャンセル' ? '❌ キャンセル通知' : '🆕 新規受付'}
+        <div class="notice-item ${n.isRead ? '' : 'unread'}" onclick="clickSingleNotice('${n.id}', ${n.rowIndex})">
+          <div style="font-weight:bold; color:${n.type === 'キャンセル' ? '#dc2626' : '#0369a1'}; font-size:0.8rem;">
+            ${n.type === 'キャンセル' ? '❌ キャンセル' : '🆕 新規受付'} ${n.isRead ? '(確認済)' : '● 未読'}
           </div>
-          <div style="font-size:0.95rem; font-weight:bold; color:#111827; margin-top:2px;">
+          <div style="font-size:0.9rem; font-weight:bold; color:#111827; margin-top:2px;">
             ${n.name} 様 (${n.pet})
           </div>
-          <div style="font-size:0.8rem; color:#64748b; margin-top:2px;">
-            📅 来院日時: ${n.date} ${n.time}
-          </div>
+          <div style="font-size:0.75rem; color:#64748b;">📅 ${n.date} ${n.time}</div>
         </div>
       `).join('');
     }
 
     function toggleNoticePopover() {
       const popover = document.getElementById('noticePopover');
-      const isOpening = (popover.style.display !== 'block');
-      popover.style.display = isOpening ? 'block' : 'none';
-
-      if (isOpening) {
-        markAllNoticesAsRead();
-      }
+      popover.style.display = (popover.style.display !== 'block') ? 'block' : 'none';
     }
 
-    function clickNoticeItem(noticeId, rowIndex) {
+    // 1件タップでその件だけ既読にする
+    function clickSingleNotice(noticeId, rowIndex) {
       readNoticeIds.add(noticeId);
-      localStorage.setItem('arbre_read_notices', JSON.stringify(Array.from(readNoticeIds)));
+      localStorage.setItem('arbre_admin_read_notices', JSON.stringify(Array.from(readNoticeIds)));
       updateNoticeBell();
-      document.getElementById('noticePopover').style.display = 'none';
-
       jumpToInterview(rowIndex);
-    }
-
-    function markAllNoticesAsRead() {
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const dd = String(now.getDate()).padStart(2, '0');
-      const todayStr = `${yyyy}-${mm}-${dd}`;
-
-      allReservations.filter(r => normalizeDateStr(r.date) === todayStr).forEach(r => {
-        const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
-        readNoticeIds.add(id);
-      });
-      localStorage.setItem('arbre_read_notices', JSON.stringify(Array.from(readNoticeIds)));
-      updateNoticeBell();
     }
 
     function setCategoryFilter(type) {
@@ -686,7 +686,7 @@
     function renderReservationTable(list) {
       const tbody = document.getElementById('reservationTableBody');
       if (!list || list.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='10' style='text-align:center; color:#6b7280; padding:40px; font-size:1.1rem; font-weight:bold;'>該当する予約はありません</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='10' style='text-align:center; color:#6b7280; padding:40px; font-weight:bold;'>該当する予約はありません</td></tr>";
         return;
       }
 
@@ -813,32 +813,32 @@
           <div class="interview-card ${isChecked ? 'checked' : ''}" id="interview-card-${r.rowIndex}">
             <div class="interview-header">
               <div>
-                <span style="font-size:1.15rem; font-weight:900; color:var(--primary-dark);">📅 ${r.date} ${r.time}</span>
-                <span class="badge badge-${r.status}" style="margin-left:10px;">${r.status}</span>
+                <span style="font-size:1.1rem; font-weight:900; color:var(--primary-dark);">📅 ${r.date} ${r.time}</span>
+                <span class="badge badge-${r.status}" style="margin-left:8px;">${r.status}</span>
               </div>
-              <button class="btn-action ${isChecked ? 'btn-green' : ''}" style="font-size:0.85rem; padding:6px 12px;" onclick="toggleInterviewCheck(${r.rowIndex})">
+              <button class="btn-action ${isChecked ? 'btn-green' : ''}" style="font-size:0.8rem; padding:4px 10px;" onclick="toggleInterviewCheck(${r.rowIndex})">
                 ${isChecked ? '✅ 確認済み' : '☑️ 未確認'}
               </button>
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px; font-size:0.95rem;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px; font-size:0.9rem;">
               <div>👤 <strong>飼い主名：</strong> ${r.lineUserName} 様 (${r.visitType || '-'})</div>
               <div>🐾 <strong>ペット名：</strong> ${r.petName} [${r.petInfo || '-'}]</div>
               <div>📞 <strong>電話番号：</strong> ${r.phoneNo || '-'}</div>
               <div>🩺 <strong>メニュー：</strong> ${r.menu}</div>
             </div>
 
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; margin-top:8px;">
-              <div style="font-size:0.85rem; color:#64748b; font-weight:bold; margin-bottom:4px;">【選択症状・受取品】</div>
-              <div style="margin-bottom:8px;">${parsed.chipsHtml}</div>
-              <div style="font-size:0.85rem; color:#64748b; font-weight:bold; margin-bottom:4px;">【具体的な様子・備考メモ全文】</div>
-              <div style="white-space:pre-wrap; font-weight:600; font-size:0.95rem; line-height:1.5; color:#1e293b;">${parsed.detailText}</div>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-top:6px;">
+              <div style="font-size:0.8rem; color:#64748b; font-weight:bold; margin-bottom:2px;">【選択症状・受取品】</div>
+              <div style="margin-bottom:6px;">${parsed.chipsHtml}</div>
+              <div style="font-size:0.8rem; color:#64748b; font-weight:bold; margin-bottom:2px;">【具体的内容・備考メモ全文】</div>
+              <div style="white-space:pre-wrap; font-weight:600; font-size:0.9rem; line-height:1.4; color:#1e293b;">${parsed.detailText}</div>
             </div>
 
-            <div style="margin-top:12px; background:#fff8e6; border:1.5px solid #fcd34d; padding:12px; border-radius:8px;">
-              <div style="font-size:0.85rem; color:#b45309; font-weight:900; margin-bottom:4px;">🏥 病院用メモ欄（カルテ共有・スタッフメモ）</div>
-              <textarea id="hospitalNote-${r.rowIndex}" rows="2" style="width:100%; font-size:0.95rem; padding:8px; border:1px solid #d1d5db; border-radius:6px;" placeholder="院内共有用のメモ（例: 車内でお待ち、次回検査希望ありなど）">${r.hospitalNote || ''}</textarea>
-              <button class="btn-action btn-dark" style="margin-top:6px; font-size:0.8rem; padding:6px 12px;" onclick="saveHospitalNote(${r.rowIndex})">💾 病院メモを保存</button>
+            <div style="margin-top:10px; background:#fff8e6; border:1.5px solid #fcd34d; padding:10px; border-radius:8px;">
+              <div style="font-size:0.8rem; color:#b45309; font-weight:900; margin-bottom:2px;">🏥 病院用メモ欄（カルテ共有）</div>
+              <textarea id="hospitalNote-${r.rowIndex}" rows="2" style="width:100%; font-size:0.9rem; padding:6px; border:1px solid #d1d5db; border-radius:6px;" placeholder="院内共有メモ">${r.hospitalNote || ''}</textarea>
+              <button class="btn-action btn-dark" style="margin-top:4px; font-size:0.75rem; padding:4px 8px;" onclick="saveHospitalNote(${r.rowIndex})">💾 保存</button>
             </div>
           </div>
         `;
@@ -852,18 +852,12 @@
         body: JSON.stringify({ action: "updateHospitalNote", rowIndex: rowIndex, hospitalNote: note, pass: adminPass })
       })
       .then(res => res.json())
-      .then(data => {
-        alert("病院メモを保存しました！");
-        loadData(false);
-      });
+      .then(() => alert("病院メモを保存しました！"));
     }
 
     function toggleInterviewCheck(rowIndex) {
-      if (checkedInterviews.has(rowIndex)) {
-        checkedInterviews.delete(rowIndex);
-      } else {
-        checkedInterviews.add(rowIndex);
-      }
+      if (checkedInterviews.has(rowIndex)) checkedInterviews.delete(rowIndex);
+      else checkedInterviews.add(rowIndex);
       renderInterviewList();
     }
 
@@ -890,7 +884,7 @@
     function renderTimeline() {
       const selectedDate = document.getElementById('timelineDatePicker').value;
       const container = document.getElementById('timelineBody');
-      document.getElementById('timelineTitle').innerText = `🕒 ${selectedDate} のタイムラインスケジュール`;
+      document.getElementById('timelineTitle').innerText = `🕒 ${selectedDate} のタイムライン`;
 
       const dayReservations = allReservations.filter(r => normalizeDateStr(r.date) === selectedDate && r.status !== 'キャンセル');
 
@@ -905,22 +899,21 @@
           slots = dayReservations.filter(r => r.time === slotLabel);
         }
 
-        html += `<div style="border-left: 4px solid var(--primary); padding-left: 12px; margin-bottom: 8px;">`;
-        html += `<strong style="font-size: 1.15rem; color: var(--primary-dark);">${slotLabel}</strong>`;
+        html += `<div style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 6px;">`;
+        html += `<strong style="font-size: 1.05rem; color: var(--primary-dark);">${slotLabel}</strong>`;
         
         if (slots.length === 0) {
-          html += `<div style="color:#94a3b8; font-size:0.95rem; margin-top:2px;">（予約なし・空き）</div>`;
+          html += `<div style="color:#94a3b8; font-size:0.85rem; margin-top:2px;">（空き）</div>`;
         } else {
           slots.forEach(r => {
             const isPickup = r.menu.includes('薬・フード');
             const bg = isPickup ? '#fffbebf5' : '#f0f9ff';
             const border = isPickup ? '#fcd34d' : '#bae6fd';
             html += `
-              <div style="background:${bg}; border:1px solid ${border}; border-radius:8px; padding:8px 12px; margin-top:4px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="jumpToInterview(${r.rowIndex})">
+              <div style="background:${bg}; border:1px solid ${border}; border-radius:8px; padding:6px 10px; margin-top:4px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="jumpToInterview(${r.rowIndex})">
                 <div>
-                  <strong style="font-size:1.05rem;">👤 ${r.lineUserName} 様 (${r.petName})</strong>
-                  <span class="menu-badge ${isPickup ? 'menu-受取' : 'menu-診療'}" style="margin-left:8px;">${r.menu}</span>
-                  <div style="font-size:0.85rem; color:#4b5563; margin-top:2px;">[📋 事前問診を確認]</div>
+                  <strong style="font-size:0.95rem;">👤 ${r.lineUserName} 様 (${r.petName})</strong>
+                  <span class="menu-badge ${isPickup ? 'menu-受取' : 'menu-診療'}" style="margin-left:6px;">${r.menu}</span>
                 </div>
                 <div><span class="badge badge-${r.status}">${r.status}</span></div>
               </div>
@@ -951,10 +944,8 @@
       document.getElementById('tileWeekTitle').innerText = m1 === m2 ? m1 : `${m1} / ${m2}`;
 
       const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-      let headerHtml = `<th style="width:110px;">時間</th>`;
-      dates.forEach(d => {
-        headerHtml += `<th>${d.getDate()}<br>(${dayNames[d.getDay()]})</th>`;
-      });
+      let headerHtml = `<th style="width:100px;">時間</th>`;
+      dates.forEach(d => headerHtml += `<th>${d.getDate()}<br>(${dayNames[d.getDay()]})</th>`);
       document.getElementById('tileHeaderRow').innerHTML = headerHtml;
 
       let bodyHtml = "";
@@ -1024,7 +1015,7 @@
         let dateStr = `${yyyy}-${mm}-${dd}`;
 
         headerHtml += `<th class="th-day-toggle" onclick="toggleDayHoliday('${dateStr}')" title="1日まとめて休止/解除">
-          ${d.getDate()} (${dayNames[d.getDay()]})<br><span style="font-size:0.75rem; color:#0284c7;">[1日切替]</span>
+          ${d.getDate()} (${dayNames[d.getDay()]})<br><span style="font-size:0.7rem; color:#0284c7;">[1日切替]</span>
         </th>`;
       });
       document.getElementById('holidayHeaderRow').innerHTML = headerHtml;
@@ -1041,7 +1032,7 @@
           const isOff = allReservations.some(r => normalizeDateStr(r.date) === dateStr && r.time === time && r.status === '休診');
 
           bodyHtml += `<td class="holiday-cell ${isOff ? 'is-off' : 'is-open'}" onclick="toggleHolidaySlot('${dateStr}', '${time}')">
-            ${isOff ? '休診 (受付不可)' : '受付中 (〇)'}
+            ${isOff ? '休診' : '受付中'}
           </td>`;
         });
         bodyHtml += `</tr>`;
@@ -1058,9 +1049,7 @@
     }
 
     function toggleDayHoliday(dateStr) {
-      const isSet = confirm(`${dateStr} を1日まとめて「休診」に切り替えますか？（既に全休の場合は解除されます）`);
-      if (!isSet) return;
-
+      if (!confirm(`${dateStr} を1日まとめて「休診」に切り替えますか？`)) return;
       fetch(GAS_URL, {
         method: "POST",
         body: JSON.stringify({ action: "toggleDayHoliday", date: dateStr, isSet: true, pass: adminPass })
@@ -1102,16 +1091,12 @@
       list.sort((a, b) => {
         if (sortType === 'lastDate_desc') return b.lastDate.localeCompare(a.lastDate);
         if (sortType === 'lastDate_asc') return a.lastDate.localeCompare(b.lastDate);
-        
         if (sortType === 'owner_asc') return a.ownerName.localeCompare(b.ownerName, 'ja');
         if (sortType === 'owner_desc') return b.ownerName.localeCompare(a.ownerName, 'ja');
-        
         if (sortType === 'ticket_asc') return (a.ticketNo || '99999').localeCompare(b.ticketNo || '99999', undefined, {numeric: true});
         if (sortType === 'ticket_desc') return (b.ticketNo || '0').localeCompare(a.ticketNo || '0', undefined, {numeric: true});
-        
         if (sortType === 'count_desc') return b.count - a.count;
         if (sortType === 'count_asc') return a.count - b.count;
-        
         return 0;
       });
 
@@ -1122,14 +1107,14 @@
 
       tbody.innerHTML = list.map(p => `
         <tr>
-          <td><strong style="font-size:1.05rem; color:#047857;">🎫 ${p.ticketNo || '-'}</strong></td>
-          <td><strong style="font-size:1.15rem; font-weight:900;">👤 ${p.ownerName}</strong></td>
-          <td><strong style="font-size:1.15rem; font-weight:900;">🐾 ${p.petName}</strong></td>
-          <td style="font-size:0.95rem; color:#4b5563; font-weight:700;">${p.lineUserId}</td>
-          <td><strong style="font-size:1.15rem; font-weight:900;">${p.count}</strong> 回</td>
-          <td><strong style="font-size:1.05rem;">${p.lastDate}</strong></td>
+          <td><strong style="font-size:1rem; color:#047857;">🎫 ${p.ticketNo || '-'}</strong></td>
+          <td><strong style="font-size:1.05rem; font-weight:900;">👤 ${p.ownerName}</strong></td>
+          <td><strong style="font-size:1.05rem; font-weight:900;">🐾 ${p.petName}</strong></td>
+          <td style="font-size:0.85rem; color:#4b5563;">${p.lineUserId}</td>
+          <td><strong>${p.count}</strong> 回</td>
+          <td><strong>${p.lastDate}</strong></td>
           <td>
-            <button class="btn-sm btn-sm-line" style="width:auto; padding:8px 14px; font-size:0.95rem;" onclick="openModal('${p.ownerName}')">💬 無料チャット</button>
+            <button class="btn-sm btn-sm-line" style="width:auto; padding:6px 12px; font-size:0.85rem;" onclick="openModal('${p.ownerName}')">💬 無料チャット</button>
           </td>
         </tr>
       `).join('');
@@ -1188,7 +1173,7 @@
         body: JSON.stringify({ action: "sendBroadcast", message: msg, pass: adminPass })
       })
       .then(res => res.json())
-      .then(data => {
+      .then(() => {
         alert('一括配信を実行しました！');
         document.getElementById('broadcastMsg').value = '';
       });
