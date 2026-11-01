@@ -30,7 +30,7 @@
     .notice-bell-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; position: relative; }
     .notice-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; border-radius: 50%; font-size: 0.75rem; font-weight: 900; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #fff; }
     
-    .notice-popover { display: none; position: absolute; top: 52px; right: 0; width: 340px; background: #fff; border: 2px solid #cbd5e0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 500; font-size: 0.9rem; }
+    .notice-popover { display: none; position: absolute; top: 52px; right: 0; width: 360px; background: #fff; border: 2px solid #cbd5e0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 500; font-size: 0.9rem; }
     .notice-popover-header { background: #f8fafc; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 10px; border-top-right-radius: 10px; }
     .notice-popover-body { max-height: 320px; overflow-y: auto; }
     .notice-item { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; }
@@ -45,6 +45,7 @@
     .btn-action { padding: 8px 14px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.9rem; }
     .btn-green { background: var(--primary); }
     .btn-dark { background: var(--primary-dark); }
+    .btn-danger { background: #dc2626; color: #fff; }
     .btn-filter { background: #e5e7eb; color: #374151; border: 1.5px solid #d1d5db; }
     .btn-filter.active { background: #0284c7; color: #fff; border-color: #0284c7; }
 
@@ -146,10 +147,13 @@
           
           <div class="notice-popover" id="noticePopover">
             <div class="notice-popover-header">
-              <strong>🔔 本日の通知（1件ずつタップで既読）</strong>
+              <strong>🔔 当日の新規通知一覧</strong>
             </div>
             <div class="notice-popover-body" id="noticeListContainer">
-              <div style="padding:16px; text-align:center; color:#94a3b8;">本日の通知はありません</div>
+              <div style="padding:16px; text-align:center; color:#94a3b8;">当日の新規通知はありません</div>
+            </div>
+            <div style="padding:8px; border-top:1px solid #e2e8f0; background:#f8fafc; text-align:center;">
+              <button class="btn-action btn-dark" style="width:100%; font-size:0.85rem;" onclick="openPastNoticeModal()">📜 前日以前の過去通知を見る</button>
             </div>
           </div>
         </div>
@@ -231,7 +235,7 @@
           <div class="icon">🐾</div>
           <div class="info">
             <h3>患者様名簿・カルテ参照</h3>
-            <p>診察券番号順・五十音順での並べ替えや電話番号での連絡ができます。</p>
+            <p>診察券番号順・五十音順での並べ替えや電話番号での連絡、重複削除ができます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -335,7 +339,7 @@
   <div id="tab-holiday" class="tab-content">
     <div style="background:#fff3cd; border:1px solid #ffeba2; padding:12px; border-radius:8px; margin-bottom:14px; font-size:0.95rem; color:#856404;">
       💡 <strong>休み設定の使い方</strong>：<br>
-      ・日付ヘッダーをタップ ➔ その日を<strong>1日まとめて「全日休診」</strong>に切り替えます。<br>
+      ・日付ヘッダーをタップ ➔ その日を<strong>1日まとめて「全日休診」</strong>に切り替え・解除します。<br>
       ・各時間枠のセルをタップ ➔ その時間枠のみ<strong>「受付停止/受付再開」</strong>を切り替えます。
     </div>
 
@@ -355,7 +359,7 @@
     </div>
   </div>
 
-  <!-- TAB 5: 患者名簿（LINE ID列削除、電話番号列配置） -->
+  <!-- TAB 5: 患者名簿 -->
   <div id="tab-patients" class="tab-content">
     <div class="filter-box">
       <label style="font-weight:900;">並べ替え（ソート）:</label>
@@ -381,7 +385,7 @@
             <th>ペット名・情報</th>
             <th>受診回数</th>
             <th>最終受診日</th>
-            <th>個別連絡</th>
+            <th>操作・連絡</th>
           </tr>
         </thead>
         <tbody id="patientTableBody">
@@ -412,6 +416,14 @@
   </div>
 
   <!-- モーダル各種 -->
+  <div id="pastNoticeModal" class="modal">
+    <div class="modal-content" style="max-width:600px; max-height:80vh; overflow-y:auto;">
+      <h3 style="margin-top:0; font-size:1.2rem; font-weight:900; color:var(--primary-dark);">📜 前日以前の過去通知履歴</h3>
+      <div id="pastNoticeModalBody" style="margin:16px 0;"></div>
+      <button class="btn-action btn-dark" style="width:100%; padding:10px;" onclick="closePastNoticeModal()">閉じる</button>
+    </div>
+  </div>
+
   <div id="cancelModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-top:0; font-size:1.2rem; font-weight:900; color:#991b1b;">⚠️ 予約取り消しとLINE通知</h3>
@@ -577,6 +589,7 @@
       return { chipsHtml, detailText: fullDetailText };
     }
 
+    // 🔔 通知ベルとバッジ・当日通知／過去通知の分離ロジック
     function updateNoticeBell() {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -584,56 +597,62 @@
       const dd = String(now.getDate()).padStart(2, '0');
       const todayStr = `${yyyy}-${mm}-${dd}`;
 
-      const todayReservations = allReservations.filter(r => 
-        r.status !== '休診' && 
-        r.lineUserId !== 'SYSTEM_HOLIDAY' && 
-        normalizeDateStr(r.date) === todayStr
+      const validReservations = allReservations.filter(r => 
+        r && r.status !== '休診' && r.lineUserId !== 'SYSTEM_HOLIDAY'
       );
       
-      const notices = [];
-      todayReservations.forEach(r => {
+      const allNotices = [];
+      validReservations.forEach(r => {
         const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
         const isRead = readNoticeIds.has(id);
         const isCancel = r.status === 'キャンセル';
         
-        notices.push({
+        const normCreated = normalizeDateStr(r.createdAt);
+        const normReserve = normalizeDateStr(r.date);
+        const isToday = (normCreated === todayStr || normReserve === todayStr);
+
+        allNotices.push({
           id: id,
           rowIndex: r.rowIndex,
           date: r.date,
           time: r.time,
-          name: r.lineUserName,
-          pet: r.petName,
+          name: r.lineUserName || '不明',
+          pet: r.petName || 'ペット',
           type: isCancel ? 'キャンセル' : '新規受付',
-          isRead: isRead
+          isRead: isRead,
+          isToday: isToday
         });
       });
 
-      const unreadCount = notices.filter(n => !n.isRead).length;
+      // 未読通知件数（日程不問ですべてカウント）
+      const totalUnreadCount = allNotices.filter(n => !n.isRead).length;
       const badge = document.getElementById('noticeBadge');
-      if (unreadCount > 0) {
-        badge.innerText = unreadCount;
+      if (totalUnreadCount > 0) {
+        badge.innerText = totalUnreadCount;
         badge.style.display = 'flex';
       } else {
         badge.style.display = 'none';
       }
 
+      // ポップアップには「当日分の通知」を表示
+      const todayNotices = allNotices.filter(n => n.isToday);
       const container = document.getElementById('noticeListContainer');
-      if (notices.length === 0) {
-        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">本日の通知はありません</div>`;
-        return;
+      
+      if (todayNotices.length === 0) {
+        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">当日の新規通知はありません</div>`;
+      } else {
+        container.innerHTML = todayNotices.map(n => `
+          <div class="notice-item ${n.isRead ? '' : 'unread'}" onclick="clickSingleNotice('${n.id}', ${n.rowIndex})">
+            <div style="font-weight:bold; color:${n.type === 'キャンセル' ? '#dc2626' : '#0369a1'}; font-size:0.8rem;">
+              ${n.type === 'キャンセル' ? '❌ キャンセル' : '🆕 新規受付'} ${n.isRead ? '（既読）' : '● 未読'}
+            </div>
+            <div style="font-size:0.9rem; font-weight:bold; color:#111827; margin-top:2px;">
+              ${n.name} 様 (${n.pet})
+            </div>
+            <div style="font-size:0.75rem; color:#64748b;">📅 ${n.date} ${n.time}</div>
+          </div>
+        `).join('');
       }
-
-      container.innerHTML = notices.map(n => `
-        <div class="notice-item ${n.isRead ? '' : 'unread'}" onclick="clickSingleNotice('${n.id}', ${n.rowIndex})">
-          <div style="font-weight:bold; color:${n.type === 'キャンセル' ? '#dc2626' : '#0369a1'}; font-size:0.8rem;">
-            ${n.type === 'キャンセル' ? '❌ キャンセル' : '🆕 新規受付'} ${n.isRead ? '(確認済)' : '● 未読'}
-          </div>
-          <div style="font-size:0.9rem; font-weight:bold; color:#111827; margin-top:2px;">
-            ${n.name} 様 (${n.pet})
-          </div>
-          <div style="font-size:0.75rem; color:#64748b;">📅 ${n.date} ${n.time}</div>
-        </div>
-      `).join('');
     }
 
     function toggleNoticePopover() {
@@ -646,6 +665,58 @@
       localStorage.setItem('arbre_admin_read_notices', JSON.stringify(Array.from(readNoticeIds)));
       updateNoticeBell();
       jumpToInterview(rowIndex);
+      document.getElementById('noticePopover').style.display = 'none';
+    }
+
+    // 📜 前日以前の過去通知一覧モーダル
+    function openPastNoticeModal() {
+      const container = document.getElementById('pastNoticeModalBody');
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+
+      const validReservations = allReservations.filter(r => 
+        r && r.status !== '休診' && r.lineUserId !== 'SYSTEM_HOLIDAY'
+      );
+
+      const pastNotices = validReservations.filter(r => {
+        const normCreated = normalizeDateStr(r.createdAt);
+        const normReserve = normalizeDateStr(r.date);
+        return (normCreated !== todayStr && normReserve !== todayStr);
+      });
+
+      if (pastNotices.length === 0) {
+        container.innerHTML = `<div style="padding:20px; text-align:center; color:#64748b;">前日以前の通知履歴はありません。</div>`;
+      } else {
+        container.innerHTML = pastNotices.map(r => {
+          const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
+          const isRead = readNoticeIds.has(id);
+          const isCancel = r.status === 'キャンセル';
+
+          return `
+            <div style="padding:10px 12px; border-bottom:1px solid #e2e8f0; cursor:pointer; background:${isRead ? '#fff' : '#fefce8'}; margin-bottom:6px; border-radius:8px; border:1px solid #cbd5e0;" onclick="clickSingleNotice('${id}', ${r.rowIndex}); closePastNoticeModal();">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:bold; font-size:0.85rem; color:${isCancel ? '#dc2626' : '#0369a1'};">
+                  ${isCancel ? '❌ キャンセル' : '🆕 新規受付'} ${isRead ? '（既読）' : '● 未読'}
+                </span>
+                <span style="font-size:0.75rem; color:#64748b;">📅 ${r.date} ${r.time}</span>
+              </div>
+              <div style="font-size:0.95rem; font-weight:bold; color:#111827; margin-top:2px;">
+                👤 ${r.lineUserName || '不明'} 様 / 🐾 ${r.petName || 'ペット'} (${r.menu || '未指定'})
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('pastNoticeModal').style.display = 'flex';
+      document.getElementById('noticePopover').style.display = 'none';
+    }
+
+    function closePastNoticeModal() {
+      document.getElementById('pastNoticeModal').style.display = 'none';
     }
 
     function setCategoryFilter(type) {
@@ -1043,14 +1114,13 @@
     }
 
     function toggleDayHoliday(dateStr) {
-      if (!confirm(`${dateStr} を1日まとめて「休診」に切り替えますか？`)) return;
+      if (!confirm(`${dateStr} を1日まとめて「休診」に切り替え・解除しますか？`)) return;
       fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "toggleDayHoliday", date: dateStr, isSet: true, pass: adminPass })
+        body: JSON.stringify({ action: "toggleDayHoliday", date: dateStr, pass: adminPass })
       }).then(() => loadData());
     }
 
-    // 🐾 患者名簿のレンダリング（LINE ID列を削除し「電話番号」を表示・同期）
     function renderPatientTable() {
       const tbody = document.getElementById('patientTableBody');
       const sortType = document.getElementById('patientSortSelect').value;
@@ -1059,6 +1129,7 @@
       allPatientRecords.forEach(pr => {
         const key = `${pr.phoneNo}_${pr.petName}`;
         patientsMap[key] = {
+          lineUserId: pr.lineUserId || '',
           ownerName: pr.ownerName,
           phoneNo: pr.phoneNo,
           petName: pr.petName,
@@ -1082,6 +1153,7 @@
         if (!foundKey) {
           foundKey = `${r.phoneNo}_${cleanPetName}`;
           patientsMap[foundKey] = {
+            lineUserId: r.lineUserId || '',
             ownerName: r.lineUserName || '不明',
             phoneNo: r.phoneNo || '-',
             petName: cleanPetName,
@@ -1138,10 +1210,39 @@
           <td><strong>${p.count}</strong> 回</td>
           <td><strong>${p.lastDate}</strong></td>
           <td>
-            <button class="btn-sm btn-sm-line" style="width:auto; padding:6px 12px; font-size:0.85rem;" onclick="openModal('${p.ownerName}')">💬 無料チャット</button>
+            <div style="display:flex; gap:4px; flex-wrap:wrap;">
+              <button class="btn-sm btn-sm-line" style="width:auto; padding:6px 10px; font-size:0.8rem;" onclick="openModal('${p.ownerName}')">💬 チャット</button>
+              <button class="btn-action btn-danger" style="padding:4px 8px; font-size:0.8rem;" onclick="deletePatientRecord('${p.phoneNo}', '${p.petName}')">🗑️ 削除</button>
+            </div>
           </td>
         </tr>
       `).join('');
+    }
+
+    function deletePatientRecord(phoneNo, petName) {
+      if (!confirm(`【患者データの削除】\n電話番号: ${phoneNo}\nペット名: ${petName}\n\nこの重複・誤入力データを名簿から削除しますか？`)) {
+        return;
+      }
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "deletePatientRecordAdmin",
+          phoneNo: phoneNo,
+          petName: petName,
+          pass: adminPass
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert('患者データを削除しました。');
+          loadData();
+        } else {
+          alert('削除処理に失敗しました: ' + (data.message || ''));
+        }
+      })
+      .catch(err => alert('エラーが発生しました: ' + err));
     }
 
     function updateStatus(rowIndex, newStatus) {
