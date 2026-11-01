@@ -357,7 +357,7 @@
                 </div>
 
                 <label for="pickupDays">何日分（または数量） <span class="req">必須</span></label>
-                <input type="number" id="pickupDays" placeholder="例: 30 (日分/個)" min="1">
+                <input type="text" id="pickupDays" placeholder="例: 30日分 / 2袋 / 10個">
 
                 <label for="pickupMessage">伝えたいこと・製品名など <span class="opt">任意</span></label>
                 <textarea id="pickupMessage" rows="3" placeholder="希望のフード名や現在服用中の薬名などがあればご入力ください"></textarea>
@@ -1252,7 +1252,7 @@
 
       if (step === 3 && isPickupMode) {
         const chips = Array.from(document.querySelectorAll('#sectionPickupDetail .chip.selected')).map(c => c.innerText);
-        const days = document.getElementById('pickupDays').value;
+        const days = document.getElementById('pickupDays').value.trim();
         if (chips.length === 0) return alert('受取対象（薬・フード・サプリメント等）を選択してください');
         if (!days) return alert('何日分（数量）か入力してください');
       }
@@ -1273,9 +1273,9 @@
         let symptomsText = "";
         if (isPickupMode) {
           const items = Array.from(document.querySelectorAll('#sectionPickupDetail .chip.selected')).map(c => c.innerText).join('、');
-          const days = document.getElementById('pickupDays').value;
+          const days = document.getElementById('pickupDays').value.trim();
           const msg = document.getElementById('pickupMessage').value;
-          symptomsText = `[受取品] ${items} (${days}日分/個) ${msg ? ' / 備考:' + msg : ''}`;
+          symptomsText = `[受取品] ${items} (${days}) ${msg ? ' / 備考:' + msg : ''}`;
         } else {
           const chips = Array.from(document.querySelectorAll('#sectionMedicalSymptoms .chip.selected')).map(c => c.innerText);
           const detail = document.getElementById('symptomsDetail').value;
@@ -1337,9 +1337,9 @@
       let symptomsText = "";
       if (isPickupMode) {
         const items = Array.from(document.querySelectorAll('#sectionPickupDetail .chip.selected')).map(c => c.innerText).join('、');
-        const days = document.getElementById('pickupDays').value;
+        const days = document.getElementById('pickupDays').value.trim();
         const msg = document.getElementById('pickupMessage').value;
-        symptomsText = `[受取品] ${items} (${days}日分/個) ${msg ? ' / 備考:' + msg : ''}`;
+        symptomsText = `[受取品] ${items} (${days}) ${msg ? ' / 備考:' + msg : ''}`;
       } else {
         const chips = Array.from(document.querySelectorAll('#sectionMedicalSymptoms .chip.selected')).map(c => c.innerText);
         const detail = document.getElementById('symptomsDetail').value;
