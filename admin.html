@@ -30,7 +30,7 @@
     .notice-bell-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; position: relative; }
     .notice-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; border-radius: 50%; font-size: 0.75rem; font-weight: 900; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #fff; }
     
-    .notice-popover { display: none; position: absolute; top: 52px; right: 0; width: 340px; background: #fff; border: 2px solid #cbd5e0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 500; font-size: 0.9rem; }
+    .notice-popover { display: none; position: absolute; top: 52px; right: 0; width: 360px; background: #fff; border: 2px solid #cbd5e0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 500; font-size: 0.9rem; }
     .notice-popover-header { background: #f8fafc; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 10px; border-top-right-radius: 10px; }
     .notice-popover-body { max-height: 320px; overflow-y: auto; }
     .notice-item { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; }
@@ -45,11 +45,12 @@
     .btn-action { padding: 8px 14px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.9rem; }
     .btn-green { background: var(--primary); }
     .btn-dark { background: var(--primary-dark); }
+    .btn-danger { background: #dc2626; color: #fff; }
     .btn-filter { background: #e5e7eb; color: #374151; border: 1.5px solid #d1d5db; }
     .btn-filter.active { background: #0284c7; color: #fff; border-color: #0284c7; }
 
     .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; max-height: 70vh; overflow-y: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border-color); position: relative; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; min-width: 1350px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; min-width: 1400px; }
     th { position: sticky; top: 0; background: #f3f4f6; color: #111827; padding: 12px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; z-index: 10; }
     td { padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
     tr:hover { background: #f9fafb; }
@@ -117,7 +118,7 @@
     .tab-content.active { display: block; }
 
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-    .modal-content { background: #fff; padding: 24px; border-radius: 14px; width: 90%; max-width: 560px; font-size: 1rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal-content { background: #fff; padding: 24px; border-radius: 14px; width: 90%; max-width: 600px; font-size: 1rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto; }
   </style>
 </head>
 <body>
@@ -146,10 +147,13 @@
           
           <div class="notice-popover" id="noticePopover">
             <div class="notice-popover-header">
-              <strong>🔔 本日の通知（1件ずつタップで既読）</strong>
+              <strong>🔔 最新の通知（未読一覧）</strong>
             </div>
             <div class="notice-popover-body" id="noticeListContainer">
-              <div style="padding:16px; text-align:center; color:#94a3b8;">本日の通知はありません</div>
+              <div style="padding:16px; text-align:center; color:#94a3b8;">未読の通知はありません</div>
+            </div>
+            <div style="padding:8px; border-top:1px solid #e2e8f0; background:#f8fafc; text-align:center;">
+              <button class="btn-action btn-dark" style="width:100%; font-size:0.85rem;" onclick="openAllNoticeModal()">📜 過去の全通知履歴を見る</button>
             </div>
           </div>
         </div>
@@ -231,7 +235,7 @@
           <div class="icon">🐾</div>
           <div class="info">
             <h3>患者様名簿・カルテ参照</h3>
-            <p>診察券番号順・五十音順での並べ替えや電話番号での連絡ができます。</p>
+            <p>診察券番号順・五十音順での並べ替え、重複データ削除、電話連絡ができます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -275,7 +279,7 @@
             <th style="width: 140px;">電話番号</th>
             <th style="width: 120px;">診察区分</th>
             <th style="width: 130px;">ペット名</th>
-            <th style="width: 140px;">ペット情報</th>
+            <th style="width: 160px;">ペット情報・生年月日</th>
             <th style="width: 150px;">メニュー</th>
             <th style="width: 220px;">選択症状（簡易タグ）</th>
             <th style="width: 100px;">状態</th>
@@ -378,10 +382,10 @@
             <th>診察券番号</th>
             <th>飼い主名</th>
             <th>電話番号</th>
-            <th>ペット名・情報</th>
+            <th>ペット名・情報・生年月日</th>
             <th>受診回数</th>
             <th>最終受診日</th>
-            <th>個別連絡</th>
+            <th>操作（連絡・削除）</th>
           </tr>
         </thead>
         <tbody id="patientTableBody">
@@ -412,6 +416,14 @@
   </div>
 
   <!-- モーダル各種 -->
+  <div id="allNoticeModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-top:0; font-size:1.2rem; font-weight:900; color:var(--primary-dark);">📜 全通知履歴（新規予約・キャンセル等）</h3>
+      <div id="allNoticeModalBody" style="max-height:60vh; overflow-y:auto; margin:16px 0;"></div>
+      <button class="btn-action btn-dark" style="width:100%; padding:10px;" onclick="closeAllNoticeModal()">閉じる</button>
+    </div>
+  </div>
+
   <div id="cancelModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-top:0; font-size:1.2rem; font-weight:900; color:#991b1b;">⚠️ 予約取り消しとLINE通知</h3>
@@ -448,7 +460,7 @@
       </div>
     </div>
   </div>
-<script>
+  <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
     
     const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
@@ -456,8 +468,8 @@
 
     let allReservations = [];
     let allPatientRecords = [];
-    let checkedInterviews = new Set();
     let readNoticeIds = new Set(JSON.parse(localStorage.getItem('arbre_admin_read_notices') || '[]'));
+    let checkedInterviews = new Set();
     let callCounts = {};
     let pendingCancelRowIndex = null;
     let adminPass = sessionStorage.getItem('adminPass') || '';
@@ -579,20 +591,12 @@
     }
 
     function updateNoticeBell() {
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const dd = String(now.getDate()).padStart(2, '0');
-      const todayStr = `${yyyy}-${mm}-${dd}`;
-
-      const todayReservations = allReservations.filter(r => 
-        r && r.status !== '休診' && 
-        r.lineUserId !== 'SYSTEM_HOLIDAY' && 
-        normalizeDateStr(r.date) === todayStr
+      const validReservations = allReservations.filter(r => 
+        r && r.status !== '休診' && r.lineUserId !== 'SYSTEM_HOLIDAY'
       );
       
       const notices = [];
-      todayReservations.forEach(r => {
+      validReservations.forEach(r => {
         const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
         const isRead = readNoticeIds.has(id);
         const isCancel = r.status === 'キャンセル';
@@ -609,25 +613,25 @@
         });
       });
 
-      const unreadCount = notices.filter(n => !n.isRead).length;
+      const unreadNotices = notices.filter(n => !n.isRead);
       const badge = document.getElementById('noticeBadge');
-      if (unreadCount > 0) {
-        badge.innerText = unreadCount;
+      if (unreadNotices.length > 0) {
+        badge.innerText = unreadNotices.length;
         badge.style.display = 'flex';
       } else {
         badge.style.display = 'none';
       }
 
       const container = document.getElementById('noticeListContainer');
-      if (notices.length === 0) {
-        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">本日の通知はありません</div>`;
+      if (unreadNotices.length === 0) {
+        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">未読の通知はありません</div>`;
         return;
       }
 
-      container.innerHTML = notices.map(n => `
-        <div class="notice-item ${n.isRead ? '' : 'unread'}" onclick="clickSingleNotice('${n.id}', ${n.rowIndex})">
+      container.innerHTML = unreadNotices.map(n => `
+        <div class="notice-item unread" onclick="clickSingleNotice('${n.id}', ${n.rowIndex})">
           <div style="font-weight:bold; color:${n.type === 'キャンセル' ? '#dc2626' : '#0369a1'}; font-size:0.8rem;">
-            ${n.type === 'キャンセル' ? '❌ キャンセル' : '🆕 新規受付'} ${n.isRead ? '(確認済)' : '● 未読'}
+            ${n.type === 'キャンセル' ? '❌ キャンセル' : '🆕 新規受付'} ● 未読
           </div>
           <div style="font-size:0.9rem; font-weight:bold; color:#111827; margin-top:2px;">
             ${n.name} 様 (${n.pet})
@@ -647,6 +651,45 @@
       localStorage.setItem('arbre_admin_read_notices', JSON.stringify(Array.from(readNoticeIds)));
       updateNoticeBell();
       jumpToInterview(rowIndex);
+      document.getElementById('noticePopover').style.display = 'none';
+    }
+
+    function openAllNoticeModal() {
+      const container = document.getElementById('allNoticeModalBody');
+      const validReservations = allReservations.filter(r => 
+        r && r.status !== '休診' && r.lineUserId !== 'SYSTEM_HOLIDAY'
+      );
+
+      if (validReservations.length === 0) {
+        container.innerHTML = `<div style="padding:20px; text-align:center; color:#64748b;">通知履歴はありません。</div>`;
+      } else {
+        container.innerHTML = validReservations.map(r => {
+          const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
+          const isRead = readNoticeIds.has(id);
+          const isCancel = r.status === 'キャンセル';
+
+          return `
+            <div style="padding:10px 12px; border-bottom:1px solid #e2e8f0; cursor:pointer; background:${isRead ? '#fff' : '#fefce8'}; margin-bottom:4px; border-radius:6px; border:1px solid #cbd5e0;" onclick="clickSingleNotice('${id}', ${r.rowIndex}); closeAllNoticeModal();">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:bold; font-size:0.85rem; color:${isCancel ? '#dc2626' : '#0369a1'};">
+                  ${isCancel ? '❌ キャンセル' : '🆕 新規受付'} ${isRead ? '（既読）' : '● 未読'}
+                </span>
+                <span style="font-size:0.75rem; color:#64748b;">📅 ${r.date} ${r.time}</span>
+              </div>
+              <div style="font-size:0.95rem; font-weight:bold; color:#111827; margin-top:2px;">
+                👤 ${r.lineUserName || '不明'} 様 / 🐾 ${r.petName || 'ペット'} (${r.menu || '未指定'})
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('allNoticeModal').style.display = 'flex';
+      document.getElementById('noticePopover').style.display = 'none';
+    }
+
+    function closeAllNoticeModal() {
+      document.getElementById('allNoticeModal').style.display = 'none';
     }
 
     function setCategoryFilter(type) {
@@ -1065,12 +1108,14 @@
       const sortType = document.getElementById('patientSortSelect').value;
       const patientsMap = {};
 
-      allPatientRecords.forEach(pr => {
+      allPatientRecords.forEach((pr, index) => {
         if (!pr) return;
         const phone = pr.phoneNo || '-';
         const pet = pr.petName || '未登録';
         const key = `${phone}_${pet}`;
         patientsMap[key] = {
+          recordIndex: index,
+          lineUserId: pr.lineUserId || '',
           ownerName: pr.ownerName || '不明',
           phoneNo: phone,
           petName: pet,
@@ -1094,6 +1139,8 @@
         if (!foundKey) {
           foundKey = `${r.phoneNo || '-'}_${cleanPetName}`;
           patientsMap[foundKey] = {
+            recordIndex: null,
+            lineUserId: r.lineUserId || '',
             ownerName: r.lineUserName || '不明',
             phoneNo: r.phoneNo || '-',
             petName: cleanPetName,
@@ -1150,10 +1197,40 @@
           <td><strong>${p.count}</strong> 回</td>
           <td><strong>${p.lastDate}</strong></td>
           <td>
-            <button class="btn-sm btn-sm-line" style="width:auto; padding:6px 12px; font-size:0.85rem;" onclick="openModal('${p.ownerName}')">💬 無料チャット</button>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <button class="btn-sm btn-sm-line" style="width:100%; padding:6px; font-size:0.85rem;" onclick="openModal('${p.ownerName}')">💬 無料チャット</button>
+              <button class="btn-action btn-danger" style="width:100%; padding:4px 6px; font-size:0.75rem;" onclick="deletePatientRecord('${p.lineUserId}', '${p.petName}', '${p.phoneNo}')">🗑️ 整理・削除</button>
+            </div>
           </td>
         </tr>
       `).join('');
+    }
+
+    function deletePatientRecord(lineUserId, petName, phoneNo) {
+      if (!confirm(`【重複・誤データの削除確認】\n飼い主電話番号: ${phoneNo}\nペット名: ${petName}\n\nこの患者データを名簿から削除しますか？`)) {
+        return;
+      }
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "deletePatientRecordAdmin",
+          lineUserId: lineUserId,
+          petName: petName,
+          phoneNo: phoneNo,
+          pass: adminPass
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert('患者データを削除しました。');
+          loadData(false);
+        } else {
+          alert('削除処理に失敗しました: ' + (data.message || ''));
+        }
+      })
+      .catch(err => alert('送信中にエラーが発生しました: ' + err));
     }
 
     function updateStatus(rowIndex, newStatus) {
