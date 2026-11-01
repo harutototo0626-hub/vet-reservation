@@ -34,7 +34,6 @@
     .notice-popover-header { background: #f8fafc; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 10px; border-top-right-radius: 10px; }
     .notice-popover-body { max-height: 320px; overflow-y: auto; }
     .notice-item { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; }
-    .notice-item:hover { background: #f0f9ff; }
     .notice-item.unread { background: #fefce8; border-left: 4px solid #f59e0b; }
 
     .nav-tabs { display: flex; gap: 6px; border-bottom: 3px solid #e5e7eb; padding-bottom: 8px; flex-wrap: wrap; }
@@ -49,7 +48,6 @@
     .btn-filter { background: #e5e7eb; color: #374151; border: 1.5px solid #d1d5db; }
     .btn-filter.active { background: #0284c7; color: #fff; border-color: #0284c7; }
 
-    /* 📌 テーブル全域で下部に固定の横スクロールバーを表示（Scrollable Sticky Wrapper） */
     .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; max-height: 70vh; overflow-y: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border-color); position: relative; }
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; min-width: 1350px; }
     th { position: sticky; top: 0; background: #f3f4f6; color: #111827; padding: 12px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; z-index: 10; }
@@ -124,7 +122,6 @@
 </head>
 <body>
 
-  <!-- ログイン画面 -->
   <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
       <h2>🔒 管理者認証</h2>
@@ -141,7 +138,6 @@
       <div style="display:flex; align-items:center; gap:16px;">
         <span id="autoRefreshNotice" style="font-size:0.85rem; color:#047857; font-weight:bold; background:#e8f9ee; padding:4px 10px; border-radius:12px;">🔄 自動更新中 (30秒)</span>
         
-        <!-- 🔔 新着通知 1件ずつ個別確認バッジ -->
         <div class="notice-bell-wrap">
           <div class="notice-bell-btn" onclick="toggleNoticePopover()">
             🔔
@@ -235,7 +231,7 @@
           <div class="icon">🐾</div>
           <div class="info">
             <h3>患者様名簿・カルテ参照</h3>
-            <p>診察券番号順・五十音順での並べ替えや無料チャット連絡ができます。</p>
+            <p>診察券番号順・五十音順での並べ替えや電話番号での連絡ができます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -270,7 +266,6 @@
       <button class="btn-action" onclick="loadData()">🔄 手動更新</button>
     </div>
 
-    <!-- 📌 横スクロールバーが常に画面下にフィットするラッパー -->
     <div class="table-container">
       <table>
         <thead>
@@ -360,7 +355,7 @@
     </div>
   </div>
 
-  <!-- TAB 5 -->
+  <!-- TAB 5: 患者名簿（LINE ID列削除、電話番号列配置） -->
   <div id="tab-patients" class="tab-content">
     <div class="filter-box">
       <label style="font-weight:900;">並べ替え（ソート）:</label>
@@ -382,8 +377,8 @@
           <tr>
             <th>診察券番号</th>
             <th>飼い主名</th>
-            <th>ペット名</th>
-            <th>LINE ID</th>
+            <th>電話番号</th>
+            <th>ペット名・情報</th>
             <th>受診回数</th>
             <th>最終受診日</th>
             <th>個別連絡</th>
@@ -396,19 +391,17 @@
     </div>
   </div>
 
-  <!-- TAB 6: 患者画面用アナウンス設定 & 一括LINE -->
+  <!-- TAB 6 -->
   <div id="tab-broadcast" class="tab-content">
     <div style="display:flex; flex-direction:column; gap:20px; max-width:680px;">
       
-      <!-- 患者画面用お知らせの編集 -->
       <div style="background:#fff; padding:24px; border-radius:12px; border:2px solid #3b82f6;">
         <h3 style="margin-top:0; color:#1d4ed8; font-size:1.2rem; font-weight:900;">📢 患者画面用「病院からのお知らせ」編集</h3>
-        <p style="font-size:0.85rem; color:#475569; margin-bottom:8px;">ここで設定した内容が、患者様画面（LINE/Web）のトップポータル上部に青枠で表示されます。</p>
+        <p style="font-size:0.85rem; color:#475569; margin-bottom:8px;">ここで設定した内容が、患者様画面（LINE/Web）ログイン後の掲示板画面に表示されます。</p>
         <textarea id="patientAnnounceText" rows="4" style="width:100%; font-size:1rem;" placeholder="例: 狂犬病予防注射の予約受付を開始しました。"></textarea>
         <button class="btn-action btn-dark" style="margin-top:10px; width:100%; padding:10px;" onclick="saveAnnounceText()">💾 お知らせを保存して更新</button>
       </div>
 
-      <!-- 全員への一括LINE配信 -->
       <div style="background:#fff; padding:24px; border-radius:12px; border:2px solid #d1d5db;">
         <h3 style="margin-top:0; color:var(--primary-dark); font-size:1.2rem; font-weight:900;">📢 全員への一括LINE配信</h3>
         <textarea id="broadcastMsg" rows="4" style="width:100%; font-size:1rem;" placeholder="【お知らせ】休診日案内など..."></textarea>
@@ -463,6 +456,7 @@
     const DISPLAY_SLOTS = ["09:00~", "10:00~", "11:00~", "午前 (受取のみ)", "16:00~", "17:00~", "18:00~", "午後 (受取のみ)"];
 
     let allReservations = [];
+    let allPatientRecords = [];
     let checkedInterviews = new Set();
     let readNoticeIds = new Set(JSON.parse(localStorage.getItem('arbre_admin_read_notices') || '[]'));
     let callCounts = {};
@@ -517,7 +511,9 @@
           sessionStorage.setItem('adminPass', adminPass);
           document.getElementById('loginOverlay').style.display = 'none';
 
-          allReservations = Array.isArray(data) ? data : [];
+          allReservations = Array.isArray(data.reservations) ? data.reservations : (Array.isArray(data) ? data : []);
+          allPatientRecords = Array.isArray(data.patientRecords) ? data.patientRecords : [];
+
           filterReservations();
           renderInterviewList();
           renderTimeline();
@@ -581,7 +577,6 @@
       return { chipsHtml, detailText: fullDetailText };
     }
 
-    // 🔔 通知ベル（1件タップごとに個別既読化）
     function updateNoticeBell() {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -646,7 +641,6 @@
       popover.style.display = (popover.style.display !== 'block') ? 'block' : 'none';
     }
 
-    // 1件タップでその件だけ既読にする
     function clickSingleNotice(noticeId, rowIndex) {
       readNoticeIds.add(noticeId);
       localStorage.setItem('arbre_admin_read_notices', JSON.stringify(Array.from(readNoticeIds)));
@@ -1056,34 +1050,61 @@
       }).then(() => loadData());
     }
 
+    // 🐾 患者名簿のレンダリング（LINE ID列を削除し「電話番号」を表示・同期）
     function renderPatientTable() {
       const tbody = document.getElementById('patientTableBody');
       const sortType = document.getElementById('patientSortSelect').value;
       const patientsMap = {};
 
+      allPatientRecords.forEach(pr => {
+        const key = `${pr.phoneNo}_${pr.petName}`;
+        patientsMap[key] = {
+          ownerName: pr.ownerName,
+          phoneNo: pr.phoneNo,
+          petName: pr.petName,
+          petInfo: `${pr.petType || '犬'} ${pr.petBreed || ''} ${pr.petSex || ''} [生年月日: ${pr.petBirth || '未設定'}]`.trim(),
+          ticketNo: pr.ticketNo || '',
+          count: 0,
+          lastDate: '-'
+        };
+      });
+
       allReservations.forEach(r => {
         if (!r.petName || r.status === '休診') return;
-        const key = `${r.lineUserName}_${r.petName}`;
+        const normPhone = r.phoneNo ? r.phoneNo.replace(/\D/g, '') : '';
+        const cleanPetName = r.petName.replace(/（.*）|\(.*\)/, '').trim();
         
+        let foundKey = Object.keys(patientsMap).find(k => {
+          const p = patientsMap[k];
+          return p.phoneNo.replace(/\D/g, '') === normPhone && p.petName === cleanPetName;
+        });
+
+        if (!foundKey) {
+          foundKey = `${r.phoneNo}_${cleanPetName}`;
+          patientsMap[foundKey] = {
+            ownerName: r.lineUserName || '不明',
+            phoneNo: r.phoneNo || '-',
+            petName: cleanPetName,
+            petInfo: r.petInfo || '-',
+            ticketNo: '',
+            count: 0,
+            lastDate: r.date
+          };
+        }
+
         let ticketNo = '';
         if (r.visitType && r.visitType.includes('券No:')) {
           const match = r.visitType.match(/券No:([^\s]+)/);
           if (match) ticketNo = match[1];
         }
 
-        if (!patientsMap[key]) {
-          patientsMap[key] = {
-            ownerName: r.lineUserName || '不明',
-            petName: r.petName,
-            ticketNo: ticketNo,
-            lineUserId: r.lineUserId,
-            count: 0,
-            lastDate: r.date
-          };
+        patientsMap[foundKey].count += 1;
+        if (r.date && (patientsMap[foundKey].lastDate === '-' || r.date > patientsMap[foundKey].lastDate)) {
+          patientsMap[foundKey].lastDate = r.date;
         }
-        patientsMap[key].count += 1;
-        if (r.date > patientsMap[key].lastDate) patientsMap[key].lastDate = r.date;
-        if (ticketNo && !patientsMap[key].ticketNo) patientsMap[key].ticketNo = ticketNo;
+        if (ticketNo && !patientsMap[foundKey].ticketNo) {
+          patientsMap[foundKey].ticketNo = ticketNo;
+        }
       });
 
       let list = Object.values(patientsMap);
@@ -1109,8 +1130,11 @@
         <tr>
           <td><strong style="font-size:1rem; color:#047857;">🎫 ${p.ticketNo || '-'}</strong></td>
           <td><strong style="font-size:1.05rem; font-weight:900;">👤 ${p.ownerName}</strong></td>
-          <td><strong style="font-size:1.05rem; font-weight:900;">🐾 ${p.petName}</strong></td>
-          <td style="font-size:0.85rem; color:#4b5563;">${p.lineUserId}</td>
+          <td><strong style="font-size:1.05rem; font-weight:900; color:#0369a1;">📞 ${p.phoneNo}</strong></td>
+          <td>
+            <div style="font-weight:bold; color:#111827;">🐾 ${p.petName}</div>
+            <div style="font-size:0.8rem; color:#64748b;">${p.petInfo}</div>
+          </td>
           <td><strong>${p.count}</strong> 回</td>
           <td><strong>${p.lastDate}</strong></td>
           <td>
