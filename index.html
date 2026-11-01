@@ -26,13 +26,15 @@
     .notice-user { text-align: center; font-size: 0.85rem; color: #047857; font-weight: bold; margin-bottom: 16px; background: #e8f9ee; padding: 8px; border-radius: 8px; border: 1px solid #a7f3d0; }
 
     /* SMS認証エリア */
-    .sms-box { background: #e0f2fe; border: 2px solid #0284c7; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-    .sms-box h3 { margin: 0 0 8px 0; color: #0369a1; font-size: 1.05rem; font-weight: 800; }
+    .sms-box { background: #e0f2fe; border: 2px solid #0284c7; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .sms-box h3 { margin: 0 0 6px 0; color: #0369a1; font-size: 1.05rem; font-weight: 800; }
+    .sms-box.verified { background: #f0fdf4; border-color: #22c55e; color: #15803d; text-align: center; font-weight: bold; padding: 12px; }
 
     /* メニューカードデザイン */
     .menu-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
     .menu-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 14px; padding: 18px 16px; display: flex; align-items: center; cursor: pointer; transition: all 0.2s; position: relative; text-decoration: none; color: inherit; }
     .menu-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(6, 199, 85, 0.15); }
+    .menu-card.disabled { opacity: 0.55; cursor: not-allowed; background: #f9fafb; border-color: #d1d5db; }
     .menu-icon { font-size: 2.2rem; margin-right: 14px; width: 44px; text-align: center; flex-shrink: 0; }
     .menu-info { flex: 1; }
     .menu-title { font-size: 1.15rem; font-weight: 800; color: #111827; margin-bottom: 2px; }
@@ -79,56 +81,10 @@
       <h1>🏥 診察予約ポータル</h1>
       <div id="lineUserInfo" class="notice-user">LINE連携確認中...</div>
 
-      <div class="menu-list">
-        <div class="menu-card" onclick="showScreen('screen-booking')">
-          <div class="menu-icon">📅</div>
-          <div class="menu-info">
-            <div class="menu-title">新規の予約</div>
-            <div class="menu-desc">新しい予約を入れることができます。</div>
-          </div>
-          <div class="menu-arrow">›</div>
-        </div>
-
-        <div class="menu-card" onclick="openMyReservationsScreen()">
-          <div class="menu-icon">📋</div>
-          <div class="menu-info">
-            <div class="menu-title">予約内容の確認・変更</div>
-            <div class="menu-desc">現在予約中の内容確認、日時変更・キャンセルが可能です。</div>
-          </div>
-          <div class="menu-arrow">›</div>
-        </div>
-
-        <div class="menu-card" onclick="openPatientInfoScreen()">
-          <div class="menu-icon">👤</div>
-          <div class="menu-info">
-            <div class="menu-title">患者様情報の確認・変更</div>
-            <div class="menu-desc">飼い主様情報、ペット情報の確認・変更が可能です。</div>
-          </div>
-          <div class="menu-arrow">›</div>
-        </div>
-
-        <div class="menu-card" onclick="openTicketScreen()">
-          <div class="menu-icon">🐾</div>
-          <div class="menu-info">
-            <div class="menu-title">デジタル診察券</div>
-            <div class="menu-desc">ご登録情報・診察券番号を確認できます。</div>
-          </div>
-          <div class="menu-arrow">›</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 📅 2. 新規予約画面 -->
-    <div id="screen-booking" class="screen">
-      <div class="nav-header">
-        <button class="btn-back" onclick="showScreen('screen-top')">‹ トップへ戻る</button>
-        <span style="font-weight:bold; color:var(--primary-dark);">新規予約フォーム</span>
-      </div>
-
-      <!-- Webアクセス時のみ表示されるSMS本人確認画面 -->
+      <!-- Webアクセス時に表示されるSMS本人確認セクション -->
       <div id="smsAuthSection" class="sms-box" style="display: none;">
-        <h3>📱 携帯電話番号での本人確認 (SMS認証)</h3>
-        <p style="font-size:0.85rem; color:#0369a1; margin-top:0;">Webからのご予約には電話番号認証が必要です。</p>
+        <h3>🔒 Webからのご利用には本人確認が必要です</h3>
+        <p style="font-size:0.85rem; color:#0369a1; margin:0 0 12px 0;">携帯電話番号宛にSMS認証コードをお送りします。本人確認完了後に全ての機能がご利用いただけます。</p>
         
         <div class="form-group">
           <label>携帯電話番号</label>
@@ -141,11 +97,48 @@
         <div class="form-group" id="smsCodeGroup" style="display: none;">
           <label>SMSに届いた4桁の認証コード</label>
           <div style="display:flex; gap:8px;">
-            <!-- autocomplete="one-time-code" によりキーボード上部への自動補完が有効化 -->
+            <!-- autocomplete="one-time-code" でキーボード上部の自動補完を有効化 -->
             <input type="text" id="smsCodeInput" placeholder="4桁の数字" autocomplete="one-time-code" inputmode="numeric">
             <button type="button" class="btn" style="width:100px; padding:10px; font-size:0.9rem;" onclick="verifySmsCode()">認証</button>
           </div>
         </div>
+      </div>
+
+      <div class="menu-list">
+        <div class="menu-card" id="menu-booking" onclick="handleMenuClick('screen-booking')">
+          <div class="menu-icon">📅</div>
+          <div class="menu-info">
+            <div class="menu-title">新規の予約</div>
+            <div class="menu-desc">新しい予約を入れることができます。</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+
+        <div class="menu-card" id="menu-myres" onclick="handleMenuClick('screen-my-reservations')">
+          <div class="menu-icon">📋</div>
+          <div class="menu-info">
+            <div class="menu-title">予約内容の確認・変更</div>
+            <div class="menu-desc">現在予約中の内容確認、日時変更・キャンセルが可能です。</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+
+        <div class="menu-card" id="menu-patient" onclick="handleMenuClick('screen-patient-info')">
+          <div class="menu-icon">👤</div>
+          <div class="menu-info">
+            <div class="menu-title">患者様情報の確認・変更</div>
+            <div class="menu-desc">飼い主様情報、ペット情報の確認・変更が可能です。</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📅 2. 新規予約画面 -->
+    <div id="screen-booking" class="screen">
+      <div class="nav-header">
+        <button class="btn-back" onclick="showScreen('screen-top')">‹ トップへ戻る</button>
+        <span style="font-weight:bold; color:var(--primary-dark);">新規予約フォーム</span>
       </div>
 
       <div id="announcementDisplay" class="announcement-box" style="display: none;"></div>
@@ -207,7 +200,7 @@
           <textarea id="detailInput" rows="3" placeholder="いつ頃からどんな様子か、気になる点を自由にご記入ください。"></textarea>
         </div>
 
-        <button type="submit" class="btn" id="submitBtn" style="margin-top: 20px;">予約を確定する</button>
+        <button type="submit" class="btn" style="margin-top: 20px;">予約を確定する</button>
       </form>
     </div>
 
@@ -218,15 +211,7 @@
         <span style="font-weight:bold; color:var(--primary-dark);">予約確認・変更</span>
       </div>
 
-      <div id="webSearchBox" class="form-group" style="display:none; background:#f3f4f6; padding:12px; border-radius:10px;">
-        <label>ご登録電話番号で検索</label>
-        <div style="display:flex; gap:8px;">
-          <input type="tel" id="searchPhoneInput" placeholder="09012345678">
-          <button type="button" class="btn btn-dark" style="width:auto; padding:0 16px;" onclick="fetchUserReservations()">検索</button>
-        </div>
-      </div>
-
-      <div id="reservationListContainer" style="margin-top:16px;">
+      <div id="reservationListContainer">
         <div style="text-align:center; padding:20px; color:#6b7280;">読み込み中...</div>
       </div>
     </div>
@@ -246,33 +231,16 @@
 
         <div class="form-group">
           <label>電話番号</label>
-          <input type="tel" id="editPhoneNo" required>
+          <input type="tel" id="editPhoneNo" required readonly style="background:#f3f4f6;">
         </div>
 
         <div class="form-group">
           <label>ペットのお名前・情報</label>
-          <input type="text" id="editPetName" required>
+          <input type="text" id="editPetName" required placeholder="例: ポチ（チワワ 3歳）">
         </div>
 
         <button type="submit" class="btn btn-dark" style="margin-top:16px;">情報を更新・保存する</button>
       </form>
-    </div>
-
-    <!-- 🐾 5. デジタル診察券画面 -->
-    <div id="screen-ticket" class="screen">
-      <div class="nav-header">
-        <button class="btn-back" onclick="showScreen('screen-top')">‹ トップへ戻る</button>
-        <span style="font-weight:bold; color:var(--primary-dark);">デジタル診察券</span>
-      </div>
-
-      <div style="background: linear-gradient(135deg, #047857, #06C755); color:#fff; border-radius:16px; padding:24px; text-align:center; box-shadow:0 8px 16px rgba(0,0,0,0.15);">
-        <div style="font-size:0.9rem; letter-spacing:1px; opacity:0.9;">アルブル動物病院</div>
-        <div style="font-size:1.6rem; font-weight:900; margin:12px 0;" id="ticketPetName">ポチ 様</div>
-        <div style="background:#fff; color:#111827; padding:12px; border-radius:10px; font-weight:bold; display:inline-block; margin-top:8px;" id="ticketOwnerName">
-          飼い主: 山田 太郎 様
-        </div>
-        <div style="font-size:0.85rem; margin-top:16px; opacity:0.8;" id="ticketPhone">📞 09012345678</div>
-      </div>
     </div>
 
   </div>
@@ -305,9 +273,11 @@
         if (liff.isLoggedIn()) {
           liff.getProfile().then(p => {
             lineUserId = p.userId;
+            isSmsVerified = true; // LINEアプリ内アクセスの場合はSMS認証不要
             document.getElementById('lineUserInfo').innerHTML = `✅ LINE連携中: <strong>${p.displayName}</strong> 様`;
             document.getElementById('ownerNameInput').value = p.displayName;
             document.getElementById('editOwnerName').value = p.displayName;
+            updateMenuCardStates();
           });
         } else {
           setWebUserMode();
@@ -320,8 +290,32 @@
     function setWebUserMode() {
       document.getElementById('lineUserInfo').innerHTML = `🌐 Webブラウザでご利用中 (SMS認証が必要です)`;
       document.getElementById('smsAuthSection').style.display = 'block';
-      document.getElementById('webSearchBox').style.display = 'block';
-      document.getElementById('submitBtn').disabled = true; // SMS認証完了までボタン無効化
+      updateMenuCardStates();
+    }
+
+    function updateMenuCardStates() {
+      const cards = ['menu-booking', 'menu-myres', 'menu-patient'];
+      cards.forEach(id => {
+        const el = document.getElementById(id);
+        if (isSmsVerified) {
+          el.classList.remove('disabled');
+        } else {
+          el.classList.add('disabled');
+        }
+      });
+    }
+
+    function handleMenuClick(targetScreen) {
+      if (!isSmsVerified) {
+        alert("Webからのご利用には上のSMS本人確認（電話番号認証）が必要です。");
+        return;
+      }
+
+      if (targetScreen === 'screen-my-reservations') {
+        fetchUserReservations();
+      }
+
+      showScreen(targetScreen);
     }
 
     function showScreen(screenId) {
@@ -329,7 +323,7 @@
       document.getElementById(screenId).classList.add('active');
     }
 
-    // --- WebOTP API (SMSコード自動取得) の受信待機処理 ---
+    // --- WebOTP API (SMSコード自動補完) の受信待機 ---
     function listenForWebOTP() {
       if ('OTPCredential' in window) {
         const ac = new AbortController();
@@ -339,12 +333,9 @@
         }).then(otp => {
           if (otp && otp.code) {
             document.getElementById('smsCodeInput').value = otp.code;
-            // コードが自動入力されたら自動で認証実行
-            verifySmsCode();
+            verifySmsCode(); // 自動で認証を実行
           }
-        }).catch(err => {
-          console.log("WebOTP待機終了または非対応ブラウザ");
-        });
+        }).catch(() => {});
       }
     }
 
@@ -360,9 +351,7 @@
       .then(data => {
         alert('携帯電話番号宛にSMSで認証コードを送信しました。');
         document.getElementById('smsCodeGroup').style.display = 'block';
-        
-        // WebOTP APIによるSMSコード自動受信待機を開始
-        listenForWebOTP();
+        listenForWebOTP(); // 自動受信待機開始
       });
     }
 
@@ -377,17 +366,18 @@
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
-          alert('本人確認（SMS認証）が完了しました！');
+          alert('本人確認（SMS認証）が完了しました！全機能をご利用いただけます。');
           isSmsVerified = true;
           currentUserPhone = phone;
+
           document.getElementById('phoneInput').value = phone;
           document.getElementById('editPhoneNo').value = phone;
-          document.getElementById('searchPhoneInput').value = phone;
           
-          document.getElementById('smsAuthSection').style.background = "#f0fdf4";
-          document.getElementById('smsAuthSection').style.borderColor = "#22c55e";
-          document.getElementById('smsAuthSection').innerHTML = "✅ <strong>SMS本人確認済み</strong>";
-          document.getElementById('submitBtn').disabled = false;
+          const box = document.getElementById('smsAuthSection');
+          box.className = "sms-box verified";
+          box.innerHTML = `✅ <strong>SMS本人確認完了</strong> (${phone})`;
+
+          updateMenuCardStates();
         } else {
           alert('認証エラー: ' + data.message);
         }
@@ -425,7 +415,7 @@
     document.getElementById('bookingForm').onsubmit = (e) => {
       e.preventDefault();
 
-      if (!liff.isLoggedIn() && !isSmsVerified) {
+      if (!isSmsVerified) {
         return alert('SMS認証を完了させてから予約を行ってください');
       }
 
@@ -461,13 +451,8 @@
     };
 
     // --- 予約一覧取得・確認 ---
-    function openMyReservationsScreen() {
-      showScreen('screen-my-reservations');
-      fetchUserReservations();
-    }
-
     function fetchUserReservations() {
-      const searchPhone = document.getElementById('searchPhoneInput').value || currentUserPhone;
+      const searchPhone = currentUserPhone;
       const targetId = lineUserId === "WEB_USER" ? ("WEB_" + searchPhone) : lineUserId;
 
       fetch(`${GAS_URL}?action=getUserReservations&userId=${encodeURIComponent(targetId)}&phone=${encodeURIComponent(searchPhone)}`)
@@ -529,29 +514,12 @@
       });
     }
 
-    // --- 患者情報の確認・更新 ---
-    function openPatientInfoScreen() {
-      showScreen('screen-patient-info');
-    }
-
+    // --- 患者情報の更新 ---
     document.getElementById('patientInfoForm').onsubmit = (e) => {
       e.preventDefault();
-      alert("患者情報を更新しました！");
+      alert("患者情報を更新保存いたしました！");
       showScreen('screen-top');
     };
-
-    // --- デジタル診察券 ---
-    function openTicketScreen() {
-      const owner = document.getElementById('ownerNameInput').value || 'ご家族';
-      const pet = document.getElementById('petNameInput').value || 'ペット';
-      const phone = document.getElementById('phoneInput').value || '-';
-
-      document.getElementById('ticketPetName').innerText = `${pet} 様`;
-      document.getElementById('ticketOwnerName').innerText = `飼い主: ${owner} 様`;
-      document.getElementById('ticketPhone').innerText = `📞 ${phone}`;
-
-      showScreen('screen-ticket');
-    }
   </script>
 </body>
 </html>
