@@ -366,10 +366,10 @@
       <select id="patientSortSelect" onchange="renderPatientTable()">
         <option value="lastDate_desc">📅 最終受診日（新しい順）</option>
         <option value="lastDate_asc">📅 最終受診日（古い順）</option>
-        <option value="owner_asc">👤 飼い主名（五十音あ〜ん）</option>
-        <option value="owner_desc">👤 飼い主名（五十音ん〜あ）</option>
         <option value="ticket_asc">🎫 診察券番号（昇順 1➔）</option>
         <option value="ticket_desc">🎫 診察券番号（降順 99➔）</option>
+        <option value="owner_asc">👤 飼い主名（五十音あ〜ん）</option>
+        <option value="owner_desc">👤 飼い主名（五十音ん〜あ）</option>
         <option value="count_desc">🔢 受診回数（多い順）</option>
         <option value="count_asc">🔢 受診回数（少ない順）</option>
       </select>
@@ -589,7 +589,7 @@
       return { chipsHtml, detailText: fullDetailText };
     }
 
-    // 🔔 通知ベルとバッジ・当日通知／過去通知の分離ロジック
+    // 🔔 通知ベルとバッジ（最新順ソート）
     function updateNoticeBell() {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -624,7 +624,9 @@
         });
       });
 
-      // 未読通知件数（日程不問ですべてカウント）
+      // 新しい順（降順）にソート
+      allNotices.sort((a, b) => b.rowIndex - a.rowIndex);
+
       const totalUnreadCount = allNotices.filter(n => !n.isRead).length;
       const badge = document.getElementById('noticeBadge');
       if (totalUnreadCount > 0) {
@@ -634,7 +636,6 @@
         badge.style.display = 'none';
       }
 
-      // ポップアップには「当日分の通知」を表示
       const todayNotices = allNotices.filter(n => n.isToday);
       const container = document.getElementById('noticeListContainer');
       
@@ -668,7 +669,7 @@
       document.getElementById('noticePopover').style.display = 'none';
     }
 
-    // 📜 前日以前の過去通知一覧モーダル
+    // 📜 前日以前の過去通知一覧モーダル（最新順ソート）
     function openPastNoticeModal() {
       const container = document.getElementById('pastNoticeModalBody');
       const now = new Date();
@@ -686,6 +687,9 @@
         const normReserve = normalizeDateStr(r.date);
         return (normCreated !== todayStr && normReserve !== todayStr);
       });
+
+      // 新しい順（降順）にソート
+      pastNotices.sort((a, b) => b.rowIndex - a.rowIndex);
 
       if (pastNotices.length === 0) {
         container.innerHTML = `<div style="padding:20px; text-align:center; color:#64748b;">前日以前の通知履歴はありません。</div>`;
@@ -1150,32 +1154,15 @@
           return p.phoneNo.replace(/\D/g, '') === normPhone && p.petName === cleanPetName;
         });
 
-        if (!foundKey) {
-          foundKey = `${r.phoneNo}_${cleanPetName}`;
-          patientsMap[foundKey] = {
-            lineUserId: r.lineUserId || '',
-            ownerName: r.lineUserName || '不明',
-            phoneNo: r.phoneNo || '-',
-            petName: cleanPetName,
-            petInfo: r.petInfo || '-',
-            ticketNo: '',
-            count: 0,
-            lastDate: r.date
-          };
-        }
-
-        let ticketNo = '';
-        if (r.visitType && r.visitType.includes('券No:')) {
-          const match = r.visitType.match(/券No:([^\s]+)/);
-          if (match) ticketNo = match[1];
-        }
-
-        patientsMap[foundKey].count += 1;
-        if (r.date && (patientsMap[foundKey].lastDate === '-' || r.date > patientsMap[foundKey].lastDate)) {
-          patientsMap[foundKey].lastDate = r.date;
-        }
-        if (ticketNo && !patientsMap[foundKey].ticketNo) {
-          patientsMap[foundKey].ticketNo = ticketNo;
+        if (foundKey) {
+          patientsMap[foundKey].count += 1;
+          if (r.date && (patientsMap[foundKey].lastDate === '-' || r.date > patientsMap[foundKey].lastDate)) {
+            patientsMap[foundKey].lastDate = r.date;
+          }
+          if (!patientsMap[foundKey].ticketNo && r.visitType && r.visitType.includes('券No:')) {
+            const match = r.visitType.match(/券No:([^\s]+)/);
+            if (match) patientsMap[foundKey].ticketNo = match[1];
+          }
         }
       });
 
@@ -1184,10 +1171,10 @@
       list.sort((a, b) => {
         if (sortType === 'lastDate_desc') return b.lastDate.localeCompare(a.lastDate);
         if (sortType === 'lastDate_asc') return a.lastDate.localeCompare(b.lastDate);
-        if (sortType === 'owner_asc') return a.ownerName.localeCompare(b.ownerName, 'ja');
-        if (sortType === 'owner_desc') return b.ownerName.localeCompare(a.ownerName, 'ja');
         if (sortType === 'ticket_asc') return (a.ticketNo || '99999').localeCompare(b.ticketNo || '99999', undefined, {numeric: true});
         if (sortType === 'ticket_desc') return (b.ticketNo || '0').localeCompare(a.ticketNo || '0', undefined, {numeric: true});
+        if (sortType === 'owner_asc') return a.ownerName.localeCompare(b.ownerName, 'ja');
+        if (sortType === 'owner_desc') return b.ownerName.localeCompare(a.ownerName, 'ja');
         if (sortType === 'count_desc') return b.count - a.count;
         if (sortType === 'count_asc') return a.count - b.count;
         return 0;
@@ -1220,7 +1207,7 @@
     }
 
     function deletePatientRecord(phoneNo, petName) {
-      if (!confirm(`【患者データの削除】\n電話番号: ${phoneNo}\nペット名: ${petName}\n\nこの重複・誤入力データを名簿から削除しますか？`)) {
+      if (!confirm(`【患者データの削除】\n電話番号: ${phoneNo}\nペット名: ${petName}\n\nこの重複・誤入力データを名簿および予約履歴から削除しますか？`)) {
         return;
       }
 
