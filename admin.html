@@ -30,7 +30,7 @@
     .notice-bell-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; position: relative; }
     .notice-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; border-radius: 50%; font-size: 0.75rem; font-weight: 900; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #fff; }
     
-    .notice-popover { display: none; position: absolute; top: 52px; right: 0; width: 360px; background: #fff; border: 2px solid #cbd5e0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 500; font-size: 0.9rem; }
+    .notice-popover { display: none; position: absolute; top: 52px; right: 0; width: 380px; background: #fff; border: 2px solid #cbd5e0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 500; font-size: 0.9rem; }
     .notice-popover-header { background: #f8fafc; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 10px; border-top-right-radius: 10px; }
     .notice-popover-body { max-height: 320px; overflow-y: auto; }
     .notice-item { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; }
@@ -147,13 +147,13 @@
           
           <div class="notice-popover" id="noticePopover">
             <div class="notice-popover-header">
-              <strong>🔔 当日の新規通知一覧</strong>
+              <strong>🔔 当日の新規操作・通知一覧</strong>
             </div>
             <div class="notice-popover-body" id="noticeListContainer">
               <div style="padding:16px; text-align:center; color:#94a3b8;">当日の新規通知はありません</div>
             </div>
             <div style="padding:8px; border-top:1px solid #e2e8f0; background:#f8fafc; text-align:center;">
-              <button class="btn-action btn-dark" style="width:100%; font-size:0.85rem;" onclick="openPastNoticeModal()">📜 前日以前の過去通知を見る</button>
+              <button class="btn-action btn-dark" style="width:100%; font-size:0.85rem;" onclick="switchTab('notices'); document.getElementById('noticePopover').style.display='none';">📜 全ての通知履歴を見る（通知一覧タブ）</button>
             </div>
           </div>
         </div>
@@ -162,6 +162,7 @@
 
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchTab('menu')">📱 メニュー</button>
+      <button class="tab-btn" onclick="switchTab('notices')">🔔 通知一覧</button>
       <button class="tab-btn" onclick="switchTab('reservations')">📅 予約一覧</button>
       <button class="tab-btn" onclick="switchTab('interview')">📋 事前問診</button>
       <button class="tab-btn" onclick="switchTab('timeline')">🕒 1日スケジュール</button>
@@ -175,6 +176,17 @@
   <!-- TAB 0 -->
   <div id="tab-menu" class="tab-content active">
     <div class="menu-portal-grid">
+      <div class="portal-card" onclick="switchTab('notices')">
+        <div style="display:flex; align-items:center;">
+          <div class="icon">🔔</div>
+          <div class="info">
+            <h3>新着・当日操作の通知一覧</h3>
+            <p>本日受付された新規予約やキャンセルなどの操作履歴を確認できます。</p>
+          </div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
       <div class="portal-card" onclick="switchTab('reservations')">
         <div style="display:flex; align-items:center;">
           <div class="icon">📅</div>
@@ -251,6 +263,24 @@
         </div>
         <div class="arrow">›</div>
       </div>
+    </div>
+  </div>
+
+  <!-- TAB 0.5: 🔔 通知一覧タブ -->
+  <div id="tab-notices" class="tab-content">
+    <div class="filter-box">
+      <label style="font-weight:900;">絞り込み:</label>
+      <select id="noticeFilterSelect" onchange="renderNoticeTabList()">
+        <option value="today">⚡ 当日操作の通知（新規受付・キャンセル）</option>
+        <option value="all">📜 全ての通知・操作履歴</option>
+        <option value="unread">● 未読の通知のみ</option>
+      </select>
+      <button class="btn-action" onclick="loadData()">🔄 手動更新</button>
+    </div>
+
+    <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:16px;">
+      <h3 style="margin-top:0; color:var(--primary-dark);" id="noticeTabTitle">当日の操作通知一覧</h3>
+      <div id="noticeTabListContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
     </div>
   </div>
 
@@ -416,14 +446,6 @@
   </div>
 
   <!-- モーダル各種 -->
-  <div id="pastNoticeModal" class="modal">
-    <div class="modal-content" style="max-width:600px; max-height:80vh; overflow-y:auto;">
-      <h3 style="margin-top:0; font-size:1.2rem; font-weight:900; color:var(--primary-dark);">📜 前日以前の過去通知履歴</h3>
-      <div id="pastNoticeModalBody" style="margin:16px 0;"></div>
-      <button class="btn-action btn-dark" style="width:100%; padding:10px;" onclick="closePastNoticeModal()">閉じる</button>
-    </div>
-  </div>
-
   <div id="cancelModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-top:0; font-size:1.2rem; font-weight:900; color:#991b1b;">⚠️ 予約取り消しとLINE通知</h3>
@@ -533,6 +555,7 @@
           renderHolidayView();
           renderPatientTable();
           updateNoticeBell();
+          renderNoticeTabList();
           loadAnnounceSetting();
         })
         .catch(err => {
@@ -589,7 +612,42 @@
       return { chipsHtml, detailText: fullDetailText };
     }
 
-    // 🔔 通知ベルとバッジ（最新順ソート）
+    // 🔔 全操作リストの生成（操作日 updated/created ベース）
+    function getAllNoticeItems() {
+      const validReservations = allReservations.filter(r => 
+        r && r.status !== '休診' && r.lineUserId !== 'SYSTEM_HOLIDAY'
+      );
+
+      const items = validReservations.map(r => {
+        const id = `${r.rowIndex}_${r.status}_${r.updatedAt || r.createdAt}`;
+        const isRead = readNoticeIds.has(id);
+        const isCancel = (r.status === 'キャンセル');
+
+        // 操作日時（updatedAt または createdAt）の取得・正規化
+        const opDateStr = normalizeDateStr(r.updatedAt || r.createdAt);
+
+        return {
+          id: id,
+          rowIndex: r.rowIndex,
+          date: r.date,
+          time: r.time,
+          name: r.lineUserName || '不明',
+          pet: r.petName || 'ペット',
+          menu: r.menu || '診察',
+          status: r.status,
+          type: isCancel ? 'キャンセル' : (r.status === '予約受付' ? '新規受付' : r.status),
+          isRead: isRead,
+          opDateStr: opDateStr,
+          opFullTime: r.updatedAt || r.createdAt || ''
+        };
+      });
+
+      // 操作日時の降順（最新順）にソート
+      items.sort((a, b) => b.rowIndex - a.rowIndex);
+      return items;
+    }
+
+    // 🔔 ベルアイコンとポップアップ通知の更新
     function updateNoticeBell() {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -597,37 +655,12 @@
       const dd = String(now.getDate()).padStart(2, '0');
       const todayStr = `${yyyy}-${mm}-${dd}`;
 
-      const validReservations = allReservations.filter(r => 
-        r && r.status !== '休診' && r.lineUserId !== 'SYSTEM_HOLIDAY'
-      );
+      const allNotices = getAllNoticeItems();
       
-      const allNotices = [];
-      validReservations.forEach(r => {
-        const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
-        const isRead = readNoticeIds.has(id);
-        const isCancel = r.status === 'キャンセル';
-        
-        const normCreated = normalizeDateStr(r.createdAt);
-        const normReserve = normalizeDateStr(r.date);
-        const isToday = (normCreated === todayStr || normReserve === todayStr);
+      // 操作日が「本日」であるものを当日通知とする
+      const todayNotices = allNotices.filter(n => n.opDateStr === todayStr);
 
-        allNotices.push({
-          id: id,
-          rowIndex: r.rowIndex,
-          date: r.date,
-          time: r.time,
-          name: r.lineUserName || '不明',
-          pet: r.petName || 'ペット',
-          type: isCancel ? 'キャンセル' : '新規受付',
-          isRead: isRead,
-          isToday: isToday
-        });
-      });
-
-      // 新しい順（降順）にソート
-      allNotices.sort((a, b) => b.rowIndex - a.rowIndex);
-
-      const totalUnreadCount = allNotices.filter(n => !n.isRead).length;
+      const totalUnreadCount = todayNotices.filter(n => !n.isRead).length;
       const badge = document.getElementById('noticeBadge');
       if (totalUnreadCount > 0) {
         badge.innerText = totalUnreadCount;
@@ -636,21 +669,19 @@
         badge.style.display = 'none';
       }
 
-      const todayNotices = allNotices.filter(n => n.isToday);
       const container = document.getElementById('noticeListContainer');
-      
       if (todayNotices.length === 0) {
-        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">当日の新規通知はありません</div>`;
+        container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">本日の新規操作・通知はありません</div>`;
       } else {
         container.innerHTML = todayNotices.map(n => `
           <div class="notice-item ${n.isRead ? '' : 'unread'}" onclick="clickSingleNotice('${n.id}', ${n.rowIndex})">
             <div style="font-weight:bold; color:${n.type === 'キャンセル' ? '#dc2626' : '#0369a1'}; font-size:0.8rem;">
-              ${n.type === 'キャンセル' ? '❌ キャンセル' : '🆕 新規受付'} ${n.isRead ? '（既読）' : '● 未読'}
+              ${n.type === 'キャンセル' ? '❌ キャンセル' : '🆕 ' + n.type} ${n.isRead ? '（既読）' : '● 未読'}
             </div>
             <div style="font-size:0.9rem; font-weight:bold; color:#111827; margin-top:2px;">
               ${n.name} 様 (${n.pet})
             </div>
-            <div style="font-size:0.75rem; color:#64748b;">📅 ${n.date} ${n.time}</div>
+            <div style="font-size:0.75rem; color:#64748b;">予約日時: 📅 ${n.date} ${n.time}</div>
           </div>
         `).join('');
       }
@@ -665,62 +696,58 @@
       readNoticeIds.add(noticeId);
       localStorage.setItem('arbre_admin_read_notices', JSON.stringify(Array.from(readNoticeIds)));
       updateNoticeBell();
+      renderNoticeTabList();
       jumpToInterview(rowIndex);
       document.getElementById('noticePopover').style.display = 'none';
     }
 
-    // 📜 前日以前の過去通知一覧モーダル（最新順ソート）
-    function openPastNoticeModal() {
-      const container = document.getElementById('pastNoticeModalBody');
+    // 🔔 「通知一覧」タブのレンダリング
+    function renderNoticeTabList() {
+      const container = document.getElementById('noticeTabListContainer');
+      const filterType = document.getElementById('noticeFilterSelect').value;
+      
       const now = new Date();
       const yyyy = now.getFullYear();
       const mm = String(now.getMonth() + 1).padStart(2, '0');
       const dd = String(now.getDate()).padStart(2, '0');
       const todayStr = `${yyyy}-${mm}-${dd}`;
 
-      const validReservations = allReservations.filter(r => 
-        r && r.status !== '休診' && r.lineUserId !== 'SYSTEM_HOLIDAY'
-      );
+      let notices = getAllNoticeItems();
 
-      const pastNotices = validReservations.filter(r => {
-        const normCreated = normalizeDateStr(r.createdAt);
-        const normReserve = normalizeDateStr(r.date);
-        return (normCreated !== todayStr && normReserve !== todayStr);
-      });
-
-      // 新しい順（降順）にソート
-      pastNotices.sort((a, b) => b.rowIndex - a.rowIndex);
-
-      if (pastNotices.length === 0) {
-        container.innerHTML = `<div style="padding:20px; text-align:center; color:#64748b;">前日以前の通知履歴はありません。</div>`;
+      if (filterType === 'today') {
+        notices = notices.filter(n => n.opDateStr === todayStr);
+        document.getElementById('noticeTabTitle').innerText = '⚡ 当日の操作通知一覧（新規受付・キャンセル等）';
+      } else if (filterType === 'unread') {
+        notices = notices.filter(n => !n.isRead);
+        document.getElementById('noticeTabTitle').innerText = '● 未読の操作通知一覧';
       } else {
-        container.innerHTML = pastNotices.map(r => {
-          const id = `${r.rowIndex}_${r.status}_${r.date}_${r.time}`;
-          const isRead = readNoticeIds.has(id);
-          const isCancel = r.status === 'キャンセル';
-
-          return `
-            <div style="padding:10px 12px; border-bottom:1px solid #e2e8f0; cursor:pointer; background:${isRead ? '#fff' : '#fefce8'}; margin-bottom:6px; border-radius:8px; border:1px solid #cbd5e0;" onclick="clickSingleNotice('${id}', ${r.rowIndex}); closePastNoticeModal();">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:bold; font-size:0.85rem; color:${isCancel ? '#dc2626' : '#0369a1'};">
-                  ${isCancel ? '❌ キャンセル' : '🆕 新規受付'} ${isRead ? '（既読）' : '● 未読'}
-                </span>
-                <span style="font-size:0.75rem; color:#64748b;">📅 ${r.date} ${r.time}</span>
-              </div>
-              <div style="font-size:0.95rem; font-weight:bold; color:#111827; margin-top:2px;">
-                👤 ${r.lineUserName || '不明'} 様 / 🐾 ${r.petName || 'ペット'} (${r.menu || '未指定'})
-              </div>
-            </div>
-          `;
-        }).join('');
+        document.getElementById('noticeTabTitle').innerText = '📜 全ての操作通知・履歴';
       }
 
-      document.getElementById('pastNoticeModal').style.display = 'flex';
-      document.getElementById('noticePopover').style.display = 'none';
-    }
+      if (notices.length === 0) {
+        container.innerHTML = `<div style="padding:30px; text-align:center; color:#94a3b8; font-weight:bold;">該当する通知データはありません</div>`;
+        return;
+      }
 
-    function closePastNoticeModal() {
-      document.getElementById('pastNoticeModal').style.display = 'none';
+      container.innerHTML = notices.map(n => `
+        <div style="background:${n.isRead ? '#fff' : '#fefce8'}; border:1.5px solid ${n.isRead ? '#cbd5e0' : '#f59e0b'}; padding:14px; border-radius:10px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="clickSingleNotice('${n.id}', ${n.rowIndex})">
+          <div>
+            <div style="font-weight:900; font-size:0.9rem; color:${n.type === 'キャンセル' ? '#dc2626' : '#047857'}; margin-bottom:4px;">
+              ${n.type === 'キャンセル' ? '❌ キャンセル操作' : '🆕 ' + n.type} ${n.isRead ? '<span style="color:#64748b; font-weight:normal;">(既読)</span>' : '<span style="color:#d97706; font-weight:900;">● 未読</span>'}
+            </div>
+            <div style="font-size:1.05rem; font-weight:900; color:#111827;">
+              👤 ${n.name} 様 / 🐾 ${n.pet} <small style="color:#475569; font-weight:normal;">(${n.menu})</small>
+            </div>
+            <div style="font-size:0.85rem; color:#475569; margin-top:4px;">
+              📅 予約希望日時: <strong>${n.date} ${n.time}</strong>
+            </div>
+          </div>
+
+          <div style="text-align:right;">
+            <button class="btn-action btn-dark" style="font-size:0.8rem; padding:6px 10px;">📋 詳細を見る</button>
+          </div>
+        </div>
+      `).join('');
     }
 
     function setCategoryFilter(type) {
