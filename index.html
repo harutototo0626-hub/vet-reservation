@@ -69,9 +69,9 @@
     }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
-    .btn-tile { border: 1px solid #cbd5e0; padding: 10px 6px; border-radius: 8px; text-align: center; font-size: 0.85rem; background: #fff; cursor: pointer; color: #4a5568; }
+    .btn-tile { border: 1.5px solid #cbd5e0; padding: 12px 8px; border-radius: 10px; text-align: center; font-size: 0.9rem; background: #fff; cursor: pointer; color: #4a5568; font-weight: 700; transition: all 0.2s; }
     .btn-tile input { display: none; }
-    .btn-tile.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); font-weight: bold; }
+    .btn-tile.selected { border-color: var(--primary-dark); background: var(--primary-light); color: var(--primary-dark); font-weight: 900; box-shadow: 0 2px 6px rgba(4, 120, 87, 0.15); }
 
     .chip-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
     .chip { border: 1px solid #cbd5e0; padding: 6px 10px; border-radius: 16px; font-size: 0.82rem; background: #fff; color: #4a5568; cursor: pointer; }
@@ -233,11 +233,9 @@
             <div class="step-content active" id="step1">
               <h2>1. ペット・飼い主様の情報</h2>
 
-              <div id="savedPetBox" style="background:#eef2ff; border:1px solid #c7d2fe; padding:10px; border-radius:10px; margin-bottom:14px; display:none;">
-                <label for="savedPetSelect" style="margin-top:0; color:#3730a3;">🐾 登録済みのペットから選ぶ</label>
-                <select id="savedPetSelect" onchange="loadSavedPetData()">
-                  <option value="">-- 新しいペットを入力 --</option>
-                </select>
+              <div id="savedPetBox" style="background:#eef2ff; border:1px solid #c7d2fe; padding:12px; border-radius:10px; margin-bottom:14px; display:none;">
+                <label style="margin-top:0; color:#3730a3; font-weight:900;">🐾 登録済みのペットから選ぶ</label>
+                <div id="savedPetTileGrid" class="grid-2" style="margin-top:8px;"></div>
               </div>
 
               <label for="petName">ペットのお名前 <span class="req">必須</span></label>
@@ -482,10 +480,8 @@
             <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:12px; border-radius:10px; margin-bottom:14px;">
               <h3 style="margin:0 0 8px 0; font-size:0.95rem; color:#1e40af;">🐾 ペット情報</h3>
               
-              <label for="profPetSelect" style="margin-top:0; color:#1e3a8a;">編集・確認するペットを選択</label>
-              <select id="profPetSelect" onchange="onProfPetSelectChange()" style="border-color:#3b82f6; font-weight:bold;">
-                <option value="NEW">＋ 新しいペットを追加する</option>
-              </select>
+              <label style="margin-top:0; color:#1e3a8a; font-weight:bold;">編集・確認するペットを選択（タップして切り替え）</label>
+              <div id="profPetTileGrid" class="grid-2" style="margin-top:6px; margin-bottom:14px;"></div>
 
               <label for="profPetName">ペットのお名前 <span class="req">必須</span></label>
               <input type="text" id="profPetName" placeholder="例: チョコ" required>
@@ -547,6 +543,7 @@
     let selectedTimeStr = "";
     let isPickupMode = false;
     let patientPetList = [];
+    let activeProfPetIndex = 'NEW';
 
     const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
 
@@ -705,7 +702,6 @@
       document.getElementById('viewPortalMenu').style.display = 'block';
     }
 
-    // 👤 患者・ペット情報の取得およびドロップダウン更新
     function loadPatientProfileData() {
       const targetPhone = currentUserPhone || localStorage.getItem('arbre_user_saved_phone');
       if (!targetPhone) return;
@@ -723,21 +719,45 @@
           }
           document.getElementById('phoneNo').value = targetPhone;
 
-          const petSelect = document.getElementById('profPetSelect');
-          petSelect.innerHTML = '<option value="NEW">＋ 新しいペットを追加する</option>' +
-            patientPetList.map((p, idx) => `<option value="${idx}">🐾 ${p.petName} ちゃん (${p.petType || '犬'})</option>`).join('');
+          renderProfPetTiles();
 
           if (patientPetList.length > 0) {
-            petSelect.value = "0";
-            fillProfPetFields(patientPetList[0]);
+            selectProfPetTile(0);
           } else {
-            petSelect.value = "NEW";
-            fillProfPetFields({});
+            selectProfPetTile('NEW');
           }
 
-          // 予約STEP1の登録済みペットドロップダウンを更新＆自動入力連動実行
-          updateSavedPetDropdownFromList(patientPetList);
+          updateSavedPetTilesFromList(patientPetList);
         });
+    }
+
+    function renderProfPetTiles() {
+      const grid = document.getElementById('profPetTileGrid');
+      let html = patientPetList.map((p, idx) => `
+        <div class="btn-tile ${activeProfPetIndex === idx ? 'selected' : ''}" onclick="selectProfPetTile(${idx})">
+          🐾 ${p.petName} ちゃん<br><small style="font-weight:normal;">(${p.petType || '犬'})</small>
+        </div>
+      `).join('');
+
+      html += `
+        <div class="btn-tile ${activeProfPetIndex === 'NEW' ? 'selected' : ''}" style="border-style:dashed; border-color:#3b82f6; color:#1d4ed8;" onclick="selectProfPetTile('NEW')">
+          ＋ 新しいペットを追加
+        </div>
+      `;
+
+      grid.innerHTML = html;
+    }
+
+    function selectProfPetTile(indexVal) {
+      activeProfPetIndex = indexVal;
+      renderProfPetTiles();
+
+      if (indexVal === 'NEW') {
+        fillProfPetFields({});
+      } else {
+        const p = patientPetList[indexVal];
+        if (p) fillProfPetFields(p);
+      }
     }
 
     function fillProfPetFields(p) {
@@ -745,46 +765,49 @@
       document.getElementById('profPetType').value = p.petType || '犬';
       document.getElementById('profPetBreed').value = p.petBreed || '';
       document.getElementById('profPetSex').value = p.petSex || '';
-      document.getElementById('profPetBirth').value = p.petBirth || '';
+      
+      const birthInput = document.getElementById('profPetBirth');
+      const normBirth = normalizeDateStr(p.petBirth);
+      if (birthInput) {
+        birthInput.value = normBirth;
+      }
+
       document.getElementById('profPetMemo').value = p.petMemo || '';
     }
 
-    function onProfPetSelectChange() {
-      const val = document.getElementById('profPetSelect').value;
-      if (val === 'NEW') {
-        fillProfPetFields({});
-      } else {
-        const p = patientPetList[parseInt(val)];
-        if (p) fillProfPetFields(p);
-      }
-    }
-
-    // STEP1 登録済みペットドロップダウンの更新＆初回自動読み込み
-    function updateSavedPetDropdownFromList(pets) {
+    function updateSavedPetTilesFromList(pets) {
       const box = document.getElementById('savedPetBox');
-      const select = document.getElementById('savedPetSelect');
+      const grid = document.getElementById('savedPetTileGrid');
 
       if (pets && pets.length > 0) {
         box.style.display = 'block';
-        select.innerHTML = '<option value="">-- 新しいペットを入力 --</option>' +
-          pets.map((p, idx) => `<option value="${idx}">🐾 ${p.petName} ちゃん (${p.petType || '犬'})</option>`).join('');
-        
-        // 1頭目を初期選択し、自動入力連動を実行
-        select.value = "0";
-        loadSavedPetData();
+        let html = pets.map((p, idx) => `
+          <div class="btn-tile ${idx === 0 ? 'selected' : ''}" id="savedPetTile_${idx}" onclick="selectSavedPetTile(${idx})">
+            🐾 ${p.petName} ちゃん<br><small style="font-weight:normal;">(${p.petType || '犬'})</small>
+          </div>
+        `).join('');
+
+        html += `
+          <div class="btn-tile" id="savedPetTile_NEW" style="border-style:dashed;" onclick="selectSavedPetTile('NEW')">
+            ＋ 手入力・新規
+          </div>
+        `;
+        grid.innerHTML = html;
+        selectSavedPetTile(0);
       } else {
         box.style.display = 'none';
       }
     }
 
-    // 🐾 【連動修復・動作保護版】登録済みペット選択時の全自動フォーム入力処理
-    function loadSavedPetData() {
-      const val = document.getElementById('savedPetSelect').value;
+    function selectSavedPetTile(indexVal) {
+      document.querySelectorAll('#savedPetTileGrid .btn-tile').forEach(el => el.classList.remove('selected'));
+      const targetEl = document.getElementById(`savedPetTile_${indexVal}`);
+      if (targetEl) targetEl.classList.add('selected');
+
       const birthInput = document.getElementById('petBirth');
       const birthUnknownCb = document.getElementById('petBirthUnknown');
 
-      if (val === "" || !patientPetList[parseInt(val)]) {
-        // 未選択に戻した場合はクリア
+      if (indexVal === 'NEW' || !patientPetList[indexVal]) {
         document.getElementById('petName').value = '';
         document.getElementById('petBreed').value = '';
         document.getElementById('petSex').value = '';
@@ -804,12 +827,12 @@
         return;
       }
 
-      const p = patientPetList[parseInt(val)];
+      const p = patientPetList[indexVal];
       document.getElementById('petName').value = p.petName || '';
       document.getElementById('petBreed').value = p.petBreed || '';
       document.getElementById('petSex').value = p.petSex || '';
 
-      // 生年月日の連動処理
+      const normBirth = normalizeDateStr(p.petBirth);
       if (p.petBirth === '不明') {
         if (birthInput) {
           birthInput.value = '';
@@ -819,14 +842,13 @@
         if (birthUnknownCb) birthUnknownCb.checked = true;
       } else {
         if (birthInput) {
-          birthInput.value = p.petBirth || '';
+          birthInput.value = normBirth;
           birthInput.disabled = false;
           birthInput.style.backgroundColor = '#fff';
         }
         if (birthUnknownCb) birthUnknownCb.checked = false;
       }
 
-      // ペット種別（犬/猫等タイル）の連動処理
       const targetType = p.petType || '犬';
       document.querySelectorAll('input[name="petType"]').forEach(r => {
         const isMatch = (r.value === targetType);
@@ -836,7 +858,6 @@
       });
     }
 
-    // 💾 患者・ペット情報の保存処理
     function savePatientProfile() {
       const ownerName = document.getElementById('profOwnerName').value.trim();
       const phoneNo = document.getElementById('profPhoneNo').value.trim();
@@ -972,10 +993,7 @@
     function toggleMenuType(type) {
       isPickupMode = (type === 'pickup');
       document.getElementById('sectionMedicalSymptoms').style.display = isPickupMode ? 'none' : 'block';
-      document.getElementById('sectionPickupDetail').style.display = isPickupMode ? 'none' : 'none'; // pickup用詳細
-      if (isPickupMode) {
-        document.getElementById('sectionPickupDetail').style.display = 'block';
-      }
+      document.getElementById('sectionPickupDetail').style.display = isPickupMode ? 'block' : 'none';
       
       document.getElementById('medicalCalendarArea').style.display = isPickupMode ? 'none' : 'block';
       document.getElementById('pickupCalendarArea').style.display = isPickupMode ? 'block' : 'none';
@@ -986,7 +1004,6 @@
       document.getElementById('btnToStep5').disabled = true;
     }
 
-    // 📅 既存の予約データおよび休診枠を取得
     function fetchExistingReservations() {
       fetch(GAS_URL)
         .then(res => res.json())
@@ -997,7 +1014,6 @@
           } else if (data && Array.isArray(data.reservations)) {
             list = data.reservations;
           }
-          // キャンセル以外のデータをすべて保持（予約枠＋休診枠）
           existingReservations = list.filter(r => r && r.status !== 'キャンセル');
           renderCalendar();
         })
@@ -1008,12 +1024,14 @@
       container.addEventListener('click', (e) => {
         const target = e.target.closest('.btn-tile');
         if (!target) return;
-        const group = target.querySelector('input').name;
+        const groupInput = target.querySelector('input');
+        if (!groupInput) return;
+        const group = groupInput.name;
         container.querySelectorAll(`input[name="${group}"]`).forEach(input => {
           input.closest('.btn-tile').classList.remove('selected');
         });
         target.classList.add('selected');
-        target.querySelector('input').checked = true;
+        groupInput.checked = true;
       });
     });
 
@@ -1023,7 +1041,6 @@
 
     function toggleChip(el) { el.classList.toggle('selected'); }
 
-    // 時刻文字列から数字・コロン部分（例: "09:00"）を安全に抽出する関数
     function extractHourMin(str) {
       if (!str) return '';
       const m = String(str).match(/(\d{1,2}:\d{2})/);
@@ -1032,7 +1049,6 @@
       return `${parts[0].padStart(2, '0')}:${parts[1]}`;
     }
 
-    // 📅 【完全改修版】休診枠および既存予約枠を正しく「✕」として表示するカレンダー描画
     function renderCalendar() {
       const monthHeader = document.getElementById('calMonthHeader');
       const dateHeader = document.getElementById('calDateHeader');
@@ -1073,11 +1089,9 @@
           let isPast = d < today;
           let isWed = d.getDay() === 3;
 
-          // 該当日の予約・休診データを取得
           let dayRecords = existingReservations.filter(r => normalizeDateStr(r.date) === dateStr);
           let targetHm = extractHourMin(time);
 
-          // 当該スロットに休診（1日休診・時間指定休診）または既存の診察予約が存在するか判定
           let isBlocked = dayRecords.some(r => {
             const isHolidayRecord = (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY');
             if (isHolidayRecord) {
@@ -1085,14 +1099,12 @@
               if (isFullDay) return true;
               return extractHourMin(r.time) === targetHm;
             }
-            // 通常予約の場合
             return extractHourMin(r.time) === targetHm;
           });
 
           if (isPast || isWed) {
             bodyHtml += `<td><span class="cell-none">-</span></td>`;
           } else if (isBlocked) {
-            // 休診・予約済みの枠は完全に「✕」にして予約不可とする
             bodyHtml += `<td><span class="cell-ng">✕</span></td>`;
           } else {
             let isSelected = (selectedDateStr === dateStr && selectedTimeStr === time);
@@ -1123,7 +1135,6 @@
       renderCalendar();
     }
 
-    // 💊 【完全改修版】薬・フード受取における休診枠チェック
     function onPickupDateChange() {
       const dateVal = document.getElementById('pickupDatePicker').value;
       if (!dateVal) return;
