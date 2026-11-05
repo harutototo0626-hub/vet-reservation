@@ -45,11 +45,11 @@
     .btn-action { padding: 8px 14px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.9rem; }
     .btn-green { background: var(--primary); }
     .btn-dark { background: var(--primary-dark); }
+    .btn-purple { background: #6d28d9; color: #fff; }
     .btn-danger { background: #dc2626; color: #fff; }
     .btn-filter { background: #e5e7eb; color: #374151; border: 1.5px solid #d1d5db; }
     .btn-filter.active { background: #0284c7; color: #fff; border-color: #0284c7; }
 
-    /* ズームや解像度変化時にも常に画面下部に横スクロールバーを表示させるスタイル */
     .table-container, .tile-grid-wrap {
       background: var(--card-bg);
       border-radius: 12px;
@@ -129,6 +129,12 @@
     .holiday-cell.is-open { background: #f0fdf4; color: #166534; }
     .holiday-cell.is-off { background: #fef2f2; color: #991b1b; }
     .th-day-toggle { cursor: pointer; background: #e2e8f0 !important; }
+
+    /* テンプレート設定用ミニテーブル */
+    .tmpl-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; background: #fff; margin-top: 10px; border-radius: 8px; overflow: hidden; border: 1.5px solid #ddd6fe; }
+    .tmpl-table th, .tmpl-table td { border: 1px solid #e9d5ff; padding: 8px 4px; }
+    .tmpl-table th { background: #f3e8ff; color: #581c87; font-weight: 800; }
+    .tmpl-table td label { display: flex; align-items: center; justify-content: center; gap: 4px; font-weight: bold; cursor: pointer; width: 100%; height: 100%; }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -219,7 +225,7 @@
           <div class="icon">📋</div>
           <div class="info">
             <h3>事前問診一覧・詳細</h3>
-            <p>過去分は月別ファイルとして折りたたみ収納されます。</p>
+            <p>月別フォルダとして折りたたみ収納されます（今月分は初期開いた状態）。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -252,7 +258,7 @@
           <div class="icon">⚙️</div>
           <div class="info">
             <h3>休業・予約公開期間設定</h3>
-            <p>年間特定曜日の一括休診や公開期間の変更ができます。</p>
+            <p>曜日・時間枠ごとの1週間標準テンプレートを一括反映できます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -384,32 +390,53 @@
   <!-- TAB 4: 休業・受付枠設定 -->
   <div id="tab-holiday" class="tab-content">
     
-    <!-- 🗓️ 年間・特定曜日の一括休診設定 -->
-    <div style="background:#f0fdf4; border:2px solid #22c55e; padding:16px; border-radius:12px; margin-bottom:16px;">
-      <h3 style="margin-top:0; color:#15803d; font-size:1.1rem; font-weight:900;">🗓️ 年間・特定曜日の一括休診設定</h3>
-      <p style="font-size:0.85rem; color:#334155; margin-bottom:10px;">指定した年（1年間）のすべての指定曜日を一括で休診枠として設定、または解除できます。</p>
-      
-      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <label for="bulkHolidayYear" style="font-weight:bold;">対象年：</label>
-        <select id="bulkHolidayYear">
+    <!-- 🗓️ 1週間の曜日・時間帯別 テンプレート設定 -->
+    <div style="background:#f3e8ff; border:2px solid #8b5cf6; padding:18px; border-radius:12px; margin-bottom:16px;">
+      <h3 style="margin-top:0; color:#581c87; font-size:1.15rem; font-weight:900;">⚙️ 1週間の曜日・時間帯別 テンプレート設定</h3>
+      <p style="font-size:0.85rem; color:#4c1d95; margin-bottom:10px; line-height:1.4;">
+        曜日ごとに「どの時間の枠を受付可能にするか（○）」を1週間の基本形としてチェックを付け、指定年のカレンダーへ一括反映します。<br>
+        （例: 水曜日は全時間帯チェックを外して全休診、土曜日は午前のみ○にして午後×など自由に設定できます）
+      </p>
+
+      <div style="display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap;">
+        <button class="btn-action" style="background:#7c3aed; font-size:0.8rem; padding:4px 8px;" onclick="applyTmplPreset('wedOff')">💡 水曜のみ全休診にする</button>
+        <button class="btn-action" style="background:#7c3aed; font-size:0.8rem; padding:4px 8px;" onclick="applyTmplPreset('satPmOff')">💡 土曜午後は休診にする</button>
+        <button class="btn-action" style="background:#4c1d95; font-size:0.8rem; padding:4px 8px;" onclick="applyTmplPreset('allOpen')">✅ 全て受付可能にする</button>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="tmpl-table">
+          <thead>
+            <tr>
+              <th style="width:70px;">曜日</th>
+              <th>09:00</th>
+              <th>10:00</th>
+              <th>11:00</th>
+              <th style="background:#ede9fe; color:#4c1d95;">午前一括</th>
+              <th>16:00</th>
+              <th>17:00</th>
+              <th>18:00</th>
+              <th style="background:#ede9fe; color:#4c1d95;">午後一括</th>
+              <th style="background:#ddd6fe; color:#4c1d95;">1日全一括</th>
+            </tr>
+          </thead>
+          <tbody id="weeklyTmplTbody">
+            <!-- JavaScriptで自動生成 -->
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:12px; margin-top:14px; flex-wrap:wrap;">
+        <label for="weeklyTmplYear" style="font-weight:bold; color:#4c1d95;">適用対象年：</label>
+        <select id="weeklyTmplYear" style="border-color:#8b5cf6;">
           <option value="2026">2026年</option>
           <option value="2027">2027年</option>
           <option value="2028">2028年</option>
         </select>
 
-        <label for="bulkHolidayDay" style="font-weight:bold; margin-left:10px;">曜日：</label>
-        <select id="bulkHolidayDay">
-          <option value="3" selected>水曜日</option>
-          <option value="0">日曜日</option>
-          <option value="1">月曜日</option>
-          <option value="2">火曜日</option>
-          <option value="4">木曜日</option>
-          <option value="5">金曜日</option>
-          <option value="6">土曜日</option>
-        </select>
-
-        <button class="btn-action btn-danger" onclick="executeBulkWeekdayHoliday('add')">🚫 指定曜日を一括休診に設定</button>
-        <button class="btn-action btn-dark" onclick="executeBulkWeekdayHoliday('remove')">🔄 一括休診を解除（通常受付）</button>
+        <button class="btn-action btn-purple" style="font-size:1rem; padding:10px 18px;" onclick="executeWeeklyTemplateApply()">
+          🚀 この週間テンプレートを指定年に一括反映する
+        </button>
       </div>
     </div>
 
@@ -433,9 +460,9 @@
     </div>
 
     <div style="background:#fff3cd; border:1px solid #ffeba2; padding:12px; border-radius:8px; margin-bottom:14px; font-size:0.95rem; color:#856404;">
-      💡 <strong>個別枠・日別の休み設定の使い方</strong>：<br>
+      💡 <strong>個別枠・日別の手動休み設定</strong>：<br>
       ・日付ヘッダーをタップ ➔ その日を<strong>1日まとめて「全日休診」</strong>に切り替え・解除します。<br>
-      ・各時間枠のセルをタップ ➔ その時間枠のみ<strong>「受付停止/受付再開」</strong>を切り替えます。
+      ・各時間枠のセルをタップ ➔ その時間枠のみ個別で<strong>「受付停止/受付再開」</strong>を切り替えます。
     </div>
 
     <div class="filter-box">
@@ -616,6 +643,7 @@
     
     const TIME_SLOTS = ["09:00", "10:00", "11:00", "16:00", "17:00", "18:00"];
     const DISPLAY_SLOTS = ["09:00", "10:00", "11:00", "午前 (受取のみ)", "16:00", "17:00", "18:00", "午後 (受取のみ)"];
+    const DAY_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
 
     let allReservations = [];
     let allPatientRecords = [];
@@ -642,6 +670,8 @@
       document.getElementById('interviewDatePicker').value = todayStr;
       document.getElementById('timelineDatePicker').value = todayStr;
       
+      initWeeklyTmplTable();
+
       if (adminPass) {
         document.getElementById('loginOverlay').style.display = 'none';
         loadData();
@@ -708,31 +738,95 @@
         });
     }
 
-    function executeBulkWeekdayHoliday(mode) {
-      const year = document.getElementById('bulkHolidayYear').value;
-      const dayOfWeek = document.getElementById('bulkHolidayDay').value;
-      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-      const dayName = dayNames[dayOfWeek];
+    // ⚙️ 1週間テンプレート表の初期化生成
+    function initWeeklyTmplTable() {
+      const tbody = document.getElementById('weeklyTmplTbody');
+      let html = '';
 
-      const actionText = mode === 'add' ? '一括休診に設定' : '休診解除（通常受付に戻す）';
-      if (!confirm(`【年間一括設定の確認】\n${year}年の「すべての ${dayName}曜日」を ${actionText} しますか？`)) {
+      DAY_NAMES.forEach((dayName, dayIdx) => {
+        const isWed = (dayIdx === 3);
+        
+        html += `<tr>`;
+        html += `<td style="font-weight:900; background:#f5f3ff; color:${dayIdx===0?'#dc2626':(dayIdx===6?'#2563eb':'#334155')};">${dayName}</td>`;
+        
+        // 午前枠 3個
+        ["09:00", "10:00", "11:00"].forEach(time => {
+          const checked = !isWed ? 'checked' : '';
+          html += `<td><label><input type="checkbox" class="tmpl-cb" data-day="${dayIdx}" data-time="${time}" ${checked}> ○</label></td>`;
+        });
+        
+        html += `<td style="background:#f5f3ff;"><button type="button" style="font-size:0.75rem; padding:2px 6px;" onclick="toggleRowBlock(${dayIdx}, 'am')">切替</button></td>`;
+        
+        // 午後枠 3個
+        ["16:00", "17:00", "18:00"].forEach(time => {
+          const checked = !isWed ? 'checked' : '';
+          html += `<td><label><input type="checkbox" class="tmpl-cb" data-day="${dayIdx}" data-time="${time}" ${checked}> ○</label></td>`;
+        });
+
+        html += `<td style="background:#f5f3ff;"><button type="button" style="font-size:0.75rem; padding:2px 6px;" onclick="toggleRowBlock(${dayIdx}, 'pm')">切替</button></td>`;
+        html += `<td style="background:#ede9fe;"><button type="button" style="font-size:0.75rem; padding:2px 6px; font-weight:bold;" onclick="toggleRowBlock(${dayIdx}, 'all')">1日全切替</button></td>`;
+        html += `</tr>`;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function toggleRowBlock(dayIdx, mode) {
+      const targetTimes = mode === 'am' ? ["09:00", "10:00", "11:00"] : (mode === 'pm' ? ["16:00", "17:00", "18:00"] : TIME_SLOTS);
+      const cbs = Array.from(document.querySelectorAll(`.tmpl-cb[data-day="${dayIdx}"]`)).filter(cb => targetTimes.includes(cb.dataset.time));
+      
+      const allChecked = cbs.every(cb => cb.checked);
+      cbs.forEach(cb => cb.checked = !allChecked);
+    }
+
+    function applyTmplPreset(presetType) {
+      document.querySelectorAll('.tmpl-cb').forEach(cb => {
+        const day = parseInt(cb.dataset.day);
+        const time = cb.dataset.time;
+
+        if (presetType === 'allOpen') {
+          cb.checked = true;
+        } else if (presetType === 'wedOff') {
+          if (day === 3) cb.checked = false;
+          else cb.checked = true;
+        } else if (presetType === 'satPmOff') {
+          if (day === 3) cb.checked = false;
+          else if (day === 6 && ["16:00", "17:00", "18:00"].includes(time)) cb.checked = false;
+          else cb.checked = true;
+        }
+      });
+    }
+
+    function executeWeeklyTemplateApply() {
+      const year = document.getElementById('weeklyTmplYear').value;
+      const template = {};
+
+      DAY_NAMES.forEach((_, dayIdx) => {
+        template[dayIdx] = [];
+        document.querySelectorAll(`.tmpl-cb[data-day="${dayIdx}"]`).forEach(cb => {
+          if (cb.checked) {
+            template[dayIdx].push(cb.dataset.time);
+          }
+        });
+      });
+
+      if (!confirm(`【週間テンプレート一括反映の確認】\n${year}年の全期間に対し、作成した1週間テンプレート（曜日×時間枠の受診枠）を一括適用しますか？`)) {
         return;
       }
 
       fetch(GAS_URL, {
         method: "POST",
         body: JSON.stringify({
-          action: "bulkSetWeekdayHoliday",
+          action: "applyWeeklyTemplate",
           year: year,
-          dayOfWeek: dayOfWeek,
-          mode: mode,
+          template: template,
           pass: adminPass
         })
       })
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
-          alert(`${year}年の ${dayName}曜日（計 ${data.count} 日分）の${actionText}が完了しました！`);
+          alert(`${year}年の全期間へ週間テンプレートを一括反映しました！`);
           loadData();
         } else {
           alert('エラーが発生しました: ' + (data.message || ''));
@@ -1120,51 +1214,51 @@
         return;
       }
 
+      list.sort((a, b) => {
+        const dateA = normalizeDateStr(a.date) + ' ' + (a.time || '');
+        const dateB = normalizeDateStr(b.date) + ' ' + (b.time || '');
+        return dateB.localeCompare(dateA) || (b.rowIndex - a.rowIndex);
+      });
+
       const now = new Date();
       const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-      const currentMonthItems = [];
-      const pastMonthGroups = {};
-
+      const monthGroups = {};
       list.forEach(r => {
         const normDate = normalizeDateStr(r.date);
-        const ym = normDate ? normDate.substring(0, 7) : '不明';
-
-        if (ym === currentYearMonth || !normDate) {
-          currentMonthItems.push(r);
-        } else {
-          if (!pastMonthGroups[ym]) pastMonthGroups[ym] = [];
-          pastMonthGroups[ym].push(r);
-        }
+        const ym = normDate ? normDate.substring(0, 7) : 'その他';
+        if (!monthGroups[ym]) monthGroups[ym] = [];
+        monthGroups[ym].push(r);
       });
 
+      const sortedYms = Object.keys(monthGroups).sort().reverse();
+
       let html = "";
+      sortedYms.forEach(ym => {
+        const items = monthGroups[ym];
+        const isCurrentMonth = (ym === currentYearMonth);
+        const isOpen = isCurrentMonth ? 'open' : '';
 
-      if (currentMonthItems.length > 0) {
-        html += `<div style="margin-bottom:16px;">`;
-        html += `<h3 style="margin-top:0; color:var(--primary-dark); border-bottom:2px solid var(--primary); padding-bottom:4px;">📌 今月（当月）の事前問診</h3>`;
-        html += currentMonthItems.map(renderInterviewCard).join('');
-        html += `</div>`;
-      }
-
-      const pastYms = Object.keys(pastMonthGroups).sort().reverse();
-      if (pastYms.length > 0) {
-        html += `<h3 style="color:#475569; border-bottom:2px solid #cbd5e0; padding-bottom:4px; margin-top:20px;">📁 過去（先月以前）の問診ファイル</h3>`;
-        pastYms.forEach(ym => {
-          const items = pastMonthGroups[ym];
+        let titleLabel = ym;
+        if (ym !== 'その他') {
           const yearParts = ym.split('-');
-          const titleLabel = yearParts.length === 2 ? `${yearParts[0]}年 ${parseInt(yearParts[1])}月` : ym;
+          if (yearParts.length === 2) {
+            titleLabel = `${yearParts[0]}年 ${parseInt(yearParts[1])}月`;
+          }
+        }
+        if (isCurrentMonth) {
+          titleLabel += '（今月）';
+        }
 
-          html += `
-            <details class="month-folder">
-              <summary>📁 ${titleLabel}の事前問診 (${items.length}件)</summary>
-              <div style="margin-top:12px;">
-                ${items.map(renderInterviewCard).join('')}
-              </div>
-            </details>
-          `;
-        });
-      }
+        html += `
+          <details class="month-folder" ${isOpen}>
+            <summary>📁 ${titleLabel}の事前問診 (${items.length}件)</summary>
+            <div style="margin-top:12px;">
+              ${items.map(renderInterviewCard).join('')}
+            </div>
+          </details>
+        `;
+      });
 
       container.innerHTML = html;
     }
@@ -1205,7 +1299,7 @@
           target.classList.add('highlight');
           setTimeout(() => target.classList.remove('highlight'), 2000);
         }
-      }, 150);
+      }, 155);
     }
 
     function renderTimeline() {
@@ -1270,9 +1364,8 @@
       let m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
       document.getElementById('tileWeekTitle').innerText = m1 === m2 ? m1 : `${m1} / ${m2}`;
 
-      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
       let headerHtml = `<th style="width:100px;">時間</th>`;
-      dates.forEach(d => headerHtml += `<th>${d.getDate()}<br>(${dayNames[d.getDay()]})</th>`);
+      dates.forEach(d => headerHtml += `<th>${d.getDate()}<br>(${DAY_NAMES[d.getDay()]})</th>`);
       document.getElementById('tileHeaderRow').innerHTML = headerHtml;
 
       let bodyHtml = "";
@@ -1333,7 +1426,6 @@
       let m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
       document.getElementById('holidayWeekTitle').innerText = m1 === m2 ? m1 : `${m1} / ${m2}`;
 
-      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
       let headerHtml = `<th style="width:80px;">時間</th>`;
       dates.forEach(d => {
         let yyyy = d.getFullYear();
@@ -1342,7 +1434,7 @@
         let dateStr = `${yyyy}-${mm}-${dd}`;
 
         headerHtml += `<th class="th-day-toggle" onclick="toggleDayHoliday('${dateStr}')" title="1日まとめて休止/解除">
-          ${d.getDate()} (${dayNames[d.getDay()]})<br><span style="font-size:0.7rem; color:#0284c7;">[1日切替]</span>
+          ${d.getDate()} (${DAY_NAMES[d.getDay()]})<br><span style="font-size:0.7rem; color:#0284c7;">[1日切替]</span>
         </th>`;
       });
       document.getElementById('holidayHeaderRow').innerHTML = headerHtml;
