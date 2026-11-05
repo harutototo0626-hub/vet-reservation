@@ -394,15 +394,8 @@
     <div style="background:#f3e8ff; border:2px solid #8b5cf6; padding:18px; border-radius:12px; margin-bottom:16px;">
       <h3 style="margin-top:0; color:#581c87; font-size:1.15rem; font-weight:900;">⚙️ 1週間の曜日・時間帯別 テンプレート設定</h3>
       <p style="font-size:0.85rem; color:#4c1d95; margin-bottom:10px; line-height:1.4;">
-        曜日ごとに「どの時間の枠を受付可能にするか（○）」を1週間の基本形としてチェックを付け、指定年のカレンダーへ一括反映します。<br>
-        （例: 水曜日は全時間帯チェックを外して全休診、土曜日は午前のみ○にして午後×など自由に設定できます）
+        曜日ごとに「どの時間の枠を受付可能にするか（○）」を1週間の基本形としてチェックを付け、指定年のカレンダーへ一括反映します。
       </p>
-
-      <div style="display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap;">
-        <button class="btn-action" style="background:#7c3aed; font-size:0.8rem; padding:4px 8px;" onclick="applyTmplPreset('wedOff')">💡 水曜のみ全休診にする</button>
-        <button class="btn-action" style="background:#7c3aed; font-size:0.8rem; padding:4px 8px;" onclick="applyTmplPreset('satPmOff')">💡 土曜午後は休診にする</button>
-        <button class="btn-action" style="background:#4c1d95; font-size:0.8rem; padding:4px 8px;" onclick="applyTmplPreset('allOpen')">✅ 全て受付可能にする</button>
-      </div>
 
       <div style="overflow-x:auto;">
         <table class="tmpl-table">
@@ -413,11 +406,9 @@
               <th>09:00</th>
               <th>10:00</th>
               <th>11:00</th>
-              <th style="background:#ede9fe; color:#4c1d95;">午前一括</th>
               <th>16:00</th>
               <th>17:00</th>
               <th>18:00</th>
-              <th style="background:#ede9fe; color:#4c1d95;">午後一括</th>
             </tr>
           </thead>
           <tbody id="weeklyTmplTbody">
@@ -738,7 +729,7 @@
         });
     }
 
-    // ⚙️ 1週間テンプレート表の初期化生成（1日全切替を一番左側に配置）
+    // ⚙️ 1週間テンプレート表の初期化生成
     function initWeeklyTmplTable() {
       const tbody = document.getElementById('weeklyTmplTbody');
       let html = '';
@@ -748,7 +739,7 @@
         
         html += `<tr>`;
         html += `<td style="font-weight:900; background:#f5f3ff; color:${dayIdx===0?'#dc2626':(dayIdx===6?'#2563eb':'#334155')};">${dayName}</td>`;
-        html += `<td style="background:#ede9fe;"><button type="button" style="font-size:0.75rem; padding:2px 6px; font-weight:bold;" onclick="toggleRowBlock(${dayIdx}, 'all')">1日全切替</button></td>`;
+        html += `<td style="background:#ede9fe;"><button type="button" style="font-size:0.75rem; padding:2px 6px; font-weight:bold;" onclick="toggleRowBlock(${dayIdx})">1日全切替</button></td>`;
         
         // 午前枠 3個
         ["09:00", "10:00", "11:00"].forEach(time => {
@@ -756,45 +747,22 @@
           html += `<td><label><input type="checkbox" class="tmpl-cb" data-day="${dayIdx}" data-time="${time}" ${checked}> ○</label></td>`;
         });
         
-        html += `<td style="background:#f5f3ff;"><button type="button" style="font-size:0.75rem; padding:2px 6px;" onclick="toggleRowBlock(${dayIdx}, 'am')">切替</button></td>`;
-        
         // 午後枠 3個
         ["16:00", "17:00", "18:00"].forEach(time => {
           const checked = !isWed ? 'checked' : '';
           html += `<td><label><input type="checkbox" class="tmpl-cb" data-day="${dayIdx}" data-time="${time}" ${checked}> ○</label></td>`;
         });
 
-        html += `<td style="background:#f5f3ff;"><button type="button" style="font-size:0.75rem; padding:2px 6px;" onclick="toggleRowBlock(${dayIdx}, 'pm')">切替</button></td>`;
         html += `</tr>`;
       });
 
       tbody.innerHTML = html;
     }
 
-    function toggleRowBlock(dayIdx, mode) {
-      const targetTimes = mode === 'am' ? ["09:00", "10:00", "11:00"] : (mode === 'pm' ? ["16:00", "17:00", "18:00"] : TIME_SLOTS);
-      const cbs = Array.from(document.querySelectorAll(`.tmpl-cb[data-day="${dayIdx}"]`)).filter(cb => targetTimes.includes(cb.dataset.time));
-      
+    function toggleRowBlock(dayIdx) {
+      const cbs = Array.from(document.querySelectorAll(`.tmpl-cb[data-day="${dayIdx}"]`));
       const allChecked = cbs.every(cb => cb.checked);
       cbs.forEach(cb => cb.checked = !allChecked);
-    }
-
-    function applyTmplPreset(presetType) {
-      document.querySelectorAll('.tmpl-cb').forEach(cb => {
-        const day = parseInt(cb.dataset.day);
-        const time = cb.dataset.time;
-
-        if (presetType === 'allOpen') {
-          cb.checked = true;
-        } else if (presetType === 'wedOff') {
-          if (day === 3) cb.checked = false;
-          else cb.checked = true;
-        } else if (presetType === 'satPmOff') {
-          if (day === 3) cb.checked = false;
-          else if (day === 6 && ["16:00", "17:00", "18:00"].includes(time)) cb.checked = false;
-          else cb.checked = true;
-        }
-      });
     }
 
     function executeWeeklyTemplateApply() {
