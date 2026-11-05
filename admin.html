@@ -41,7 +41,7 @@
     .tab-btn.active { background: var(--primary-dark); color: #fff; }
 
     .filter-box { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; font-size: 0.95rem; font-weight: 700; }
-    input[type="date"], select, textarea { padding: 8px 12px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 0.95rem; font-weight: 700; }
+    input[type="date"], input[type="text"], input[type="tel"], select, textarea { padding: 8px 12px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 0.95rem; font-weight: 700; }
     .btn-action { padding: 8px 14px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.9rem; }
     .btn-green { background: var(--primary); }
     .btn-dark { background: var(--primary-dark); }
@@ -49,7 +49,19 @@
     .btn-filter { background: #e5e7eb; color: #374151; border: 1.5px solid #d1d5db; }
     .btn-filter.active { background: #0284c7; color: #fff; border-color: #0284c7; }
 
-    .table-container { background: var(--card-bg); border-radius: 12px; overflow-x: auto; max-height: 70vh; overflow-y: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border-color); position: relative; }
+    /* ズームや解像度変化時にも常に画面下部に横スクロールバーを表示させるスタイル */
+    .table-container, .tile-grid-wrap {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: calc(100vh - 220px);
+      margin-bottom: 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+    
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; min-width: 1350px; }
     th { position: sticky; top: 0; background: #f3f4f6; color: #111827; padding: 12px; font-weight: 800; border-bottom: 3px solid #d1d5db; white-space: nowrap; z-index: 10; }
     td { padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
@@ -101,7 +113,11 @@
     .interview-card.checked { background: #f8fafc; border-color: #94a3b8; opacity: 0.8; }
     .interview-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 10px; }
 
-    .tile-grid-wrap { overflow-x: auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; }
+    details.month-folder { background: #fff; border: 2px solid #cbd5e0; border-radius: 12px; padding: 10px 14px; margin-bottom: 12px; }
+    details.month-folder summary { font-size: 1.05rem; font-weight: 900; color: #1e293b; cursor: pointer; outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    details.month-folder summary::-webkit-details-marker { display: none; }
+    details.month-folder[open] summary { border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px; }
+
     .tile-table { width: 100%; border-collapse: collapse; min-width: 900px; text-align: center; font-size: 0.85rem; }
     .tile-table th, .tile-table td { border: 1px solid #cbd5e0; padding: 8px 4px; vertical-align: top; }
     .tile-table th { background: #f1f5f9; color: #0f172a; font-weight: bold; }
@@ -118,7 +134,7 @@
     .tab-content.active { display: block; }
 
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-    .modal-content { background: #fff; padding: 24px; border-radius: 14px; width: 90%; max-width: 560px; font-size: 1rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal-content { background: #fff; padding: 24px; border-radius: 14px; width: 90%; max-width: 560px; font-size: 1rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
   </style>
 </head>
 <body>
@@ -180,8 +196,8 @@
         <div style="display:flex; align-items:center;">
           <div class="icon">🔔</div>
           <div class="info">
-            <h3>新着・当日操作の通知一覧</h3>
-            <p>本日受付された新規予約やキャンセルなどの操作履歴を確認できます。</p>
+            <h3>新着・操作の通知一覧</h3>
+            <p>受付された新規予約やキャンセルなどの全操作履歴を確認できます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -203,7 +219,7 @@
           <div class="icon">📋</div>
           <div class="info">
             <h3>事前問診一覧・詳細</h3>
-            <p>患者様が事前入力した症状・相談メモの全文と病院メモを確認できます。</p>
+            <p>過去分は月別ファイルとして折りたたみ収納されます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -235,8 +251,8 @@
         <div style="display:flex; align-items:center;">
           <div class="icon">⚙️</div>
           <div class="info">
-            <h3>休業・受付枠設定</h3>
-            <p>タイルをタップして「1日休止」や「指定時間の受付停止」を簡単に切り替えられます。</p>
+            <h3>休業・予約公開期間設定</h3>
+            <p>年間特定曜日の一括休診や公開期間の変更ができます。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -246,8 +262,8 @@
         <div style="display:flex; align-items:center;">
           <div class="icon">🐾</div>
           <div class="info">
-            <h3>患者様名簿・カルテ参照</h3>
-            <p>診察券番号順・五十音順での並べ替えや電話番号での連絡、重複削除ができます。</p>
+            <h3>患者名簿・直接編集</h3>
+            <p>診察券番号（4桁固定）や飼い主様情報の編集・重複削除が可能です。</p>
           </div>
         </div>
         <div class="arrow">›</div>
@@ -266,20 +282,20 @@
     </div>
   </div>
 
-  <!-- TAB 0.5: 🔔 通知一覧タブ -->
+  <!-- TAB 0.5 -->
   <div id="tab-notices" class="tab-content">
     <div class="filter-box">
       <label style="font-weight:900;">絞り込み:</label>
       <select id="noticeFilterSelect" onchange="renderNoticeTabList()">
+        <option value="all" selected>📜 全ての通知・操作履歴 (デフォルト)</option>
         <option value="today">⚡ 当日操作の通知（新規受付・キャンセル）</option>
-        <option value="all">📜 全ての通知・操作履歴</option>
         <option value="unread">● 未読の通知のみ</option>
       </select>
       <button class="btn-action" onclick="loadData()">🔄 手動更新</button>
     </div>
 
     <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:16px;">
-      <h3 style="margin-top:0; color:var(--primary-dark);" id="noticeTabTitle">当日の操作通知一覧</h3>
+      <h3 style="margin-top:0; color:var(--primary-dark);" id="noticeTabTitle">全ての操作通知・履歴</h3>
       <div id="noticeTabListContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
     </div>
   </div>
@@ -365,10 +381,59 @@
     </div>
   </div>
 
-  <!-- TAB 4 -->
+  <!-- TAB 4: 休業・受付枠設定 -->
   <div id="tab-holiday" class="tab-content">
+    
+    <!-- 🗓️ 年間・特定曜日の一括休診設定 -->
+    <div style="background:#f0fdf4; border:2px solid #22c55e; padding:16px; border-radius:12px; margin-bottom:16px;">
+      <h3 style="margin-top:0; color:#15803d; font-size:1.1rem; font-weight:900;">🗓️ 年間・特定曜日の一括休診設定</h3>
+      <p style="font-size:0.85rem; color:#334155; margin-bottom:10px;">指定した年（1年間）のすべての指定曜日を一括で休診枠として設定、または解除できます。</p>
+      
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <label for="bulkHolidayYear" style="font-weight:bold;">対象年：</label>
+        <select id="bulkHolidayYear">
+          <option value="2026">2026年</option>
+          <option value="2027">2027年</option>
+          <option value="2028">2028年</option>
+        </select>
+
+        <label for="bulkHolidayDay" style="font-weight:bold; margin-left:10px;">曜日：</label>
+        <select id="bulkHolidayDay">
+          <option value="3" selected>水曜日</option>
+          <option value="0">日曜日</option>
+          <option value="1">月曜日</option>
+          <option value="2">火曜日</option>
+          <option value="4">木曜日</option>
+          <option value="5">金曜日</option>
+          <option value="6">土曜日</option>
+        </select>
+
+        <button class="btn-action btn-danger" onclick="executeBulkWeekdayHoliday('add')">🚫 指定曜日を一括休診に設定</button>
+        <button class="btn-action btn-dark" onclick="executeBulkWeekdayHoliday('remove')">🔄 一括休診を解除（通常受付）</button>
+      </div>
+    </div>
+
+    <!-- 📅 予約受付可能期間（公開範囲）の設定 -->
+    <div style="background:#eff6ff; border:2px solid #3b82f6; padding:16px; border-radius:12px; margin-bottom:16px;">
+      <h3 style="margin-top:0; color:#1e40af; font-size:1.1rem; font-weight:900;">📅 予約受付可能期間（公開範囲）の設定</h3>
+      <p style="font-size:0.85rem; color:#334155; margin-bottom:10px;">患者様の予約画面（カレンダー・受取日選択）で、何週間先まで予約を許可するか設定できます。</p>
+      
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <label for="calendarWeeksSelect" style="font-weight:bold;">予約公開期間：</label>
+        <select id="calendarWeeksSelect">
+          <option value="2">2週間先まで</option>
+          <option value="3">3週間先まで</option>
+          <option value="4">4週間先まで（約1ヶ月）</option>
+          <option value="6">6週間先まで</option>
+          <option value="8">8週間先まで（約2ヶ月）</option>
+          <option value="12">12週間先まで（約3ヶ月）</option>
+        </select>
+        <button class="btn-action btn-dark" onclick="saveCalendarWeeks()">💾 設定を保存</button>
+      </div>
+    </div>
+
     <div style="background:#fff3cd; border:1px solid #ffeba2; padding:12px; border-radius:8px; margin-bottom:14px; font-size:0.95rem; color:#856404;">
-      💡 <strong>休み設定の使い方</strong>：<br>
+      💡 <strong>個別枠・日別の休み設定の使い方</strong>：<br>
       ・日付ヘッダーをタップ ➔ その日を<strong>1日まとめて「全日休診」</strong>に切り替え・解除します。<br>
       ・各時間枠のセルをタップ ➔ その時間枠のみ<strong>「受付停止/受付再開」</strong>を切り替えます。
     </div>
@@ -396,8 +461,8 @@
       <select id="patientSortSelect" onchange="renderPatientTable()">
         <option value="lastDate_desc">📅 最終受診日（新しい順）</option>
         <option value="lastDate_asc">📅 最終受診日（古い順）</option>
-        <option value="ticket_asc">🎫 診察券番号（昇順 1➔）</option>
-        <option value="ticket_desc">🎫 診察券番号（降順 99➔）</option>
+        <option value="ticket_asc">🎫 診察券番号（昇順 0001➔）</option>
+        <option value="ticket_desc">🎫 診察券番号（降順 9999➔）</option>
         <option value="owner_asc">👤 飼い主名（五十音あ〜ん）</option>
         <option value="owner_desc">👤 飼い主名（五十音ん〜あ）</option>
         <option value="count_desc">🔢 受診回数（多い順）</option>
@@ -412,10 +477,10 @@
             <th>診察券番号</th>
             <th>飼い主名</th>
             <th>電話番号</th>
-            <th>ペット名・情報</th>
+            <th>ペット名・詳細情報</th>
             <th>受診回数</th>
             <th>最終受診日</th>
-            <th>操作・連絡</th>
+            <th>操作・編集</th>
           </tr>
         </thead>
         <tbody id="patientTableBody">
@@ -445,7 +510,70 @@
     </div>
   </div>
 
-  <!-- モーダル各種 -->
+  <!-- 患者情報編集モーダル -->
+  <div id="editPatientModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-top:0; font-size:1.2rem; font-weight:900; color:var(--primary-dark);">✏️ 患者・ペット情報の編集</h3>
+      
+      <form onsubmit="event.preventDefault(); submitEditPatient();">
+        <input type="hidden" id="editOldPhoneNo">
+
+        <label style="font-size:0.85rem;">診察券番号 (4桁自動)</label>
+        <input type="text" id="editTicketNo" placeholder="例: 0001" onblur="autoFormatTicketField(this)" style="width:100%; margin-bottom:8px;">
+
+        <label style="font-size:0.85rem;">飼い主様のお名前 <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="editOwnerName" required style="width:100%; margin-bottom:8px;">
+
+        <label style="font-size:0.85rem;">電話番号 <span style="color:#dc2626;">*</span></label>
+        <input type="tel" id="editPhoneNo" required style="width:100%; margin-bottom:8px;">
+
+        <label style="font-size:0.85rem;">ペットのお名前 <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="editPetName" required style="width:100%; margin-bottom:8px;">
+
+        <div style="display:flex; gap:8px;">
+          <div style="flex:1;">
+            <label style="font-size:0.85rem;">種類</label>
+            <select id="editPetType" style="width:100%; margin-bottom:8px;">
+              <option value="犬">🐶 犬</option>
+              <option value="猫">🐱 猫</option>
+              <option value="その他">🐾 その他</option>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:0.85rem;">品種</label>
+            <input type="text" id="editPetBreed" placeholder="例: トイプードル" style="width:100%; margin-bottom:8px;">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <div style="flex:1;">
+            <label style="font-size:0.85rem;">性別</label>
+            <select id="editPetSex" style="width:100%; margin-bottom:8px;">
+              <option value="">未選択</option>
+              <option value="オス（未去勢）">オス（未去勢）</option>
+              <option value="オス（去勢済）">オス（去勢済）</option>
+              <option value="メス（未避妊）">メス（未避妊）</option>
+              <option value="メス（避妊済）">メス（避妊済）</option>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:0.85rem;">生年月日</label>
+            <input type="date" id="editPetBirth" style="width:100%; margin-bottom:8px;">
+          </div>
+        </div>
+
+        <label style="font-size:0.85rem;">持病・アレルギー・備考メモ</label>
+        <textarea id="editPetMemo" rows="2" style="width:100%; margin-bottom:14px; font-size:0.9rem;"></textarea>
+
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn-action" style="flex:1; background:#6b7280;" onclick="closeEditPatientModal()">キャンセル</button>
+          <button type="submit" class="btn-action btn-dark" style="flex:1;" id="btnSubmitEditPatient">💾 保存して更新</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- キャンセル・チャットモーダル -->
   <div id="cancelModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-top:0; font-size:1.2rem; font-weight:900; color:#991b1b;">⚠️ 予約取り消しとLINE通知</h3>
@@ -486,8 +614,8 @@
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
     
-    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
-    const DISPLAY_SLOTS = ["09:00~", "10:00~", "11:00~", "午前 (受取のみ)", "16:00~", "17:00~", "18:00~", "午後 (受取のみ)"];
+    const TIME_SLOTS = ["09:00", "10:00", "11:00", "16:00", "17:00", "18:00"];
+    const DISPLAY_SLOTS = ["09:00", "10:00", "11:00", "午前 (受取のみ)", "16:00", "17:00", "18:00", "午後 (受取のみ)"];
 
     let allReservations = [];
     let allPatientRecords = [];
@@ -524,6 +652,19 @@
       }, 30000);
     };
 
+    function formatTicketNo(val) {
+      if (!val) return '';
+      const digits = String(val).replace(/\D/g, '');
+      if (!digits) return String(val).trim();
+      return digits.padStart(4, '0');
+    }
+
+    function autoFormatTicketField(el) {
+      if (el && el.value) {
+        el.value = formatTicketNo(el.value);
+      }
+    }
+
     function verifyPass() {
       const inputPass = document.getElementById('adminPassInput').value;
       if (!inputPass) return alert('パスワードを入力してください');
@@ -548,6 +689,10 @@
           allReservations = Array.isArray(data.reservations) ? data.reservations : (Array.isArray(data) ? data : []);
           allPatientRecords = Array.isArray(data.patientRecords) ? data.patientRecords : [];
 
+          if (data.calendarWeeks) {
+            document.getElementById('calendarWeeksSelect').value = String(data.calendarWeeks);
+          }
+
           filterReservations();
           renderInterviewList();
           renderTimeline();
@@ -561,6 +706,49 @@
         .catch(err => {
           if (showErrorAlert) alert('エラーが発生しました: ' + err);
         });
+    }
+
+    function executeBulkWeekdayHoliday(mode) {
+      const year = document.getElementById('bulkHolidayYear').value;
+      const dayOfWeek = document.getElementById('bulkHolidayDay').value;
+      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+      const dayName = dayNames[dayOfWeek];
+
+      const actionText = mode === 'add' ? '一括休診に設定' : '休診解除（通常受付に戻す）';
+      if (!confirm(`【年間一括設定の確認】\n${year}年の「すべての ${dayName}曜日」を ${actionText} しますか？`)) {
+        return;
+      }
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "bulkSetWeekdayHoliday",
+          year: year,
+          dayOfWeek: dayOfWeek,
+          mode: mode,
+          pass: adminPass
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert(`${year}年の ${dayName}曜日（計 ${data.count} 日分）の${actionText}が完了しました！`);
+          loadData();
+        } else {
+          alert('エラーが発生しました: ' + (data.message || ''));
+        }
+      })
+      .catch(err => alert('通信エラーが発生しました: ' + err));
+    }
+
+    function saveCalendarWeeks() {
+      const weeks = document.getElementById('calendarWeeksSelect').value;
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "updateCalendarWeeks", weeks: weeks, pass: adminPass })
+      })
+      .then(res => res.json())
+      .then(() => alert(`予約公開期間を【${weeks}週間先まで】に更新しました！`));
     }
 
     function loadAnnounceSetting() {
@@ -612,7 +800,6 @@
       return { chipsHtml, detailText: fullDetailText };
     }
 
-    // 🔔 全操作リストの生成（操作日 updated/created ベース）
     function getAllNoticeItems() {
       const validReservations = allReservations.filter(r => 
         r && r.status !== '休診' && r.lineUserId !== 'SYSTEM_HOLIDAY'
@@ -622,8 +809,6 @@
         const id = `${r.rowIndex}_${r.status}_${r.updatedAt || r.createdAt}`;
         const isRead = readNoticeIds.has(id);
         const isCancel = (r.status === 'キャンセル');
-
-        // 操作日時（updatedAt または createdAt）の取得・正規化
         const opDateStr = normalizeDateStr(r.updatedAt || r.createdAt);
 
         return {
@@ -642,12 +827,10 @@
         };
       });
 
-      // 操作日時の降順（最新順）にソート
       items.sort((a, b) => b.rowIndex - a.rowIndex);
       return items;
     }
 
-    // 🔔 ベルアイコンとポップアップ通知の更新
     function updateNoticeBell() {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -656,8 +839,6 @@
       const todayStr = `${yyyy}-${mm}-${dd}`;
 
       const allNotices = getAllNoticeItems();
-      
-      // 操作日が「本日」であるものを当日通知とする
       const todayNotices = allNotices.filter(n => n.opDateStr === todayStr);
 
       const totalUnreadCount = todayNotices.filter(n => !n.isRead).length;
@@ -701,7 +882,6 @@
       document.getElementById('noticePopover').style.display = 'none';
     }
 
-    // 🔔 「通知一覧」タブのレンダリング
     function renderNoticeTabList() {
       const container = document.getElementById('noticeTabListContainer');
       const filterType = document.getElementById('noticeFilterSelect').value;
@@ -887,6 +1067,45 @@
       });
     };
 
+    function renderInterviewCard(r) {
+      const parsed = parseSymptoms(r.symptoms);
+      const isChecked = checkedInterviews.has(r.rowIndex);
+
+      return `
+        <div class="interview-card ${isChecked ? 'checked' : ''}" id="interview-card-${r.rowIndex}">
+          <div class="interview-header">
+            <div>
+              <span style="font-size:1.1rem; font-weight:900; color:var(--primary-dark);">📅 ${r.date} ${r.time}</span>
+              <span class="badge badge-${r.status}" style="margin-left:8px;">${r.status}</span>
+            </div>
+            <button class="btn-action ${isChecked ? 'btn-green' : ''}" style="font-size:0.8rem; padding:4px 10px;" onclick="toggleInterviewCheck(${r.rowIndex})">
+              ${isChecked ? '✅ 確認済み' : '☑️ 未確認'}
+            </button>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px; font-size:0.9rem;">
+            <div>👤 <strong>飼い主名：</strong> ${r.lineUserName} 様 (${r.visitType || '-'})</div>
+            <div>🐾 <strong>ペット名：</strong> ${r.petName} [${r.petInfo || '-'}]</div>
+            <div>📞 <strong>電話番号：</strong> ${r.phoneNo || '-'}</div>
+            <div>🩺 <strong>メニュー：</strong> ${r.menu}</div>
+          </div>
+
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-top:6px;">
+            <div style="font-size:0.8rem; color:#64748b; font-weight:bold; margin-bottom:2px;">【選択症状・受取品】</div>
+            <div style="margin-bottom:6px;">${parsed.chipsHtml}</div>
+            <div style="font-size:0.8rem; color:#64748b; font-weight:bold; margin-bottom:2px;">【具体的内容・備考メモ全文】</div>
+            <div style="white-space:pre-wrap; font-weight:600; font-size:0.9rem; line-height:1.4; color:#1e293b;">${parsed.detailText}</div>
+          </div>
+
+          <div style="margin-top:10px; background:#fff8e6; border:1.5px solid #fcd34d; padding:10px; border-radius:8px;">
+            <div style="font-size:0.8rem; color:#b45309; font-weight:900; margin-bottom:2px;">🏥 病院用メモ欄（カルテ共有）</div>
+            <textarea id="hospitalNote-${r.rowIndex}" rows="2" style="width:100%; font-size:0.9rem; padding:6px; border:1px solid #d1d5db; border-radius:6px;" placeholder="院内共有メモ">${r.hospitalNote || ''}</textarea>
+            <button class="btn-action btn-dark" style="margin-top:4px; font-size:0.75rem; padding:4px 8px;" onclick="saveHospitalNote(${r.rowIndex})">💾 保存</button>
+          </div>
+        </div>
+      `;
+    }
+
     function renderInterviewList() {
       const container = document.getElementById('interviewListContainer');
       const selectedDate = document.getElementById('interviewDatePicker').value;
@@ -901,44 +1120,53 @@
         return;
       }
 
-      container.innerHTML = list.map(r => {
-        const parsed = parseSymptoms(r.symptoms);
-        const isChecked = checkedInterviews.has(r.rowIndex);
+      const now = new Date();
+      const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-        return `
-          <div class="interview-card ${isChecked ? 'checked' : ''}" id="interview-card-${r.rowIndex}">
-            <div class="interview-header">
-              <div>
-                <span style="font-size:1.1rem; font-weight:900; color:var(--primary-dark);">📅 ${r.date} ${r.time}</span>
-                <span class="badge badge-${r.status}" style="margin-left:8px;">${r.status}</span>
+      const currentMonthItems = [];
+      const pastMonthGroups = {};
+
+      list.forEach(r => {
+        const normDate = normalizeDateStr(r.date);
+        const ym = normDate ? normDate.substring(0, 7) : '不明';
+
+        if (ym === currentYearMonth || !normDate) {
+          currentMonthItems.push(r);
+        } else {
+          if (!pastMonthGroups[ym]) pastMonthGroups[ym] = [];
+          pastMonthGroups[ym].push(r);
+        }
+      });
+
+      let html = "";
+
+      if (currentMonthItems.length > 0) {
+        html += `<div style="margin-bottom:16px;">`;
+        html += `<h3 style="margin-top:0; color:var(--primary-dark); border-bottom:2px solid var(--primary); padding-bottom:4px;">📌 今月（当月）の事前問診</h3>`;
+        html += currentMonthItems.map(renderInterviewCard).join('');
+        html += `</div>`;
+      }
+
+      const pastYms = Object.keys(pastMonthGroups).sort().reverse();
+      if (pastYms.length > 0) {
+        html += `<h3 style="color:#475569; border-bottom:2px solid #cbd5e0; padding-bottom:4px; margin-top:20px;">📁 過去（先月以前）の問診ファイル</h3>`;
+        pastYms.forEach(ym => {
+          const items = pastMonthGroups[ym];
+          const yearParts = ym.split('-');
+          const titleLabel = yearParts.length === 2 ? `${yearParts[0]}年 ${parseInt(yearParts[1])}月` : ym;
+
+          html += `
+            <details class="month-folder">
+              <summary>📁 ${titleLabel}の事前問診 (${items.length}件)</summary>
+              <div style="margin-top:12px;">
+                ${items.map(renderInterviewCard).join('')}
               </div>
-              <button class="btn-action ${isChecked ? 'btn-green' : ''}" style="font-size:0.8rem; padding:4px 10px;" onclick="toggleInterviewCheck(${r.rowIndex})">
-                ${isChecked ? '✅ 確認済み' : '☑️ 未確認'}
-              </button>
-            </div>
+            </details>
+          `;
+        });
+      }
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px; font-size:0.9rem;">
-              <div>👤 <strong>飼い主名：</strong> ${r.lineUserName} 様 (${r.visitType || '-'})</div>
-              <div>🐾 <strong>ペット名：</strong> ${r.petName} [${r.petInfo || '-'}]</div>
-              <div>📞 <strong>電話番号：</strong> ${r.phoneNo || '-'}</div>
-              <div>🩺 <strong>メニュー：</strong> ${r.menu}</div>
-            </div>
-
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-top:6px;">
-              <div style="font-size:0.8rem; color:#64748b; font-weight:bold; margin-bottom:2px;">【選択症状・受取品】</div>
-              <div style="margin-bottom:6px;">${parsed.chipsHtml}</div>
-              <div style="font-size:0.8rem; color:#64748b; font-weight:bold; margin-bottom:2px;">【具体的内容・備考メモ全文】</div>
-              <div style="white-space:pre-wrap; font-weight:600; font-size:0.9rem; line-height:1.4; color:#1e293b;">${parsed.detailText}</div>
-            </div>
-
-            <div style="margin-top:10px; background:#fff8e6; border:1.5px solid #fcd34d; padding:10px; border-radius:8px;">
-              <div style="font-size:0.8rem; color:#b45309; font-weight:900; margin-bottom:2px;">🏥 病院用メモ欄（カルテ共有）</div>
-              <textarea id="hospitalNote-${r.rowIndex}" rows="2" style="width:100%; font-size:0.9rem; padding:6px; border:1px solid #d1d5db; border-radius:6px;" placeholder="院内共有メモ">${r.hospitalNote || ''}</textarea>
-              <button class="btn-action btn-dark" style="margin-top:4px; font-size:0.75rem; padding:4px 8px;" onclick="saveHospitalNote(${r.rowIndex})">💾 保存</button>
-            </div>
-          </div>
-        `;
-      }).join('');
+      container.innerHTML = html;
     }
 
     function saveHospitalNote(rowIndex) {
@@ -970,11 +1198,14 @@
       setTimeout(() => {
         const target = document.getElementById(`interview-card-${rowIndex}`);
         if (target) {
+          const parentFolder = target.closest('details.month-folder');
+          if (parentFolder) parentFolder.open = true;
+
           target.scrollIntoView({ behavior: 'smooth', block: 'center' });
           target.classList.add('highlight');
           setTimeout(() => target.classList.remove('highlight'), 2000);
         }
-      }, 100);
+      }, 150);
     }
 
     function renderTimeline() {
@@ -1164,8 +1395,13 @@
           ownerName: pr.ownerName,
           phoneNo: pr.phoneNo,
           petName: pr.petName,
+          petType: pr.petType || '犬',
+          petBreed: pr.petBreed || '',
+          petSex: pr.petSex || '',
+          petBirth: pr.petBirth || '',
+          petMemo: pr.petMemo || '',
           petInfo: `${pr.petType || '犬'} ${pr.petBreed || ''} ${pr.petSex || ''} [生年月日: ${pr.petBirth || '未設定'}]`.trim(),
-          ticketNo: pr.ticketNo || '',
+          ticketNo: formatTicketNo(pr.ticketNo),
           count: 0,
           lastDate: '-'
         };
@@ -1188,7 +1424,7 @@
           }
           if (!patientsMap[foundKey].ticketNo && r.visitType && r.visitType.includes('券No:')) {
             const match = r.visitType.match(/券No:([^\s]+)/);
-            if (match) patientsMap[foundKey].ticketNo = match[1];
+            if (match) patientsMap[foundKey].ticketNo = formatTicketNo(match[1]);
           }
         }
       });
@@ -1199,7 +1435,7 @@
         if (sortType === 'lastDate_desc') return b.lastDate.localeCompare(a.lastDate);
         if (sortType === 'lastDate_asc') return a.lastDate.localeCompare(b.lastDate);
         if (sortType === 'ticket_asc') return (a.ticketNo || '99999').localeCompare(b.ticketNo || '99999', undefined, {numeric: true});
-        if (sortType === 'ticket_desc') return (b.ticketNo || '0').localeCompare(a.ticketNo || '0', undefined, {numeric: true});
+        if (sortType === 'ticket_desc') return (b.ticketNo || '0000').localeCompare(a.ticketNo || '0000', undefined, {numeric: true});
         if (sortType === 'owner_asc') return a.ownerName.localeCompare(b.ownerName, 'ja');
         if (sortType === 'owner_desc') return b.ownerName.localeCompare(a.ownerName, 'ja');
         if (sortType === 'count_desc') return b.count - a.count;
@@ -1212,7 +1448,7 @@
         return;
       }
 
-      tbody.innerHTML = list.map(p => `
+      tbody.innerHTML = list.map((p, idx) => `
         <tr>
           <td><strong style="font-size:1rem; color:#047857;">🎫 ${p.ticketNo || '-'}</strong></td>
           <td><strong style="font-size:1.05rem; font-weight:900;">👤 ${p.ownerName}</strong></td>
@@ -1225,12 +1461,77 @@
           <td><strong>${p.lastDate}</strong></td>
           <td>
             <div style="display:flex; gap:4px; flex-wrap:wrap;">
-              <button class="btn-sm btn-sm-line" style="width:auto; padding:6px 10px; font-size:0.8rem;" onclick="openModal('${p.ownerName}')">💬 チャット</button>
+              <button class="btn-action btn-dark" style="padding:4px 8px; font-size:0.8rem;" onclick="openEditPatientModal('${p.phoneNo}', '${p.petName}')">✏️ 編集</button>
+              <button class="btn-sm btn-sm-line" style="width:auto; padding:5px 8px; font-size:0.8rem;" onclick="openModal('${p.ownerName}')">💬 チャット</button>
               <button class="btn-action btn-danger" style="padding:4px 8px; font-size:0.8rem;" onclick="deletePatientRecord('${p.phoneNo}', '${p.petName}')">🗑️ 削除</button>
             </div>
           </td>
         </tr>
       `).join('');
+    }
+
+    function openEditPatientModal(phoneNo, petName) {
+      const normPhone = phoneNo.replace(/\D/g, '');
+      const p = allPatientRecords.find(item => item.phoneNo.replace(/\D/g, '') === normPhone && item.petName.trim() === petName.trim());
+
+      document.getElementById('editOldPhoneNo').value = phoneNo;
+      document.getElementById('editTicketNo').value = formatTicketNo(p ? p.ticketNo : '');
+      document.getElementById('editOwnerName').value = p ? p.ownerName : '';
+      document.getElementById('editPhoneNo').value = phoneNo;
+      document.getElementById('editPetName').value = petName;
+      document.getElementById('editPetType').value = p ? (p.petType || '犬') : '犬';
+      document.getElementById('editPetBreed').value = p ? (p.petBreed || '') : '';
+      document.getElementById('editPetSex').value = p ? (p.petSex || '') : '';
+      document.getElementById('editPetBirth').value = p ? normalizeDateStr(p.petBirth) : '';
+      document.getElementById('editPetMemo').value = p ? (p.petMemo || '') : '';
+
+      document.getElementById('editPatientModal').style.display = 'flex';
+    }
+
+    function closeEditPatientModal() {
+      document.getElementById('editPatientModal').style.display = 'none';
+    }
+
+    function submitEditPatient() {
+      const btn = document.getElementById('btnSubmitEditPatient');
+      btn.disabled = true;
+      btn.innerText = '保存中...';
+
+      const payload = {
+        action: "updatePatientInfo",
+        phoneNo: document.getElementById('editPhoneNo').value.trim(),
+        oldPhoneNo: document.getElementById('editOldPhoneNo').value.trim(),
+        ownerName: document.getElementById('editOwnerName').value.trim(),
+        petName: document.getElementById('editPetName').value.trim(),
+        petType: document.getElementById('editPetType').value,
+        petBreed: document.getElementById('editPetBreed').value.trim(),
+        petSex: document.getElementById('editPetSex').value,
+        petBirth: document.getElementById('editPetBirth').value,
+        petMemo: document.getElementById('editPetMemo').value.trim(),
+        ticketNo: formatTicketNo(document.getElementById('editTicketNo').value)
+      };
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => {
+        btn.disabled = false;
+        btn.innerText = '💾 保存して更新';
+        if (data.status === 'success') {
+          alert('患者情報を更新しました！');
+          closeEditPatientModal();
+          loadData();
+        } else {
+          alert('更新エラー: ' + (data.message || ''));
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.innerText = '💾 保存して更新';
+        alert('エラーが発生しました: ' + err);
+      });
     }
 
     function deletePatientRecord(phoneNo, petName) {
