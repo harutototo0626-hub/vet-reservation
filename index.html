@@ -89,8 +89,9 @@
     
     .cell-ok { color: #0284c7; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: block; width: 100%; height: 100%; }
     .cell-ok:active { background: #e0f2fe; }
-    .cell-ng { color: #dc2626; font-size: 0.95rem; font-weight: bold; background: #fef2f2; }
-    .cell-none { color: #cbd5e0; font-size: 0.8rem; }
+    .cell-ng { color: #dc2626; font-size: 0.9rem; font-weight: bold; background: #fef2f2; }
+    .cell-wed { color: #64748b; font-size: 0.75rem; font-weight: bold; background: #f1f5f9; }
+    .cell-none { color: #94a3b8; font-size: 0.8rem; background: #f8fafc; }
 
     .pickup-date-select-box { background: #fffbebf5; border: 1.5px solid #fcd34d; padding: 12px; border-radius: 10px; margin-top: 10px; }
     .pickup-time-btn { padding: 12px; border: 2px solid #cbd5e0; border-radius: 8px; background: #fff; font-weight: bold; text-align: center; cursor: pointer; margin-top: 8px; }
@@ -291,7 +292,7 @@
 
               <div id="ticketArea" style="margin-top: 8px;">
                 <label for="ticketNo">診察券番号 <span class="opt">任意</span></label>
-                <input type="text" id="ticketNo" placeholder="例: 12345">
+                <input type="text" id="ticketNo" placeholder="例: 0001" onblur="autoFormatTicketField(this)">
               </div>
 
               <label for="phoneNo">ご連絡先電話番号 <span class="req">必須</span></label>
@@ -399,10 +400,10 @@
                 <div id="pickupTimeOptions" class="pickup-date-select-box" style="display:none;">
                   <div style="font-size:0.85rem; font-weight:bold; color:#856404; margin-bottom:8px;">ご希望の時間帯を選択してください (受取人数制限なし):</div>
                   <div id="btnPickupAm" class="pickup-time-btn" onclick="selectPickupBlock('AM')">
-                    🌅 午前枠 (<span id="pickupAmLabel">09:00~12:00</span>)
+                    🌅 午前枠 (<span id="pickupAmLabel">09:00 - 12:00</span>)
                   </div>
                   <div id="btnPickupPm" class="pickup-time-btn" onclick="selectPickupBlock('PM')">
-                    🌇 午後枠 (<span id="pickupPmLabel">16:00~19:00</span>)
+                    🌇 午後枠 (<span id="pickupPmLabel">16:00 - 19:00</span>)
                   </div>
                 </div>
               </div>
@@ -474,7 +475,7 @@
               <input type="text" id="profOwnerName" placeholder="例: 中川 太郎" required>
 
               <label for="profTicketNo">診察券番号 <span class="opt">任意</span></label>
-              <input type="text" id="profTicketNo" placeholder="例: 12345">
+              <input type="text" id="profTicketNo" placeholder="例: 0001" onblur="autoFormatTicketField(this)">
 
               <label for="profPhoneNo">ご連絡先電話番号 <span class="req">必須</span></label>
               <input type="tel" id="profPhoneNo" placeholder="例: 09012345678" required>
@@ -547,8 +548,9 @@
     let isPickupMode = false;
     let patientPetList = [];
     let activeProfPetIndex = 'NEW';
+    let maxCalendarWeeks = 4;
 
-    const TIME_SLOTS = ["09:00~", "10:00~", "11:00~", "16:00~", "17:00~", "18:00~"];
+    const TIME_SLOTS = ["09:00", "10:00", "11:00", "16:00", "17:00", "18:00"];
 
     window.onload = () => {
       const today = new Date();
@@ -578,6 +580,19 @@
 
       fetchExistingReservations();
     };
+
+    function formatTicketNo(val) {
+      if (!val) return '';
+      const digits = String(val).replace(/\D/g, '');
+      if (!digits) return String(val).trim();
+      return digits.padStart(4, '0');
+    }
+
+    function autoFormatTicketField(el) {
+      if (el && el.value) {
+        el.value = formatTicketNo(el.value);
+      }
+    }
 
     function checkWebAuthSession() {
       const savedPhone = localStorage.getItem('arbre_user_saved_phone');
@@ -614,6 +629,43 @@
     function onUserAuthenticated() {
       loadAnnounceAndShowBoard();
       loadPatientProfileData();
+      restoreSavedInput();
+    }
+
+    function restoreSavedInput() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('arbre_last_booking_info') || '{}');
+        if (saved.ownerName && !document.getElementById('ownerName').value) {
+          document.getElementById('ownerName').value = saved.ownerName;
+        }
+        if (saved.phoneNo && !document.getElementById('phoneNo').value) {
+          document.getElementById('phoneNo').value = saved.phoneNo;
+        }
+        if (saved.ticketNo && !document.getElementById('ticketNo').value) {
+          document.getElementById('ticketNo').value = formatTicketNo(saved.ticketNo);
+        }
+        if (saved.petName && !document.getElementById('petName').value) {
+          document.getElementById('petName').value = saved.petName;
+        }
+        if (saved.petBreed && !document.getElementById('petBreed').value) {
+          document.getElementById('petBreed').value = saved.petBreed;
+        }
+        if (saved.petSex && !document.getElementById('petSex').value) {
+          document.getElementById('petSex').value = saved.petSex;
+        }
+      } catch(e){}
+    }
+
+    function saveCurrentBookingInput() {
+      const info = {
+        ownerName: document.getElementById('ownerName').value.trim(),
+        phoneNo: document.getElementById('phoneNo').value.trim(),
+        ticketNo: formatTicketNo(document.getElementById('ticketNo').value),
+        petName: document.getElementById('petName').value.trim(),
+        petBreed: document.getElementById('petBreed').value.trim(),
+        petSex: document.getElementById('petSex').value
+      };
+      localStorage.setItem('arbre_last_booking_info', JSON.stringify(info));
     }
 
     function showAuthPage(page) {
@@ -681,6 +733,10 @@
       fetch(`${GAS_URL}?action=getAnnounce`)
         .then(res => res.json())
         .then(data => {
+          if (data && data.calendarWeeks) {
+            maxCalendarWeeks = parseInt(data.calendarWeeks) || 4;
+            updatePickupMaxDate();
+          }
           if (data && data.announce && data.announce.trim()) {
             document.getElementById('announceContent').innerText = data.announce;
           } else {
@@ -690,6 +746,15 @@
         }).catch(()=>{
           showAnnounceBoard();
         });
+    }
+
+    function updatePickupMaxDate() {
+      const maxDate = new Date();
+      maxDate.setDate(maxDate.getDate() + (maxCalendarWeeks * 7));
+      const yyyy = maxDate.getFullYear();
+      const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(maxDate.getDate()).padStart(2, '0');
+      document.getElementById('pickupDatePicker').max = `${yyyy}-${mm}-${dd}`;
     }
 
     function showAnnounceBoard() {
@@ -718,7 +783,9 @@
           
           if (data && data.ownerName) {
             document.getElementById('profOwnerName').value = data.ownerName;
-            document.getElementById('ownerName').value = data.ownerName;
+            if (!document.getElementById('ownerName').value) {
+              document.getElementById('ownerName').value = data.ownerName;
+            }
           }
           document.getElementById('phoneNo').value = targetPhone;
 
@@ -775,13 +842,14 @@
 
       document.getElementById('profPetMemo').value = p.petMemo || '';
       
+      const formattedTicket = formatTicketNo(p.ticketNo);
       const profTicketNo = document.getElementById('profTicketNo');
       if (profTicketNo) {
-        profTicketNo.value = p.ticketNo || '';
+        profTicketNo.value = formattedTicket;
       }
       const ticketNo = document.getElementById('ticketNo');
-      if (ticketNo && p.ticketNo) {
-        ticketNo.value = p.ticketNo;
+      if (ticketNo && formattedTicket) {
+        ticketNo.value = formattedTicket;
       }
     }
 
@@ -843,7 +911,7 @@
       document.getElementById('petSex').value = p.petSex || '';
 
       if (p.ticketNo) {
-        document.getElementById('ticketNo').value = p.ticketNo;
+        document.getElementById('ticketNo').value = formatTicketNo(p.ticketNo);
       }
 
       const normBirth = normalizeDateStr(p.petBirth);
@@ -875,7 +943,7 @@
     function savePatientProfile() {
       const ownerName = document.getElementById('profOwnerName').value.trim();
       const phoneNo = document.getElementById('profPhoneNo').value.trim();
-      const ticketNo = document.getElementById('profTicketNo').value.trim();
+      const ticketNo = formatTicketNo(document.getElementById('profTicketNo').value);
       const petName = document.getElementById('profPetName').value.trim();
       const petType = document.getElementById('profPetType').value;
       const petBreed = document.getElementById('profPetBreed').value.trim();
@@ -937,6 +1005,7 @@
       document.getElementById('viewMyReservations').style.display = (section === 'myReservations') ? 'block' : 'none';
       document.getElementById('viewPatientProfile').style.display = (section === 'patientProfile') ? 'block' : 'none';
 
+      if (section === 'newReserve') restoreSavedInput();
       if (section === 'myReservations') loadUserReservations();
       if (section === 'patientProfile') loadPatientProfileData();
     }
@@ -956,12 +1025,14 @@
       fetch(`${GAS_URL}?action=getUserReservations&lineUserId=${encodeURIComponent(lineUserId)}&phone=${encodeURIComponent(currentUserPhone)}`)
         .then(res => res.json())
         .then(data => {
-          if (!data || data.length === 0) {
+          const activeReservations = (data || []).filter(r => r && r.status !== 'キャンセル');
+
+          if (!activeReservations || activeReservations.length === 0) {
             container.innerHTML = '<div style="text-align:center; padding:30px; color:#94a3b8; font-weight:bold;">現在ご予約はありません</div>';
             return;
           }
 
-          container.innerHTML = data.map(r => `
+          container.innerHTML = activeReservations.map(r => `
             <div class="res-card">
               <header>
                 <span class="res-card-title">📅 ${r.date} ${r.time}</span>
@@ -971,11 +1042,9 @@
               <div><strong>メニュー:</strong> ${r.menu}</div>
               <div style="font-size:0.8rem; color:#64748b; margin-top:4px;">${r.symptoms || ''}</div>
               
-              ${r.status !== 'キャンセル' ? `
-                <div style="display:flex; gap:6px; margin-top:10px;">
-                  <button type="button" class="btn btn-secondary" style="padding:6px; font-size:0.8rem;" onclick="userCancelRes(${r.rowIndex})">❌ キャンセル</button>
-                </div>
-              ` : ''}
+              <div style="display:flex; gap:6px; margin-top:10px;">
+                <button type="button" class="btn btn-secondary" style="padding:6px; font-size:0.8rem;" onclick="userCancelRes(${r.rowIndex})">❌ キャンセル</button>
+              </div>
             </div>
           `).join('');
         });
@@ -1030,6 +1099,10 @@
           } else if (data && Array.isArray(data.reservations)) {
             list = data.reservations;
           }
+          if (data && data.calendarWeeks) {
+            maxCalendarWeeks = parseInt(data.calendarWeeks) || 4;
+            updatePickupMaxDate();
+          }
           existingReservations = list.filter(r => r && r.status !== 'キャンセル');
           renderCalendar();
         })
@@ -1074,6 +1147,9 @@
       let today = new Date();
       today.setHours(0,0,0,0);
 
+      const maxLimitDate = new Date(today);
+      maxLimitDate.setDate(maxLimitDate.getDate() + (maxCalendarWeeks * 7));
+
       for (let i = 0; i < 7; i++) {
         let d = new Date(currentWeekStart);
         d.setDate(d.getDate() + i);
@@ -1094,7 +1170,7 @@
 
       let bodyHtml = "";
       TIME_SLOTS.forEach(time => {
-        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.75rem;">${time.replace('~','')}</td>`;
+        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.75rem;">${time}</td>`;
         
         dates.forEach(d => {
           let yyyy = d.getFullYear();
@@ -1104,6 +1180,7 @@
 
           let isPast = d < today;
           let isWed = d.getDay() === 3;
+          let isOverRange = d > maxLimitDate;
 
           let dayRecords = existingReservations.filter(r => normalizeDateStr(r.date) === dateStr);
           let targetHm = extractHourMin(time);
@@ -1118,7 +1195,9 @@
             return extractHourMin(r.time) === targetHm;
           });
 
-          if (isPast || isWed) {
+          if (isWed) {
+            bodyHtml += `<td class="cell-wed">休</td>`;
+          } else if (isPast || isOverRange) {
             bodyHtml += `<td><span class="cell-none">-</span></td>`;
           } else if (isBlocked) {
             bodyHtml += `<td><span class="cell-ng">✕</span></td>`;
@@ -1196,14 +1275,14 @@
         btnAm.classList.add('disabled');
         lblAm.innerText = "受付不可・休診";
       } else {
-        lblAm.innerText = "09:00~12:00";
+        lblAm.innerText = "09:00 - 12:00";
       }
 
       if (!pmAvailable) {
         btnPm.classList.add('disabled');
         lblPm.innerText = "受付不可・休診";
       } else {
-        lblPm.innerText = "16:00~19:00";
+        lblPm.innerText = "16:00 - 19:00";
       }
 
       document.getElementById('pickupTimeOptions').style.display = 'block';
@@ -1248,6 +1327,7 @@
         if (!document.getElementById('petName').value.trim()) return alert('ペットのお名前を入力してください');
         if (!document.getElementById('ownerName').value.trim()) return alert('飼い主様のお名前を入力してください');
         if (!document.getElementById('phoneNo').value.trim()) return alert('電話番号を入力してください');
+        saveCurrentBookingInput();
       }
 
       if (step === 3 && isPickupMode) {
@@ -1260,7 +1340,8 @@
       if (step === 4) {
         const ownerName = document.getElementById('ownerName').value.trim();
         const visitType = document.querySelector('input[name="visitType"]:checked').value;
-        const ticketNo = document.getElementById('ticketNo').value;
+        const rawTicketNo = document.getElementById('ticketNo').value;
+        const ticketNo = formatTicketNo(rawTicketNo);
         const phoneNo = document.getElementById('phoneNo').value;
         const petType = document.querySelector('input[name="petType"]:checked').value;
         const petName = document.getElementById('petName').value;
@@ -1324,7 +1405,7 @@
 
       const ownerName = document.getElementById('ownerName').value.trim();
       const visitType = document.querySelector('input[name="visitType"]:checked').value;
-      const ticketNo = document.getElementById('ticketNo').value;
+      const ticketNo = formatTicketNo(document.getElementById('ticketNo').value);
       const phoneNo = document.getElementById('phoneNo').value;
       const petType = document.querySelector('input[name="petType"]:checked').value;
       const petName = document.getElementById('petName').value.trim();
@@ -1333,6 +1414,8 @@
       const isUnknown = document.getElementById('petBirthUnknown').checked;
       const petBirth = isUnknown ? '不明' : (document.getElementById('petBirth').value || '未設定');
       const menu = document.querySelector('input[name="menu"]:checked').value;
+
+      saveCurrentBookingInput();
 
       let symptomsText = "";
       if (isPickupMode) {
