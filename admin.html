@@ -409,6 +409,7 @@
           <thead>
             <tr>
               <th style="width:70px;">曜日</th>
+              <th style="background:#ddd6fe; color:#4c1d95; width:90px;">1日全一括</th>
               <th>09:00</th>
               <th>10:00</th>
               <th>11:00</th>
@@ -417,7 +418,6 @@
               <th>17:00</th>
               <th>18:00</th>
               <th style="background:#ede9fe; color:#4c1d95;">午後一括</th>
-              <th style="background:#ddd6fe; color:#4c1d95;">1日全一括</th>
             </tr>
           </thead>
           <tbody id="weeklyTmplTbody">
@@ -738,7 +738,7 @@
         });
     }
 
-    // ⚙️ 1週間テンプレート表の初期化生成
+    // ⚙️ 1週間テンプレート表の初期化生成（1日全切替を一番左側に配置）
     function initWeeklyTmplTable() {
       const tbody = document.getElementById('weeklyTmplTbody');
       let html = '';
@@ -748,6 +748,7 @@
         
         html += `<tr>`;
         html += `<td style="font-weight:900; background:#f5f3ff; color:${dayIdx===0?'#dc2626':(dayIdx===6?'#2563eb':'#334155')};">${dayName}</td>`;
+        html += `<td style="background:#ede9fe;"><button type="button" style="font-size:0.75rem; padding:2px 6px; font-weight:bold;" onclick="toggleRowBlock(${dayIdx}, 'all')">1日全切替</button></td>`;
         
         // 午前枠 3個
         ["09:00", "10:00", "11:00"].forEach(time => {
@@ -764,7 +765,6 @@
         });
 
         html += `<td style="background:#f5f3ff;"><button type="button" style="font-size:0.75rem; padding:2px 6px;" onclick="toggleRowBlock(${dayIdx}, 'pm')">切替</button></td>`;
-        html += `<td style="background:#ede9fe;"><button type="button" style="font-size:0.75rem; padding:2px 6px; font-weight:bold;" onclick="toggleRowBlock(${dayIdx}, 'all')">1日全切替</button></td>`;
         html += `</tr>`;
       });
 
