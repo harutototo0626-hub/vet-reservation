@@ -338,7 +338,7 @@
             <th style="width: 140px;">電話番号</th>
             <th style="width: 120px;">診察区分</th>
             <th style="width: 130px;">ペット名</th>
-            <th style="width: 140px;">ペット情報</th>
+            <th style="width: 180px;">ペット情報・持病メモ</th>
             <th style="width: 150px;">メニュー</th>
             <th style="width: 220px;">選択症状（簡易タグ）</th>
             <th style="width: 100px;">状態</th>
@@ -503,7 +503,7 @@
             <th>診察券番号</th>
             <th>飼い主名</th>
             <th>電話番号</th>
-            <th>ペット名・詳細情報</th>
+            <th>ペット名・詳細情報・持病メモ</th>
             <th>受診回数</th>
             <th>最終受診日</th>
             <th>操作・編集</th>
@@ -743,7 +743,6 @@
         });
     }
 
-    // ⚙️ 1週間テンプレート表の初期化生成
     function initWeeklyTmplTable() {
       const tbody = document.getElementById('weeklyTmplTbody');
       let html = '';
@@ -867,11 +866,41 @@
     }
 
     function normalizeTimeStr(str) {
-  if (!str) return '';
-  const m = String(str).match(/(\d{1,2}):(\d{2})/);
-  if (!m) return String(str).trim();
-  return `${m[1].padStart(2, '0')}:${m[2]}`;
-}
+      if (!str) return '';
+      const m = String(str).match(/(\d{1,2}):(\d{2})/);
+      if (!m) return String(str).trim();
+      return `${m[1].padStart(2, '0')}:${m[2]}`;
+    }
+
+    function findMatchedPatient(phoneNo, petName) {
+      const normPhone = phoneNo ? String(phoneNo).replace(/\D/g, '') : '';
+      const cleanPetName = (petName || '').replace(/（.*）|\(.*\)/, '').trim();
+      return allPatientRecords.find(p =>
+        String(p.phoneNo || '').replace(/\D/g, '') === normPhone &&
+        String(p.petName || '').trim() === cleanPetName
+      );
+    }
+
+    function renderPetMemoHtml(memo) {
+      if (!memo || !String(memo).trim()) return '';
+      const text = String(memo).trim();
+      const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const isLong = text.length > 30 || text.includes('\n');
+
+      if (isLong) {
+        return `
+          <details style="margin-top:6px; background:#fff1f2; border:1px solid #fecdd3; border-radius:6px; padding:4px 8px; font-size:0.82rem;">
+            <summary style="cursor:pointer; font-weight:800; color:#be123c;">🩺 持病・アレルギー・備考メモを見る</summary>
+            <div style="margin-top:4px; white-space:pre-wrap; color:#1f2937; font-weight:600; line-height:1.4;">${escaped}</div>
+          </details>
+        `;
+      }
+      return `
+        <div style="margin-top:6px; background:#fff1f2; border:1px solid #fecdd3; border-radius:6px; padding:4px 8px; font-size:0.82rem; color:#1f2937; font-weight:600;">
+          <span style="color:#be123c; font-weight:800;">🩺 持病・備考：</span>${escaped}
+        </div>
+      `;
+    }
 
     function parseSymptoms(fullText) {
       if (!fullText) return { chipsHtml: '<span style="color:#9ca3af;">選択なし</span>', detailText: '記入なし' };
@@ -1071,6 +1100,9 @@
         const count = callCounts[r.rowIndex] || 0;
         const callLabel = count > 0 ? `呼出(${count})` : '📢 呼出';
 
+        const matchedPatient = findMatchedPatient(r.phoneNo, r.petName);
+        const petMemoHtml = renderPetMemoHtml(matchedPatient ? matchedPatient.petMemo : '');
+
         return `
           <tr>
             <td class="time-cell">
@@ -1081,7 +1113,10 @@
             <td><div class="phone-badge">📞 ${r.phoneNo || '-'}</div></td>
             <td><span class="visit-badge ${visitClass}">${r.visitType || '-'}</span></td>
             <td><div class="pet-name-box">🐾 ${r.petName}</div></td>
-            <td><div class="pet-info-box">${r.petInfo || '-'}</div></td>
+            <td>
+              <div class="pet-info-box">${r.petInfo || '-'}</div>
+              ${petMemoHtml}
+            </td>
             <td><span class="menu-badge ${menuClass}">${r.menu}</span></td>
             <td>
               <div>${parsed.chipsHtml}</div>
@@ -1165,6 +1200,12 @@
     function renderInterviewCard(r) {
       const parsed = parseSymptoms(r.symptoms);
       const isChecked = checkedInterviews.has(r.rowIndex);
+      const matchedPatient = findMatchedPatient(r.phoneNo, r.petName);
+
+      const detailInfo = matchedPatient
+        ? `${matchedPatient.petType || ''} ${matchedPatient.petBreed || ''} ${matchedPatient.petSex || ''} [生年月日: ${matchedPatient.petBirth || '未設定'}]`.trim()
+        : (r.petInfo || '-');
+      const petMemoHtml = renderPetMemoHtml(matchedPatient ? matchedPatient.petMemo : '');
 
       return `
         <div class="interview-card ${isChecked ? 'checked' : ''}" id="interview-card-${r.rowIndex}">
@@ -1180,9 +1221,14 @@
 
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px; font-size:0.9rem;">
             <div>👤 <strong>飼い主名：</strong> ${r.lineUserName} 様 (${r.visitType || '-'})</div>
-            <div>🐾 <strong>ペット名：</strong> ${r.petName} [${r.petInfo || '-'}]</div>
+            <div>🐾 <strong>ペット名：</strong> ${r.petName}</div>
             <div>📞 <strong>電話番号：</strong> ${r.phoneNo || '-'}</div>
             <div>🩺 <strong>メニュー：</strong> ${r.menu}</div>
+          </div>
+
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:8px 10px; margin-bottom:8px; font-size:0.85rem;">
+            <div><strong style="color:#047857;">🐾 ペット詳細：</strong>${detailInfo}</div>
+            ${petMemoHtml}
           </div>
 
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-top:6px;">
@@ -1318,7 +1364,7 @@
         } else if (slotLabel === '午後 (受取のみ)') {
           slots = dayReservations.filter(r => r.menu.includes('薬・フード') && r.time.includes('午後'));
         } else {
-          slots = dayReservations.filter(r => r.time === slotLabel);
+          slots = dayReservations.filter(r => normalizeTimeStr(r.time) === slotLabel);
         }
 
         html += `<div style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 6px;">`;
@@ -1384,7 +1430,7 @@
           } else if (slotLabel === '午後 (受取のみ)') {
             matches = allReservations.filter(r => normalizeDateStr(r.date) === dateStr && r.menu.includes('薬・フード') && r.time.includes('午後') && r.status !== 'キャンセル');
           } else {
-            matches = allReservations.filter(r => normalizeDateStr(r.date) === dateStr && r.time === slotLabel && r.status !== 'キャンセル');
+            matches = allReservations.filter(r => normalizeDateStr(r.date) === dateStr && normalizeTimeStr(r.time) === slotLabel && r.status !== 'キャンセル');
           }
 
           bodyHtml += `<td>`;
@@ -1549,6 +1595,7 @@
           <td>
             <div style="font-weight:bold; color:#111827;">🐾 ${p.petName}</div>
             <div style="font-size:0.8rem; color:#64748b;">${p.petInfo}</div>
+            ${renderPetMemoHtml(p.petMemo)}
           </td>
           <td><strong>${p.count}</strong> 回</td>
           <td><strong>${p.lastDate}</strong></td>
