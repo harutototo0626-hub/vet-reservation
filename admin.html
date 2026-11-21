@@ -148,6 +148,33 @@
 
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
     .modal-content { background: #fff; padding: 24px; border-radius: 14px; width: 90%; max-width: 560px; font-size: 1rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+
+    /* 右下のトップへ戻る丸ボタン */
+    .scroll-top-btn {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--primary-dark);
+      color: #fff;
+      border: none;
+      font-size: 1.2rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 900;
+      opacity: 0.85;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .scroll-top-btn:hover {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
@@ -637,6 +664,9 @@
     </div>
   </div>
 
+  <!-- 一番上へ戻るボタン -->
+  <button id="scrollTopBtn" class="scroll-top-btn" onclick="scrollToTopAll()" title="一番上へ戻る">↑</button>
+
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
     
@@ -681,6 +711,13 @@
         if (adminPass) loadData(false);
       }, 30000);
     };
+
+    function scrollToTopAll() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.querySelectorAll('.table-container, .tile-grid-wrap').forEach(el => {
+        el.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
 
     function formatTicketNo(val) {
       if (!val) return '';
@@ -867,8 +904,10 @@
 
     function normalizeTimeStr(str) {
       if (!str) return '';
-      const m = String(str).match(/(\d{1,2}):(\d{2})/);
-      if (!m) return String(str).trim();
+      const s = String(str).trim();
+      if (s.includes('午前') || s.includes('午後')) return s;
+      const m = s.match(/(\d{1,2}):(\d{2})/);
+      if (!m) return s;
       return `${m[1].padStart(2, '0')}:${m[2]}`;
     }
 
