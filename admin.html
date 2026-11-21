@@ -538,12 +538,43 @@
 
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function getDeviceLabel() {
+      const ua = navigator.userAgent || '';
+      let os = '不明OS';
+      if (/iPhone/i.test(ua)) os = 'iPhone';
+      else if (/iPad/i.test(ua)) os = 'iPad';
+      else if (/Android/i.test(ua)) os = 'Android';
+      else if (/Windows/i.test(ua)) os = 'Windows';
+      else if (/Mac OS X/i.test(ua)) os = 'Mac';
+      else if (/Linux/i.test(ua)) os = 'Linux';
+
+      let browser = '不明ブラウザ';
+      if (/Line\//i.test(ua)) browser = 'LINEアプリ';
+      else if (/Edg\//i.test(ua)) browser = 'Edge';
+      else if (/Chrome\//i.test(ua)) browser = 'Chrome';
+      else if (/Safari\//i.test(ua)) browser = 'Safari';
+      else if (/Firefox\//i.test(ua)) browser = 'Firefox';
+      return `${os} / ${browser}`;
+    }
+
+    async function fetchClientInfo() {
+      const info = { device: getDeviceLabel(), ip: '取得不可', location: '取得不可' };
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 2000);
+        const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+        clearTimeout(timer);
+        if (res.ok) {
+          const d = await res.json();
+          if (d.ip) info.ip = d.ip;
+          const loc = [d.country_name, d.region, d.city].filter(Boolean).join(', ');
+          if (loc) info.location = loc;
+        }
+      } catch (e) {}
+      return info;
     }
 
     window.onload = () => {
@@ -556,9 +587,9 @@
 
       if (adminPass) {
         document.getElementById('loginOverlay').style.display = 'none';
-        loadData();
+        loadData(false, false);
       }
-      autoRefreshTimer = setInterval(() => { if (adminPass) loadData(false); }, 30000);
+      autoRefreshTimer = setInterval(() => { if (adminPass) loadData(false, false); }, 30000);
     };
 
     function scrollToTopAll() {
@@ -574,17 +605,24 @@
 
     function autoFormatTicketField(el) { if (el && el.value) el.value = formatTicketNo(el.value); }
 
-    function verifyPass() {
+    async function verifyPass() {
       const inputPass = document.getElementById('adminPassInput').value;
       if (!inputPass) return alert('パスワードを入力してください');
       adminPass = inputPass;
-      loadData(true);
+      const clientInfo = await fetchClientInfo();
+      loadData(true, true, clientInfo);
     }
 
-    function loadData(showErrorAlert = false) {
+    function loadData(showErrorAlert = false, isLoginAttempt = false, clientInfo = null) {
+      const bodyObj = { action: "getAdminData", pass: adminPass };
+      if (isLoginAttempt) {
+        bodyObj.isLoginAttempt = true;
+        bodyObj.clientInfo = clientInfo;
+      }
+
       fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "getAdminData", pass: adminPass })
+        body: JSON.stringify(bodyObj)
       })
       .then(res => res.json())
       .then(data => {
