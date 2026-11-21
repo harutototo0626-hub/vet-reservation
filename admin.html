@@ -43,6 +43,7 @@
     .filter-box { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; font-size: 0.95rem; font-weight: 700; }
     input[type="date"], input[type="text"], input[type="tel"], select, textarea { padding: 8px 12px; border: 2px solid #9ca3af; border-radius: 8px; font-size: 0.95rem; font-weight: 700; }
     .btn-action { padding: 8px 14px; background: #374151; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.9rem; }
+    .btn-action:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-green { background: var(--primary); }
     .btn-dark { background: var(--primary-dark); }
     .btn-purple { background: #6d28d9; color: #fff; }
@@ -118,6 +119,13 @@
     details.month-folder summary::-webkit-details-marker { display: none; }
     details.month-folder[open] summary { border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px; }
 
+    details.tmpl-accordion { background: #f3e8ff; border: 2px solid #8b5cf6; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
+    details.tmpl-accordion summary { font-size: 1.1rem; font-weight: 900; color: #581c87; cursor: pointer; outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    details.tmpl-accordion summary::-webkit-details-marker { display: none; }
+    details.tmpl-accordion summary::after { content: '▼ 開く'; font-size: 0.85rem; background: #ede9fe; padding: 4px 10px; border-radius: 6px; border: 1px solid #c4b5fd; }
+    details.tmpl-accordion[open] summary::after { content: '▲ 閉じる'; }
+    details.tmpl-accordion[open] summary { border-bottom: 1.5px solid #ddd6fe; padding-bottom: 10px; margin-bottom: 12px; }
+
     .tile-table { width: 100%; border-collapse: collapse; min-width: 900px; text-align: center; font-size: 0.85rem; }
     .tile-table th, .tile-table td { border: 1px solid #cbd5e0; padding: 8px 4px; vertical-align: top; }
     .tile-table th { background: #f1f5f9; color: #0f172a; font-weight: bold; }
@@ -130,10 +138,9 @@
     .holiday-cell.is-off { background: #fef2f2; color: #991b1b; }
     .th-day-toggle { cursor: pointer; background: #e2e8f0 !important; }
 
-    /* テンプレート設定用ミニテーブル */
-    .tmpl-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; background: #fff; margin-top: 10px; border-radius: 8px; overflow: hidden; border: 1.5px solid #ddd6fe; }
+    .tmpl-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; background: #fff; margin-top: 10px; border-radius: 8px; overflow: hidden; border: 1.5px solid #ddd6fe; min-width: 600px; }
     .tmpl-table th, .tmpl-table td { border: 1px solid #e9d5ff; padding: 8px 4px; }
-    .tmpl-table th { background: #f3e8ff; color: #581c87; font-weight: 800; }
+    .tmpl-table th { background: #f3e8ff; color: #581c87; font-weight: 800; position: static; }
     .tmpl-table td label { display: flex; align-items: center; justify-content: center; gap: 4px; font-weight: bold; cursor: pointer; width: 100%; height: 100%; }
 
     .tab-content { display: none; }
@@ -390,10 +397,11 @@
   <!-- TAB 4: 休業・受付枠設定 -->
   <div id="tab-holiday" class="tab-content">
     
-    <!-- 🗓️ 1週間の曜日・時間帯別 テンプレート設定 -->
-    <div style="background:#f3e8ff; border:2px solid #8b5cf6; padding:18px; border-radius:12px; margin-bottom:16px;">
-      <h3 style="margin-top:0; color:#581c87; font-size:1.15rem; font-weight:900;">⚙️ 1週間の曜日・時間帯別 テンプレート設定</h3>
-      <p style="font-size:0.85rem; color:#4c1d95; margin-bottom:10px; line-height:1.4;">
+    <!-- 🗓️ 1週間の曜日・時間帯別 テンプレート設定（折りたたみ収納） -->
+    <details class="tmpl-accordion">
+      <summary>⚙️ 1週間の曜日・時間帯別 テンプレート設定</summary>
+      
+      <p style="font-size:0.85rem; color:#4c1d95; margin-top:0; margin-bottom:10px; line-height:1.4;">
         曜日ごとに「どの時間の枠を受付可能にするか（○）」を1週間の基本形としてチェックを付け、指定年のカレンダーへ一括反映します。
       </p>
 
@@ -425,11 +433,11 @@
           <option value="2028">2028年</option>
         </select>
 
-        <button class="btn-action btn-purple" style="font-size:1rem; padding:10px 18px;" onclick="executeWeeklyTemplateApply()">
+        <button class="btn-action btn-purple" id="btnApplyWeeklyTmpl" style="font-size:1rem; padding:10px 18px;" onclick="executeWeeklyTemplateApply()">
           🚀 この週間テンプレートを指定年に一括反映する
         </button>
       </div>
-    </div>
+    </details>
 
     <!-- 📅 予約受付可能期間（公開範囲）の設定 -->
     <div style="background:#eff6ff; border:2px solid #3b82f6; padding:16px; border-radius:12px; margin-bottom:16px;">
@@ -645,6 +653,7 @@
     let adminPass = sessionStorage.getItem('adminPass') || '';
     let autoRefreshTimer = null;
     let currentTargetName = '';
+    let isTemplateInitialized = false;
     
     let currentCategoryFilter = 'all';
     let tileWeekStart = new Date();
@@ -714,6 +723,11 @@
             document.getElementById('calendarWeeksSelect').value = String(data.calendarWeeks);
           }
 
+          if (data.weeklyTemplate && !isTemplateInitialized) {
+            applySavedWeeklyTemplate(data.weeklyTemplate);
+            isTemplateInitialized = true;
+          }
+
           filterReservations();
           renderInterviewList();
           renderTimeline();
@@ -741,14 +755,7 @@
         html += `<td style="font-weight:900; background:#f5f3ff; color:${dayIdx===0?'#dc2626':(dayIdx===6?'#2563eb':'#334155')};">${dayName}</td>`;
         html += `<td style="background:#ede9fe;"><button type="button" style="font-size:0.75rem; padding:2px 6px; font-weight:bold;" onclick="toggleRowBlock(${dayIdx})">1日全切替</button></td>`;
         
-        // 午前枠 3個
-        ["09:00", "10:00", "11:00"].forEach(time => {
-          const checked = !isWed ? 'checked' : '';
-          html += `<td><label><input type="checkbox" class="tmpl-cb" data-day="${dayIdx}" data-time="${time}" ${checked}> ○</label></td>`;
-        });
-        
-        // 午後枠 3個
-        ["16:00", "17:00", "18:00"].forEach(time => {
+        ["09:00", "10:00", "11:00", "16:00", "17:00", "18:00"].forEach(time => {
           const checked = !isWed ? 'checked' : '';
           html += `<td><label><input type="checkbox" class="tmpl-cb" data-day="${dayIdx}" data-time="${time}" ${checked}> ○</label></td>`;
         });
@@ -757,6 +764,15 @@
       });
 
       tbody.innerHTML = html;
+    }
+
+    function applySavedWeeklyTemplate(template) {
+      document.querySelectorAll('.tmpl-cb').forEach(cb => {
+        const day = cb.dataset.day;
+        const time = cb.dataset.time;
+        const openTimes = template[day] || [];
+        cb.checked = openTimes.includes(time);
+      });
     }
 
     function toggleRowBlock(dayIdx) {
@@ -782,6 +798,10 @@
         return;
       }
 
+      const btn = document.getElementById('btnApplyWeeklyTmpl');
+      btn.disabled = true;
+      btn.innerText = '⏳ 反映中...（数秒お待ちください）';
+
       fetch(GAS_URL, {
         method: "POST",
         body: JSON.stringify({
@@ -793,6 +813,8 @@
       })
       .then(res => res.json())
       .then(data => {
+        btn.disabled = false;
+        btn.innerText = '🚀 この週間テンプレートを指定年に一括反映する';
         if (data.status === 'success') {
           alert(`${year}年の全期間へ週間テンプレートを一括反映しました！`);
           loadData();
@@ -800,7 +822,11 @@
           alert('エラーが発生しました: ' + (data.message || ''));
         }
       })
-      .catch(err => alert('通信エラーが発生しました: ' + err));
+      .catch(err => {
+        btn.disabled = false;
+        btn.innerText = '🚀 この週間テンプレートを指定年に一括反映する';
+        alert('通信エラーが発生しました: ' + err);
+      });
     }
 
     function saveCalendarWeeks() {
@@ -1681,4 +1707,3 @@
   </script>
 </body>
 </html>
-<!-- Trigger GitHub Actions re-deploy: 2026-11-06-v2 -->
