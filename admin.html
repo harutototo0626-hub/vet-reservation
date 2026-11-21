@@ -866,6 +866,13 @@
       return `${matched[1]}-${matched[2].padStart(2, '0')}-${matched[3].padStart(2, '0')}`;
     }
 
+    function normalizeTimeStr(str) {
+  if (!str) return '';
+  const m = String(str).match(/(\d{1,2}):(\d{2})/);
+  if (!m) return String(str).trim();
+  return `${m[1].padStart(2, '0')}:${m[2]}`;
+}
+
     function parseSymptoms(fullText) {
       if (!fullText) return { chipsHtml: '<span style="color:#9ca3af;">選択なし</span>', detailText: '記入なし' };
 
@@ -1442,7 +1449,7 @@
           let dd = String(d.getDate()).padStart(2, '0');
           let dateStr = `${yyyy}-${mm}-${dd}`;
 
-          const isOff = allReservations.some(r => normalizeDateStr(r.date) === dateStr && r.time === time && r.status === '休診');
+          const isOff = allReservations.some(r => normalizeDateStr(r.date) === dateStr && normalizeTimeStr(r.time) === time && r.status === '休診');
 
           bodyHtml += `<td class="holiday-cell ${isOff ? 'is-off' : 'is-open'}" onclick="toggleHolidaySlot('${dateStr}', '${time}')">
             ${isOff ? '休診' : '受付中'}
