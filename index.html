@@ -48,6 +48,7 @@
     .req { background: #fed7d7; color: #9b2c2c; font-size: 0.7rem; padding: 1px 5px; border-radius: 4px; margin-left: 4px; font-weight: normal; }
     .opt { background: #edf2f7; color: #718096; font-size: 0.7rem; padding: 1px 5px; border-radius: 4px; margin-left: 4px; font-weight: normal; }
     input[type="text"], input[type="number"], input[type="tel"], input[type="password"], input[type="date"], select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.95rem; background: #fff; outline: none; }
+    input[readonly] { background: #edf2f7; color: #64748b; cursor: not-allowed; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
     .btn-tile { border: 1.5px solid #cbd5e0; padding: 12px 8px; border-radius: 10px; text-align: center; font-size: 0.9rem; background: #fff; cursor: pointer; color: #4a5568; font-weight: 700; transition: all 0.2s; }
     .btn-tile input { display: none; }
@@ -117,7 +118,7 @@
               <input type="password" id="loginPass" name="password" placeholder="パスワード" autocomplete="current-password" required>
               <div class="btn-area">
                 <button type="button" class="btn btn-secondary" onclick="showAuthPage('select')">🠔 戻る</button>
-                <button type="submit" class="btn btn-primary">ログイン ➔</button>
+                <button type="submit" class="btn btn-primary" id="btnLoginSubmit">ログイン ➔</button>
               </div>
             </form>
           </div>
@@ -133,7 +134,7 @@
               <input type="password" id="regPass" name="password" placeholder="6文字以上のパスワード" autocomplete="new-password" required>
               <div class="btn-area">
                 <button type="button" class="btn btn-secondary" onclick="showAuthPage('select')">🠔 戻る</button>
-                <button type="submit" class="btn btn-primary">新規登録して進む ➔</button>
+                <button type="submit" class="btn btn-primary" id="btnRegSubmit">新規登録して進む ➔</button>
               </div>
             </form>
           </div>
@@ -315,8 +316,8 @@
               <input type="text" id="profOwnerName" placeholder="例: 中川 太郎" required>
               <label for="profTicketNo">診察券番号 <span class="opt">任意</span></label>
               <input type="text" id="profTicketNo" placeholder="例: 0001" onblur="autoFormatTicketField(this)">
-              <label for="profPhoneNo">ご連絡先電話番号 <span class="req">必須</span></label>
-              <input type="tel" id="profPhoneNo" placeholder="例: 09012345678" required>
+              <label for="profPhoneNo">ご登録電話番号（変更時は病院へご連絡ください）</label>
+              <input type="tel" id="profPhoneNo" readonly required>
             </div>
             <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:12px; border-radius:10px; margin-bottom:14px;">
               <h3 style="margin:0 0 8px 0; font-size:0.95rem; color:#1e40af;">🐾 ペット情報</h3>
@@ -371,8 +372,43 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    function getDeviceLabel() {
+      const ua = navigator.userAgent || '';
+      let os = '不明OS';
+      if (/iPhone/i.test(ua)) os = 'iPhone';
+      else if (/iPad/i.test(ua)) os = 'iPad';
+      else if (/Android/i.test(ua)) os = 'Android';
+      else if (/Windows/i.test(ua)) os = 'Windows';
+      else if (/Mac OS X/i.test(ua)) os = 'Mac';
+      else if (/Linux/i.test(ua)) os = 'Linux';
+
+      let browser = '不明ブラウザ';
+      if (/Line\//i.test(ua)) browser = 'LINEアプリ';
+      else if (/Edg\//i.test(ua)) browser = 'Edge';
+      else if (/Chrome\//i.test(ua)) browser = 'Chrome';
+      else if (/Safari\//i.test(ua)) browser = 'Safari';
+      else if (/Firefox\//i.test(ua)) browser = 'Firefox';
+      return `${os} / ${browser}`;
+    }
+
+    async function fetchClientInfo() {
+      const info = { device: getDeviceLabel(), ip: '取得不可', location: '取得不可' };
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 2000);
+        const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+        clearTimeout(timer);
+        if (res.ok) {
+          const d = await res.json();
+          if (d.ip) info.ip = d.ip;
+          const loc = [d.country_name, d.region, d.city].filter(Boolean).join(', ');
+          if (loc) info.location = loc;
+        }
+      } catch (e) {}
+      return info;
+    }
+
     window.onload = () => {
-      // 旧バージョンで保存されていた平文パスワードがあれば削除
       localStorage.removeItem('arbre_user_saved_pass');
       renderMedicalChips('一般診療');
 
@@ -477,28 +513,42 @@
       onUserAuthenticated();
     }
 
-    function loginUser() {
+    async function loginUser() {
       const phone = document.getElementById('loginPhone').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
       if (!phone || !pass) return alert('電話番号とパスワードを入力してください');
-      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "loginUser", phoneNo: phone, userPass: pass }) })
+
+      const btn = document.getElementById('btnLoginSubmit');
+      btn.disabled = true; btn.innerText = '認証中...';
+      const clientInfo = await fetchClientInfo();
+
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "loginUser", phoneNo: phone, userPass: pass, clientInfo }) })
         .then(res => res.json())
         .then(data => {
+          btn.disabled = false; btn.innerText = 'ログイン ➔';
           if (data.status === 'success' && data.sessionToken) { alert('ログインしました'); onAuthSuccess(phone, data.sessionToken); }
           else alert('ログインエラー: ' + (data.message || ''));
-        });
+        })
+        .catch(() => { btn.disabled = false; btn.innerText = 'ログイン ➔'; alert('通信エラーが発生しました'); });
     }
 
-    function registerUser() {
+    async function registerUser() {
       const phone = document.getElementById('regPhone').value.trim();
       const pass = document.getElementById('regPass').value.trim();
       if (!phone || pass.length < 6) return alert('電話番号と6文字以上のパスワードを入力してください');
-      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "registerUser", phoneNo: phone, userPass: pass }) })
+
+      const btn = document.getElementById('btnRegSubmit');
+      btn.disabled = true; btn.innerText = '登録中...';
+      const clientInfo = await fetchClientInfo();
+
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "registerUser", phoneNo: phone, userPass: pass, clientInfo }) })
         .then(res => res.json())
         .then(data => {
+          btn.disabled = false; btn.innerText = '新規登録して進む ➔';
           if (data.status === 'success' && data.sessionToken) { alert('新規登録が完了しました！'); onAuthSuccess(phone, data.sessionToken); }
           else alert('登録エラー: ' + (data.message || ''));
-        });
+        })
+        .catch(() => { btn.disabled = false; btn.innerText = '新規登録して進む ➔'; alert('通信エラーが発生しました'); });
     }
 
     function loadAnnounceAndShowBoard() {
@@ -620,7 +670,7 @@
       }).then(res => res.json()).then(data => {
         btn.disabled = false; btn.innerText = '💾 この患者・ペット情報を保存する';
         if (data.status === 'unauthorized') return forceRelogin(data.message);
-        if (data.status === 'success') { alert('保存しました！'); currentUserPhone = phoneNo; localStorage.setItem('arbre_user_saved_phone', phoneNo); loadPatientProfileData(); returnToPortal(); }
+        if (data.status === 'success') { alert('保存しました！'); loadPatientProfileData(); returnToPortal(); }
         else alert('保存エラー: ' + data.message);
       }).catch(() => { btn.disabled = false; btn.innerText = '💾 この患者・ペット情報を保存する'; alert('通信エラーが発生しました'); });
     }
