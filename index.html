@@ -1005,7 +1005,10 @@
       document.getElementById('viewMyReservations').style.display = (section === 'myReservations') ? 'block' : 'none';
       document.getElementById('viewPatientProfile').style.display = (section === 'patientProfile') ? 'block' : 'none';
 
-      if (section === 'newReserve') restoreSavedInput();
+      if (section === 'newReserve') {
+        restoreSavedInput();
+        fetchExistingReservations();
+      }
       if (section === 'myReservations') loadUserReservations();
       if (section === 'patientProfile') loadPatientProfileData();
     }
@@ -1090,7 +1093,7 @@
     }
 
     function fetchExistingReservations() {
-      fetch(GAS_URL)
+      fetch(`${GAS_URL}?action=getReservations`)
         .then(res => res.json())
         .then(data => {
           let list = [];
@@ -1179,27 +1182,30 @@
           let dateStr = `${yyyy}-${mm}-${dd}`;
 
           let isPast = d < today;
-          let isWed = d.getDay() === 3;
           let isOverRange = d > maxLimitDate;
 
           let dayRecords = existingReservations.filter(r => normalizeDateStr(r.date) === dateStr);
           let targetHm = extractHourMin(time);
 
-          let isBlocked = dayRecords.some(r => {
+          let isHolidaySlot = dayRecords.some(r => {
             const isHolidayRecord = (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY');
-            if (isHolidayRecord) {
-              const isFullDay = (r.time && (r.time.includes('全日') || r.time.includes('1日'))) || (r.symptoms && r.symptoms.includes('1日休診'));
-              if (isFullDay) return true;
-              return extractHourMin(r.time) === targetHm;
-            }
+            if (!isHolidayRecord) return false;
+            const isFullDay = (r.time && (r.time.includes('全日') || r.time.includes('1日'))) || (r.symptoms && r.symptoms.includes('1日休診'));
+            if (isFullDay) return true;
             return extractHourMin(r.time) === targetHm;
           });
 
-          if (isWed) {
-            bodyHtml += `<td class="cell-wed">休</td>`;
-          } else if (isPast || isOverRange) {
+          let isReservedSlot = dayRecords.some(r => {
+            const isHolidayRecord = (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY');
+            if (isHolidayRecord) return false;
+            return extractHourMin(r.time) === targetHm;
+          });
+
+          if (isPast || isOverRange) {
             bodyHtml += `<td><span class="cell-none">-</span></td>`;
-          } else if (isBlocked) {
+          } else if (isHolidaySlot) {
+            bodyHtml += `<td class="cell-wed">休</td>`;
+          } else if (isReservedSlot) {
             bodyHtml += `<td><span class="cell-ng">✕</span></td>`;
           } else {
             let isSelected = (selectedDateStr === dateStr && selectedTimeStr === time);
@@ -1233,14 +1239,6 @@
     function onPickupDateChange() {
       const dateVal = document.getElementById('pickupDatePicker').value;
       if (!dateVal) return;
-
-      const d = new Date(dateVal);
-      if (d.getDay() === 3) {
-        alert("水曜日は定休日のため受取予約はできません");
-        document.getElementById('pickupDatePicker').value = "";
-        document.getElementById('pickupTimeOptions').style.display = 'none';
-        return;
-      }
 
       selectedDateStr = dateVal;
       selectedTimeStr = "";
