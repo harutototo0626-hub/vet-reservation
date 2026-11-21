@@ -111,6 +111,12 @@
     .res-card { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 12px; padding: 12px; margin-bottom: 10px; font-size: 0.85rem; }
     .res-card header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px; }
     .res-card-title { font-weight: bold; color: var(--primary-dark); font-size: 0.95rem; }
+    details.month-folder { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; }
+    details.month-folder summary { font-size: 0.95rem; font-weight: 800; color: #1e293b; cursor: pointer; outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    details.month-folder summary::-webkit-details-marker { display: none; }
+    details.month-folder summary::after { content: '▼'; font-size: 0.75rem; color: #64748b; }
+    details.month-folder[open] summary::after { content: '▲'; }
+    details.month-folder[open] summary { border-bottom: 1.5px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -1042,21 +1048,56 @@
             return dateB.localeCompare(dateA) || (b.rowIndex - a.rowIndex);
           });
 
-          container.innerHTML = activeReservations.map(r => `
-            <div class="res-card">
-              <header>
-                <span class="res-card-title">📅 ${r.date} ${r.time}</span>
-                <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-weight:bold;">${r.status}</span>
-              </header>
-              <div><strong>ペット:</strong> ${r.petName}</div>
-              <div><strong>メニュー:</strong> ${r.menu}</div>
-              <div style="font-size:0.8rem; color:#64748b; margin-top:4px;">${r.symptoms || ''}</div>
-              
-              <div style="display:flex; gap:6px; margin-top:10px;">
-                <button type="button" class="btn btn-secondary" style="padding:6px; font-size:0.8rem;" onclick="userCancelRes(${r.rowIndex})">❌ キャンセル</button>
+          const now = new Date();
+          const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+          // 年月ごとにグループ化
+          const monthGroups = {};
+          activeReservations.forEach(r => {
+            const normDate = normalizeDateStr(r.date);
+            const ym = normDate ? normDate.substring(0, 7) : 'その他';
+            if (!monthGroups[ym]) monthGroups[ym] = [];
+            monthGroups[ym].push(r);
+          });
+
+          // 新しい月順に並べ替え
+          const sortedYms = Object.keys(monthGroups).sort().reverse();
+
+          container.innerHTML = sortedYms.map(ym => {
+            const items = monthGroups[ym];
+            const isCurrentMonth = (ym === currentYearMonth);
+            const isOpen = isCurrentMonth ? 'open' : '';
+
+            let titleLabel = ym;
+            if (ym !== 'その他') {
+              const parts = ym.split('-');
+              if (parts.length === 2) titleLabel = `${parts[0]}年 ${parseInt(parts[1])}月`;
+            }
+            if (isCurrentMonth) titleLabel += '（今月）';
+
+            const cardsHtml = items.map(r => `
+              <div class="res-card">
+                <header>
+                  <span class="res-card-title">📅 ${r.date} ${r.time}</span>
+                  <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-weight:bold;">${r.status}</span>
+                </header>
+                <div><strong>ペット:</strong> ${r.petName}</div>
+                <div><strong>メニュー:</strong> ${r.menu}</div>
+                <div style="font-size:0.8rem; color:#64748b; margin-top:4px;">${r.symptoms || ''}</div>
+                
+                <div style="display:flex; gap:6px; margin-top:10px;">
+                  <button type="button" class="btn btn-secondary" style="padding:6px; font-size:0.8rem;" onclick="userCancelRes(${r.rowIndex})">❌ キャンセル</button>
+                </div>
               </div>
-            </div>
-          `).join('');
+            `).join('');
+
+            return `
+              <details class="month-folder" ${isOpen}>
+                <summary>📁 ${titleLabel} (${items.length}件)</summary>
+                <div>${cardsHtml}</div>
+              </details>
+            `;
+          }).join('');
         });
     }
 
