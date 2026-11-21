@@ -1035,6 +1035,13 @@
             return;
           }
 
+          // 新しい予約日時が上に来るように降順ソート
+          activeReservations.sort((a, b) => {
+            const dateA = normalizeDateStr(a.date) + ' ' + extractHourMin(a.time);
+            const dateB = normalizeDateStr(b.date) + ' ' + extractHourMin(b.time);
+            return dateB.localeCompare(dateA) || (b.rowIndex - a.rowIndex);
+          });
+
           container.innerHTML = activeReservations.map(r => `
             <div class="res-card">
               <header>
