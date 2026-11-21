@@ -7,32 +7,20 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     :root {
-      --primary: #06C755;
-      --primary-dark: #047857;
-      --primary-light: #e8f9ee;
-      --cal-blue: #0284c7;
-      --cal-bg: #f0f9ff;
-      --bg-color: #f7faf7;
-      --card-bg: #ffffff;
-      --text-main: #2d3748;
-      --border: #cbd5e0;
+      --primary: #06C755; --primary-dark: #047857; --primary-light: #e8f9ee;
+      --cal-blue: #0284c7; --cal-bg: #f0f9ff; --bg-color: #f7faf7;
+      --card-bg: #ffffff; --text-main: #2d3748; --border: #cbd5e0;
     }
-
     * { box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 16px 8px; color: var(--text-main); line-height: 1.5; }
-    
     .container { max-width: 480px; margin: 0 auto; position: relative; }
-
     .header { text-align: center; margin-bottom: 12px; padding-top: 10px; }
     .header h1 { font-size: 1.15rem; margin: 0 0 6px 0; color: var(--primary-dark); font-weight: 700; }
     .badge-user { display: inline-block; background: var(--primary-light); color: var(--primary-dark); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid #c6f6d5; }
-
     .card { background: var(--card-bg); border-radius: 16px; padding: 16px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border); margin-bottom: 14px; }
-    
     .announce-board-card { background: #eff6ff; border: 2px solid #3b82f6; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.15); }
     .announce-board-title { font-size: 1.15rem; font-weight: 900; color: #1e40af; margin: 0 0 12px 0; border-bottom: 2px solid #bfdbfe; padding-bottom: 8px; }
     .announce-board-body { background: #ffffff; border: 1px solid #93c5fd; border-radius: 10px; padding: 14px; font-size: 0.95rem; color: #1e293b; line-height: 1.6; white-space: pre-wrap; min-height: 120px; }
-
     .portal-menu-grid { display: flex; flex-direction: column; gap: 12px; }
     .portal-card { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; }
     .portal-card:active { background: #f8fafc; border-color: var(--primary); transform: scale(0.99); }
@@ -41,7 +29,6 @@
     .portal-card-text h3 { margin: 0 0 4px 0; font-size: 1.05rem; color: #1e293b; font-weight: 800; }
     .portal-card-text p { margin: 0; font-size: 0.78rem; color: #64748b; line-height: 1.3; }
     .portal-card-arrow { font-size: 1.3rem; color: #94a3b8; font-weight: bold; }
-
     .auth-container { text-align: center; padding: 10px 4px; }
     .auth-title { font-size: 1.1rem; color: var(--primary-dark); font-weight: 800; margin-bottom: 8px; }
     .auth-sub { font-size: 0.85rem; color: #4a5568; margin-bottom: 20px; }
@@ -49,69 +36,52 @@
     .btn-auth-login { background: var(--primary-dark); color: #fff; }
     .btn-auth-register { background: #fff; color: var(--primary-dark); }
     .auth-form-card { background: #f8fafc; border: 1.5px solid #cbd5e0; border-radius: 12px; padding: 16px; text-align: left; }
-
     .step-bar { display: flex; justify-content: space-between; margin-bottom: 20px; position: relative; padding: 0 8px; }
     .step-bar::before { content: ''; position: absolute; top: 14px; left: 15%; right: 15%; height: 2px; background: #e2e8f0; z-index: 1; }
     .step-dot { position: relative; z-index: 2; background: #fff; border: 2px solid #cbd5e0; color: #a0aec0; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
     .step-dot.active { border-color: var(--primary); background: var(--primary); color: #fff; transform: scale(1.1); }
     .step-dot.finished { border-color: var(--primary); background: #fff; color: var(--primary); }
-
     .step-content { display: none; }
     .step-content.active { display: block; }
-
     h2 { font-size: 1.05rem; color: var(--text-main); margin: 0 0 14px 0; padding-bottom: 6px; border-bottom: 2px solid var(--primary-light); text-align: center; }
     label { font-size: 0.85rem; font-weight: 700; color: #4a5568; display: block; margin-top: 14px; margin-bottom: 6px; }
     .req { background: #fed7d7; color: #9b2c2c; font-size: 0.7rem; padding: 1px 5px; border-radius: 4px; margin-left: 4px; font-weight: normal; }
     .opt { background: #edf2f7; color: #718096; font-size: 0.7rem; padding: 1px 5px; border-radius: 4px; margin-left: 4px; font-weight: normal; }
-
-    input[type="text"], input[type="number"], input[type="tel"], input[type="password"], input[type="date"], select, textarea {
-      width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.95rem; background: #fff; outline: none;
-    }
-
+    input[type="text"], input[type="number"], input[type="tel"], input[type="password"], input[type="date"], select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.95rem; background: #fff; outline: none; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
     .btn-tile { border: 1.5px solid #cbd5e0; padding: 12px 8px; border-radius: 10px; text-align: center; font-size: 0.9rem; background: #fff; cursor: pointer; color: #4a5568; font-weight: 700; transition: all 0.2s; }
     .btn-tile input { display: none; }
     .btn-tile.selected { border-color: var(--primary-dark); background: var(--primary-light); color: var(--primary-dark); font-weight: 900; box-shadow: 0 2px 6px rgba(4, 120, 87, 0.15); }
-
     .chip-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
     .chip { border: 1px solid #cbd5e0; padding: 6px 10px; border-radius: 16px; font-size: 0.82rem; background: #fff; color: #4a5568; cursor: pointer; }
     .chip.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); font-weight: bold; }
-
     .cal-nav { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
     .btn-cal-week { flex: 1; padding: 8px; border: 1.5px solid var(--cal-blue); background: #fff; color: var(--cal-blue); font-weight: bold; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
-    
     .cal-table-wrap { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
     .cal-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.78rem; table-layout: fixed; }
     .cal-table th, .cal-table td { border: 1px solid #e2e8f0; padding: 8px 2px; vertical-align: middle; }
     .cal-table th { background: var(--cal-bg); color: var(--cal-blue); font-weight: bold; }
     .cal-table th.sun { color: #e11d48; }
     .cal-table th.sat { color: #2563eb; }
-    
     .cell-ok { color: #0284c7; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: block; width: 100%; height: 100%; }
     .cell-ok:active { background: #e0f2fe; }
     .cell-ng { color: #dc2626; font-size: 0.9rem; font-weight: bold; background: #fef2f2; }
     .cell-wed { color: #64748b; font-size: 0.75rem; font-weight: bold; background: #f1f5f9; }
     .cell-none { color: #94a3b8; font-size: 0.8rem; background: #f8fafc; }
-
     .pickup-date-select-box { background: #fffbebf5; border: 1.5px solid #fcd34d; padding: 12px; border-radius: 10px; margin-top: 10px; }
     .pickup-time-btn { padding: 12px; border: 2px solid #cbd5e0; border-radius: 8px; background: #fff; font-weight: bold; text-align: center; cursor: pointer; margin-top: 8px; }
     .pickup-time-btn.selected { border-color: var(--primary-dark); background: var(--primary-light); color: var(--primary-dark); }
     .pickup-time-btn.disabled { opacity: 0.4; cursor: not-allowed; background: #f1f5f9; border-color: #cbd5e0; }
-
     .selected-slot-box { background: #e0f2fe; border: 1px solid #7dd3fc; color: #0369a1; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 0.95rem; margin-top: 12px; }
-
     .btn-area { display: flex; gap: 8px; margin-top: 20px; }
     .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 0.92rem; font-weight: bold; cursor: pointer; text-align: center; }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-secondary { background: #edf2f7; color: #4a5568; }
-
     .conf-box { background: #f7fafc; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #edf2f7; font-size: 0.85rem; }
     .conf-box span { display: block; font-size: 0.75rem; color: var(--primary-dark); font-weight: bold; margin-bottom: 2px; }
-
     .res-card { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 12px; padding: 12px; margin-bottom: 10px; font-size: 0.85rem; }
     .res-card header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px; }
     .res-card-title { font-weight: bold; color: var(--primary-dark); font-size: 0.95rem; }
-
     details.month-folder { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; }
     details.month-folder summary { font-size: 0.95rem; font-weight: 800; color: #1e293b; cursor: pointer; outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center; }
     details.month-folder summary::-webkit-details-marker { display: none; }
@@ -129,7 +99,6 @@
     </div>
 
     <div class="card">
-
       <div id="webAuthContainer" class="auth-container" style="display:none;">
         <div id="webAuthSelectPage">
           <div class="auth-title">🔒 Web利用ログイン・認証</div>
@@ -160,8 +129,8 @@
             <form onsubmit="event.preventDefault(); registerUser();">
               <label for="regPhone">電話番号（ログインIDとなります）</label>
               <input type="tel" id="regPhone" name="username" placeholder="例: 09012345678" autocomplete="username tel" required>
-              <label for="regPass">ご希望のパスワード</label>
-              <input type="password" id="regPass" name="password" placeholder="8文字以上のパスワード" autocomplete="new-password" required>
+              <label for="regPass">ご希望のパスワード（6文字以上）</label>
+              <input type="password" id="regPass" name="password" placeholder="6文字以上のパスワード" autocomplete="new-password" required>
               <div class="btn-area">
                 <button type="button" class="btn btn-secondary" onclick="showAuthPage('select')">🠔 戻る</button>
                 <button type="submit" class="btn btn-primary">新規登録して進む ➔</button>
@@ -172,185 +141,100 @@
       </div>
 
       <div id="mainPortalApp" style="display:none;">
-
         <div id="viewAnnounceBoard" style="display:none;">
           <div class="announce-board-card">
             <div class="announce-board-title">📢 病院からのお知らせ</div>
             <div class="announce-board-body" id="announceContent">お知らせはありません。</div>
           </div>
-          
           <div class="btn-area" style="margin-top:16px;">
-            <button type="button" class="btn btn-primary" style="padding:16px; font-size:1.05rem;" onclick="proceedToPortalMenu()">
-              メニュー画面へ進む ➔
-            </button>
+            <button type="button" class="btn btn-primary" style="padding:16px; font-size:1.05rem;" onclick="proceedToPortalMenu()">メニュー画面へ進む ➔</button>
           </div>
         </div>
 
         <div id="viewPortalMenu" style="display:none;">
           <div class="portal-menu-grid">
             <div class="portal-card" onclick="openNavSection('newReserve')">
-              <div class="portal-card-left">
-                <div class="portal-card-icon">📅</div>
-                <div class="portal-card-text">
-                  <h3>新規の予約</h3>
-                  <p>新しい診察・薬受取の予約を入れることができます。</p>
-                </div>
-              </div>
-              <div class="portal-card-arrow">›</div>
+              <div class="portal-card-left"><div class="portal-card-icon">📅</div><div class="portal-card-text"><h3>新規の予約</h3><p>新しい診察・薬受取の予約を入れることができます。</p></div></div><div class="portal-card-arrow">›</div>
             </div>
-
             <div class="portal-card" onclick="openNavSection('myReservations')">
-              <div class="portal-card-left">
-                <div class="portal-card-icon">📋</div>
-                <div class="portal-card-text">
-                  <h3>予約内容の確認・変更</h3>
-                  <p>現在予約中の内容や予約履歴の確認・日時変更・キャンセルが可能です。</p>
-                </div>
-              </div>
-              <div class="portal-card-arrow">›</div>
+              <div class="portal-card-left"><div class="portal-card-icon">📋</div><div class="portal-card-text"><h3>予約内容の確認・変更</h3><p>現在予約中の内容や予約履歴の確認・キャンセルが可能です。</p></div></div><div class="portal-card-arrow">›</div>
             </div>
-
             <div class="portal-card" onclick="openNavSection('patientProfile')">
-              <div class="portal-card-left">
-                <div class="portal-card-icon">👤</div>
-                <div class="portal-card-text">
-                  <h3>患者様情報の確認・変更</h3>
-                  <p>オーナー情報、診察券番号、ペット情報などの確認・変更が可能です。</p>
-                </div>
-              </div>
-              <div class="portal-card-arrow">›</div>
+              <div class="portal-card-left"><div class="portal-card-icon">👤</div><div class="portal-card-text"><h3>患者様情報の確認・変更</h3><p>オーナー情報、診察券番号、ペット情報などの確認・変更が可能です。</p></div></div><div class="portal-card-arrow">›</div>
             </div>
           </div>
         </div>
 
-        <!-- 新規予約フォーム画面 -->
         <div id="viewNewReserve" style="display:none;">
           <div style="margin-bottom:12px;">
             <button type="button" class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="returnToPortal()">🠔 メニューに戻る</button>
           </div>
-
           <div class="step-bar">
-            <div class="step-dot active" id="dot1">1</div>
-            <div class="step-dot" id="dot2">2</div>
-            <div class="step-dot" id="dot3">3</div>
-            <div class="step-dot" id="dot4">4</div>
+            <div class="step-dot active" id="dot1">1</div><div class="step-dot" id="dot2">2</div><div class="step-dot" id="dot3">3</div><div class="step-dot" id="dot4">4</div>
           </div>
 
           <form id="reserveForm">
-            <!-- STEP 1 -->
             <div class="step-content active" id="step1">
               <h2>1. ペット・飼い主様の情報</h2>
-
               <div id="savedPetBox" style="background:#eef2ff; border:1px solid #c7d2fe; padding:12px; border-radius:10px; margin-bottom:14px; display:none;">
                 <label style="margin-top:0; color:#3730a3; font-weight:900;">🐾 登録済みのペットから選ぶ</label>
                 <div id="savedPetTileGrid" class="grid-2" style="margin-top:8px;"></div>
               </div>
-
               <label for="petName">ペットのお名前 <span class="req">必須</span></label>
               <input type="text" id="petName" placeholder="例: チョコ" required>
-
               <label>ペットの種類 <span class="req">必須</span></label>
               <div class="grid-2" id="petTypeGrid">
-                <label class="btn-tile selected">
-                  <input type="radio" name="petType" value="犬" checked> 🐶 犬
-                </label>
-                <label class="btn-tile">
-                  <input type="radio" name="petType" value="猫"> 🐱 猫
-                </label>
+                <label class="btn-tile selected"><input type="radio" name="petType" value="犬" checked> 🐶 犬</label>
+                <label class="btn-tile"><input type="radio" name="petType" value="猫"> 🐱 猫</label>
               </div>
-
               <div style="display: flex; gap: 8px;">
-                <div style="flex:1;">
-                  <label for="petBreed">品種 <span class="opt">任意</span></label>
-                  <input type="text" id="petBreed" placeholder="トイプードル等">
-                </div>
+                <div style="flex:1;"><label for="petBreed">品種 <span class="opt">任意</span></label><input type="text" id="petBreed" placeholder="トイプードル等"></div>
                 <div style="flex:1;">
                   <label for="petSex">性別 <span class="opt">任意</span></label>
-                  <select id="petSex">
-                    <option value="">未選択</option>
-                    <option value="オス（未去勢）">オス（未去勢）</option>
-                    <option value="オス（去勢済）">オス（去勢済）</option>
-                    <option value="メス（未避妊）">メス（未避妊）</option>
-                    <option value="メス（避妊済）">メス（避妊済）</option>
-                  </select>
+                  <select id="petSex"><option value="">未選択</option><option value="オス（未去勢）">オス（未去勢）</option><option value="オス（去勢済）">オス（去勢済）</option><option value="メス（未避妊）">メス（未避妊）</option><option value="メス（避妊済）">メス（避妊済）</option></select>
                 </div>
               </div>
-
               <label for="petBirth">ペットの生年月日 <span class="opt">任意</span></label>
               <input type="date" id="petBirth">
-              <label style="font-weight:normal; font-size:0.8rem; margin-top:4px; display:flex; align-items:center; gap:6px;">
-                <input type="checkbox" id="petBirthUnknown" onchange="toggleBirthUnknown(this)"> 生年月日がわからない・不明
-              </label>
-
+              <label style="font-weight:normal; font-size:0.8rem; margin-top:4px; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="petBirthUnknown" onchange="toggleBirthUnknown(this)"> 生年月日がわからない・不明</label>
               <hr style="border:none; border-top:1px dashed #e2e8f0; margin:18px 0 10px 0;">
-
               <label for="ownerName">飼い主様のお名前 <span class="req">必須</span></label>
               <input type="text" id="ownerName" placeholder="例: 中川 太郎" autocomplete="name" required>
-
               <label>診察区分 <span class="req">必須</span></label>
               <div class="grid-2">
-                <label class="btn-tile selected" onclick="toggleTicket(true)">
-                  <input type="radio" name="visitType" value="再診" checked> 再診（かかりつけ）
-                </label>
-                <label class="btn-tile" onclick="toggleTicket(false)">
-                  <input type="radio" name="visitType" value="初診"> 初診（初めて）
-                </label>
+                <label class="btn-tile selected" onclick="toggleTicket(true)"><input type="radio" name="visitType" value="再診" checked> 再診（かかりつけ）</label>
+                <label class="btn-tile" onclick="toggleTicket(false)"><input type="radio" name="visitType" value="初診"> 初診（初めて）</label>
               </div>
-
-              <div id="ticketArea" style="margin-top: 8px;">
-                <label for="ticketNo">診察券番号 <span class="opt">任意</span></label>
-                <input type="text" id="ticketNo" placeholder="例: 0001" onblur="autoFormatTicketField(this)">
-              </div>
-
+              <div id="ticketArea" style="margin-top: 8px;"><label for="ticketNo">診察券番号 <span class="opt">任意</span></label><input type="text" id="ticketNo" placeholder="例: 0001" onblur="autoFormatTicketField(this)"></div>
               <label for="phoneNo">ご連絡先電話番号 <span class="req">必須</span></label>
               <input type="tel" id="phoneNo" placeholder="例: 09012345678" autocomplete="tel" required>
-
-              <div class="btn-area">
-                <button type="button" class="btn btn-primary" onclick="nextStep(1)">次へ：メニュー選択 ➔</button>
-              </div>
+              <div class="btn-area"><button type="button" class="btn btn-primary" onclick="nextStep(1)">次へ：メニュー選択 ➔</button></div>
             </div>
 
-            <!-- STEP 2 -->
             <div class="step-content" id="step2">
               <h2>2. 診療メニュー</h2>
               <label>診療内容 <span class="req">必須</span></label>
               <div class="grid-2">
-                <label class="btn-tile selected" onclick="toggleMenuType('medical', '一般診療')">
-                  <input type="radio" name="menu" value="一般診療" checked> 🩺 一般診療
-                </label>
-                <label class="btn-tile" onclick="toggleMenuType('medical', '予防接種')">
-                  <input type="radio" name="menu" value="予防接種"> 💉 予防接種
-                </label>
-                <label class="btn-tile" onclick="toggleMenuType('medical', '健康診断')">
-                  <input type="radio" name="menu" value="健康診断"> 📋 健康診断
-                </label>
-                <label class="btn-tile" onclick="toggleMenuType('medical', 'お手入れ（爪切り等）')">
-                  <input type="radio" name="menu" value="お手入れ（爪切り等）"> ✂️ お手入れ（爪切り等）
-                </label>
-                <label class="btn-tile" style="grid-column: span 2; background: #fffbebf5; border-color: #fcd34d;" onclick="toggleMenuType('pickup', '薬・フード等の受け取り')">
-                  <input type="radio" name="menu" value="薬・フード等の受け取り"> 💊 薬・フード等の受け取りのみ
-                </label>
+                <label class="btn-tile selected" onclick="toggleMenuType('medical', '一般診療')"><input type="radio" name="menu" value="一般診療" checked> 🩺 一般診療</label>
+                <label class="btn-tile" onclick="toggleMenuType('medical', '予防接種')"><input type="radio" name="menu" value="予防接種"> 💉 予防接種</label>
+                <label class="btn-tile" onclick="toggleMenuType('medical', '健康診断')"><input type="radio" name="menu" value="健康診断"> 📋 健康診断</label>
+                <label class="btn-tile" onclick="toggleMenuType('medical', 'お手入れ（爪切り等）')"><input type="radio" name="menu" value="お手入れ（爪切り等）"> ✂️ お手入れ（爪切り等）</label>
+                <label class="btn-tile" style="grid-column: span 2; background: #fffbebf5; border-color: #fcd34d;" onclick="toggleMenuType('pickup', '薬・フード等の受け取り')"><input type="radio" name="menu" value="薬・フード等の受け取り"> 💊 薬・フード等の受け取りのみ</label>
               </div>
-
               <div class="btn-area">
                 <button type="button" class="btn btn-secondary" onclick="prevStep(2)">🠔 戻る</button>
                 <button type="button" class="btn btn-primary" onclick="nextStep(2)">次へ：詳細入力 ➔</button>
               </div>
             </div>
 
-            <!-- STEP 3 -->
             <div class="step-content" id="step3">
               <div id="sectionMedicalSymptoms">
-                <h2 id="step3MedicalTitle">3. 症状・ご相談</h2>
-                <label id="step3MedicalLabel">気になる症状・目的（複数選択可）</label>
-                <div class="chip-container" id="medicalChipContainer">
-                  <!-- メニューに応じて自動生成されます -->
-                </div>
-
+                <h2>3. 症状・ご相談</h2>
+                <label>気になる症状・目的（複数選択可）</label>
+                <div class="chip-container" id="medicalChipContainer"></div>
                 <label for="symptomsDetail">具体的な様子・備考メモ <span class="opt">任意</span></label>
                 <textarea id="symptomsDetail" rows="3" placeholder="いつ頃からの症状か、ご希望の内容などをご記入ください"></textarea>
               </div>
-
               <div id="sectionPickupDetail" style="display:none;">
                 <h2>3. 受け取り品目の選択</h2>
                 <label>受取対象の選択（複数選択可） <span class="req">必須</span></label>
@@ -359,93 +243,54 @@
                   <div class="chip" onclick="toggleChip(this)">🍖 フード</div>
                   <div class="chip" onclick="toggleChip(this)">🧪 サプリメント</div>
                 </div>
-
                 <label for="pickupDays">何日分（または数量） <span class="req">必須</span></label>
                 <input type="text" id="pickupDays" placeholder="例: 30日分 / 2袋 / 10個">
-
                 <label for="pickupMessage">伝えたいこと・製品名など <span class="opt">任意</span></label>
                 <textarea id="pickupMessage" rows="3" placeholder="希望のフード名や現在服用中の薬名などがあればご入力ください"></textarea>
               </div>
-
               <div class="btn-area">
                 <button type="button" class="btn btn-secondary" onclick="prevStep(3)">🠔 戻る</button>
                 <button type="button" class="btn btn-primary" onclick="nextStep(3)">次へ：日時選択 ➔</button>
               </div>
             </div>
 
-            <!-- STEP 4 -->
             <div class="step-content" id="step4">
               <h2>4. 希望日時の選択</h2>
-
               <div id="medicalCalendarArea">
                 <div class="cal-nav">
                   <button type="button" class="btn-cal-week" onclick="changeWeek(-7)">‹ 前の週</button>
                   <button type="button" class="btn-cal-week" onclick="changeWeek(7)">次の週 ›</button>
                 </div>
-
                 <div class="cal-table-wrap">
                   <table class="cal-table">
-                    <thead>
-                      <tr id="calMonthHeader"></tr>
-                      <tr id="calDateHeader"></tr>
-                    </thead>
-                    <tbody id="calBody">
-                      <tr><td colspan="8" style="padding:20px; color:#888;">空き状況を読み込み中...</td></tr>
-                    </tbody>
+                    <thead><tr id="calMonthHeader"></tr><tr id="calDateHeader"></tr></thead>
+                    <tbody id="calBody"><tr><td colspan="8" style="padding:20px; color:#888;">空き状況を読み込み中...</td></tr></tbody>
                   </table>
                 </div>
               </div>
-
               <div id="pickupCalendarArea" style="display:none;">
                 <label for="pickupDatePicker">受取希望日を選択 <span class="req">必須</span></label>
                 <input type="date" id="pickupDatePicker" onchange="onPickupDateChange()">
-
                 <div id="pickupTimeOptions" class="pickup-date-select-box" style="display:none;">
                   <div style="font-size:0.85rem; font-weight:bold; color:#856404; margin-bottom:8px;">ご希望の時間帯を選択してください (受取人数制限なし):</div>
-                  <div id="btnPickupAm" class="pickup-time-btn" onclick="selectPickupBlock('AM')">
-                    🌅 午前枠 (<span id="pickupAmLabel">09:00 - 12:00</span>)
-                  </div>
-                  <div id="btnPickupPm" class="pickup-time-btn" onclick="selectPickupBlock('PM')">
-                    🌇 午後枠 (<span id="pickupPmLabel">16:00 - 19:00</span>)
-                  </div>
+                  <div id="btnPickupAm" class="pickup-time-btn" onclick="selectPickupBlock('AM')">🌅 午前枠 (<span id="pickupAmLabel">09:00 - 12:00</span>)</div>
+                  <div id="btnPickupPm" class="pickup-time-btn" onclick="selectPickupBlock('PM')">🌇 午後枠 (<span id="pickupPmLabel">16:00 - 19:00</span>)</div>
                 </div>
               </div>
-
-              <div id="selectedSlotNotice" class="selected-slot-box" style="display:none;">
-                選択中: <span id="selectedSlotText">-</span>
-              </div>
-
+              <div id="selectedSlotNotice" class="selected-slot-box" style="display:none;">選択中: <span id="selectedSlotText">-</span></div>
               <div class="btn-area">
                 <button type="button" class="btn btn-secondary" onclick="prevStep(4)">🠔 戻る</button>
                 <button type="button" class="btn btn-primary" id="btnToStep5" onclick="nextStep(4)" disabled>確認画面へ ➔</button>
               </div>
             </div>
 
-            <!-- STEP 5 -->
             <div class="step-content" id="step5">
               <h2>📋 予約内容の確認</h2>
-
-              <div class="conf-box">
-                <span>ペット情報</span>
-                <div id="confPet">-</div>
-              </div>
-              <div class="conf-box">
-                <span>診察区分・飼い主様お名前</span>
-                <div id="confOwner">-</div>
-              </div>
-              <div class="conf-box">
-                <span>診療内容</span>
-                <div id="confMenu">-</div>
-              </div>
-              <div class="conf-box">
-                <span>希望日時</span>
-                <div id="confDate">-</div>
-              </div>
-              <div class="conf-box">
-                <span>症状・受取詳細メモ</span>
-                <div id="confSymptoms">-</div>
-              </div>
-
+              <div class="conf-box"><span>ペット情報</span><div id="confPet">-</div></div>
+              <div class="conf-box"><span>診察区分・飼い主様お名前</span><div id="confOwner">-</div></div>
+              <div class="conf-box"><span>診療内容</span><div id="confMenu">-</div></div>
+              <div class="conf-box"><span>希望日時</span><div id="confDate">-</div></div>
+              <div class="conf-box"><span>症状・受取詳細メモ</span><div id="confSymptoms">-</div></div>
               <div class="btn-area">
                 <button type="button" class="btn btn-secondary" onclick="prevStep(5)">🠔 修正</button>
                 <button type="submit" class="btn btn-primary" id="submitBtn">予約を確定する 🐾</button>
@@ -455,106 +300,52 @@
         </div>
 
         <div id="viewMyReservations" style="display:none;">
-          <div style="margin-bottom:12px;">
-            <button type="button" class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="returnToPortal()">🠔 メニューに戻る</button>
-          </div>
+          <div style="margin-bottom:12px;"><button type="button" class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="returnToPortal()">🠔 メニューに戻る</button></div>
           <h2>📋 現在の予約内容・履歴</h2>
-          <div id="myReservationList">
-            <div style="text-align:center; padding:20px; color:#64748b;">読み込み中...</div>
-          </div>
+          <div id="myReservationList"><div style="text-align:center; padding:20px; color:#64748b;">読み込み中...</div></div>
         </div>
 
-        <!-- 患者様・ペット情報の確認・変更画面 -->
         <div id="viewPatientProfile" style="display:none;">
-          <div style="margin-bottom:12px;">
-            <button type="button" class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="returnToPortal()">🠔 メニューに戻る</button>
-          </div>
+          <div style="margin-bottom:12px;"><button type="button" class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="returnToPortal()">🠔 メニューに戻る</button></div>
           <h2>👤 患者様・ペット情報の確認・変更</h2>
-          
           <form onsubmit="event.preventDefault(); savePatientProfile();">
             <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:10px; margin-bottom:14px;">
               <h3 style="margin:0 0 8px 0; font-size:0.95rem; color:var(--primary-dark);">👤 飼い主様情報</h3>
               <label for="profOwnerName" style="margin-top:0;">飼い主様のお名前 <span class="req">必須</span></label>
               <input type="text" id="profOwnerName" placeholder="例: 中川 太郎" required>
-
               <label for="profTicketNo">診察券番号 <span class="opt">任意</span></label>
               <input type="text" id="profTicketNo" placeholder="例: 0001" onblur="autoFormatTicketField(this)">
-
               <label for="profPhoneNo">ご連絡先電話番号 <span class="req">必須</span></label>
               <input type="tel" id="profPhoneNo" placeholder="例: 09012345678" required>
             </div>
-
             <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:12px; border-radius:10px; margin-bottom:14px;">
               <h3 style="margin:0 0 8px 0; font-size:0.95rem; color:#1e40af;">🐾 ペット情報</h3>
-              
               <label style="margin-top:0; color:#1e3a8a; font-weight:bold;">編集・確認するペットを選択（タップして切り替え）</label>
               <div id="profPetTileGrid" class="grid-2" style="margin-top:6px; margin-bottom:14px;"></div>
-
               <label for="profPetName">ペットのお名前 <span class="req">必須</span></label>
               <input type="text" id="profPetName" placeholder="例: チョコ" required>
-
               <label for="profPetType">ペットの種類 <span class="req">必須</span></label>
-              <select id="profPetType">
-                <option value="犬">🐶 犬</option>
-                <option value="猫">🐱 猫</option>
-                <option value="その他">🐾 その他</option>
-              </select>
-
+              <select id="profPetType"><option value="犬">🐶 犬</option><option value="猫">🐱 猫</option><option value="その他">🐾 その他</option></select>
               <div style="display: flex; gap: 8px;">
-                <div style="flex:1;">
-                  <label for="profPetBreed">品種 <span class="opt">任意</span></label>
-                  <input type="text" id="profPetBreed" placeholder="例: トイプードル">
-                </div>
-                <div style="flex:1;">
-                  <label for="profPetSex">性別 <span class="opt">任意</span></label>
-                  <select id="profPetSex">
-                    <option value="">未選択</option>
-                    <option value="オス（未去勢）">オス（未去勢）</option>
-                    <option value="オス（去勢済）">オス（去勢済）</option>
-                    <option value="メス（未避妊）">メス（未避妊）</option>
-                    <option value="メス（避妊済）">メス（避妊済）</option>
-                  </select>
-                </div>
+                <div style="flex:1;"><label for="profPetBreed">品種 <span class="opt">任意</span></label><input type="text" id="profPetBreed" placeholder="例: トイプードル"></div>
+                <div style="flex:1;"><label for="profPetSex">性別 <span class="opt">任意</span></label><select id="profPetSex"><option value="">未選択</option><option value="オス（未去勢）">オス（未去勢）</option><option value="オス（去勢済）">オス（去勢済）</option><option value="メス（未避妊）">メス（未避妊）</option><option value="メス（避妊済）">メス（避妊済）</option></select></div>
               </div>
-
               <label for="profPetBirth">生年月日 <span class="opt">任意</span></label>
               <input type="date" id="profPetBirth">
-
               <label for="profPetMemo">持病・アレルギー・備考メモ <span class="opt">任意</span></label>
               <textarea id="profPetMemo" rows="3" placeholder="かかりつけ・薬のアレルギー・既往症など"></textarea>
             </div>
-
-            <div class="btn-area">
-              <button type="submit" class="btn btn-primary" id="btnSaveProfile">💾 この患者・ペット情報を保存する</button>
-            </div>
+            <div class="btn-area"><button type="submit" class="btn btn-primary" id="btnSaveProfile">💾 この患者・ペット情報を保存する</button></div>
           </form>
         </div>
-
       </div>
-
     </div>
   </div>
 
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycby2hQKwINtq3r21e4pxhe_SQ_U_44ejXTA_Xp1mzsY7x4g7rF-zTM7YChI_ar5Rg2Y3nA/exec";
     const LIFF_ID = "2006687046-Q04fom0s";
-    
-    let lineUserId = "WEB_USER";
-    let lineUserName = "Webユーザー";
-    let isWebVerified = false;
-    let currentUserPhone = "";
-    
-    let currentWeekStart = new Date();
-    let existingReservations = [];
-    let selectedDateStr = "";
-    let selectedTimeStr = "";
-    let isPickupMode = false;
-    let patientPetList = [];
-    let activeProfPetIndex = 'NEW';
-    let maxCalendarWeeks = 4;
-
     const TIME_SLOTS = ["09:00", "10:00", "11:00", "16:00", "17:00", "18:00"];
-
     const MENU_SYMPTOMS_MAP = {
       '一般診療': ['食欲がない', '嘔吐・下痢', '元気がない', 'かゆみ', '目・耳の異常', 'ケガ・足を引きずる'],
       '予防接種': ['混合ワクチン', '狂犬病', 'フィラリア', 'ノミ・マダニ'],
@@ -562,65 +353,61 @@
       'お手入れ（爪切り等）': ['爪切り', '肛門腺絞り', '耳掃除', '足裏バリカン']
     };
 
+    let lineUserId = "WEB_USER";
+    let isWebVerified = false;
+    let currentUserPhone = "";
+    let sessionToken = localStorage.getItem('arbre_user_session_token') || "";
+    let currentWeekStart = new Date();
+    let publicSlots = [];
+    let selectedDateStr = "";
+    let selectedTimeStr = "";
+    let isPickupMode = false;
+    let patientPetList = [];
+    let activeProfPetIndex = 'NEW';
+    let maxCalendarWeeks = 4;
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
     window.onload = () => {
+      // 旧バージョンで保存されていた平文パスワードがあれば削除
+      localStorage.removeItem('arbre_user_saved_pass');
       renderMedicalChips('一般診療');
 
       const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      document.getElementById('pickupDatePicker').min = `${yyyy}-${mm}-${dd}`;
+      document.getElementById('pickupDatePicker').min = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
       liff.init({ liffId: LIFF_ID }).then(() => {
         if (liff.isLoggedIn()) {
           liff.getProfile().then(p => {
             lineUserId = p.userId;
-            lineUserName = p.displayName;
             isWebVerified = true;
-            document.getElementById('lineUserInfo').innerHTML = `✅ LINE連携: <strong>${p.displayName}</strong> 様`;
+            document.getElementById('lineUserInfo').innerHTML = `✅ LINE連携: <strong>${escapeHtml(p.displayName)}</strong> 様`;
             document.getElementById('webAuthContainer').style.display = 'none';
             document.getElementById('mainPortalApp').style.display = 'block';
-            
             onUserAuthenticated();
           });
-        } else {
-          checkWebAuthSession();
-        }
-      }).catch(() => {
-        checkWebAuthSession();
-      });
+        } else { checkWebAuthSession(); }
+      }).catch(() => checkWebAuthSession());
 
-      fetchExistingReservations();
+      fetchPublicSlots();
     };
 
     function formatTicketNo(val) {
       if (!val) return '';
       const digits = String(val).replace(/\D/g, '');
-      if (!digits) return String(val).trim();
-      return digits.padStart(4, '0');
+      return digits ? digits.padStart(4, '0') : String(val).trim();
     }
-
-    function autoFormatTicketField(el) {
-      if (el && el.value) {
-        el.value = formatTicketNo(el.value);
-      }
-    }
+    function autoFormatTicketField(el) { if (el && el.value) el.value = formatTicketNo(el.value); }
 
     function checkWebAuthSession() {
       const savedPhone = localStorage.getItem('arbre_user_saved_phone');
-      const savedPass = localStorage.getItem('arbre_user_saved_pass');
       const authExpire = localStorage.getItem('arbre_user_auth_expire');
+      if (savedPhone) { document.getElementById('loginPhone').value = savedPhone; document.getElementById('regPhone').value = savedPhone; }
 
-      if (savedPhone) {
-        document.getElementById('loginPhone').value = savedPhone;
-        document.getElementById('regPhone').value = savedPhone;
-      }
-      if (savedPass) {
-        document.getElementById('loginPass').value = savedPass;
-        document.getElementById('regPass').value = savedPass;
-      }
-
-      if (authExpire && parseInt(authExpire) > Date.now() && savedPhone) {
+      if (sessionToken && authExpire && parseInt(authExpire) > Date.now() && savedPhone) {
         isWebVerified = true;
         currentUserPhone = savedPhone;
         lineUserId = "WEB_" + savedPhone;
@@ -628,14 +415,22 @@
         document.getElementById('lineUserInfo').innerText = `🌐 Web認証済み (${currentUserPhone})`;
         document.getElementById('webAuthContainer').style.display = 'none';
         document.getElementById('mainPortalApp').style.display = 'block';
-        
         onUserAuthenticated();
       } else {
-        document.getElementById('lineUserInfo').innerText = `🌐 Webログインが必要です`;
-        document.getElementById('webAuthContainer').style.display = 'block';
-        document.getElementById('mainPortalApp').style.display = 'none';
-        showAuthPage('select');
+        forceRelogin();
       }
+    }
+
+    function forceRelogin(msg) {
+      if (msg) alert(msg);
+      isWebVerified = false;
+      sessionToken = "";
+      localStorage.removeItem('arbre_user_session_token');
+      localStorage.removeItem('arbre_user_auth_expire');
+      document.getElementById('lineUserInfo').innerText = `🌐 Webログインが必要です`;
+      document.getElementById('webAuthContainer').style.display = 'block';
+      document.getElementById('mainPortalApp').style.display = 'none';
+      showAuthPage('select');
     }
 
     function onUserAuthenticated() {
@@ -647,37 +442,18 @@
     function restoreSavedInput() {
       try {
         const saved = JSON.parse(localStorage.getItem('arbre_last_booking_info') || '{}');
-        if (saved.ownerName && !document.getElementById('ownerName').value) {
-          document.getElementById('ownerName').value = saved.ownerName;
-        }
-        if (saved.phoneNo && !document.getElementById('phoneNo').value) {
-          document.getElementById('phoneNo').value = saved.phoneNo;
-        }
-        if (saved.ticketNo && !document.getElementById('ticketNo').value) {
-          document.getElementById('ticketNo').value = formatTicketNo(saved.ticketNo);
-        }
-        if (saved.petName && !document.getElementById('petName').value) {
-          document.getElementById('petName').value = saved.petName;
-        }
-        if (saved.petBreed && !document.getElementById('petBreed').value) {
-          document.getElementById('petBreed').value = saved.petBreed;
-        }
-        if (saved.petSex && !document.getElementById('petSex').value) {
-          document.getElementById('petSex').value = saved.petSex;
-        }
+        if (saved.ownerName && !document.getElementById('ownerName').value) document.getElementById('ownerName').value = saved.ownerName;
+        if (saved.phoneNo && !document.getElementById('phoneNo').value) document.getElementById('phoneNo').value = saved.phoneNo;
+        if (saved.ticketNo && !document.getElementById('ticketNo').value) document.getElementById('ticketNo').value = formatTicketNo(saved.ticketNo);
       } catch(e){}
     }
 
     function saveCurrentBookingInput() {
-      const info = {
+      localStorage.setItem('arbre_last_booking_info', JSON.stringify({
         ownerName: document.getElementById('ownerName').value.trim(),
         phoneNo: document.getElementById('phoneNo').value.trim(),
-        ticketNo: formatTicketNo(document.getElementById('ticketNo').value),
-        petName: document.getElementById('petName').value.trim(),
-        petBreed: document.getElementById('petBreed').value.trim(),
-        petSex: document.getElementById('petSex').value
-      };
-      localStorage.setItem('arbre_last_booking_info', JSON.stringify(info));
+        ticketNo: formatTicketNo(document.getElementById('ticketNo').value)
+      }));
     }
 
     function showAuthPage(page) {
@@ -686,328 +462,167 @@
       document.getElementById('webRegisterPage').style.display = (page === 'register') ? 'block' : 'none';
     }
 
+    function onAuthSuccess(phone, token) {
+      isWebVerified = true;
+      currentUserPhone = phone;
+      sessionToken = token;
+      lineUserId = "WEB_" + phone;
+      localStorage.setItem('arbre_user_saved_phone', phone);
+      localStorage.setItem('arbre_user_session_token', token);
+      localStorage.setItem('arbre_user_auth_expire', (Date.now() + (5 * 60 * 60 * 1000)).toString());
+      document.getElementById('phoneNo').value = phone;
+      document.getElementById('lineUserInfo').innerText = `🌐 Web認証済み (${phone})`;
+      document.getElementById('webAuthContainer').style.display = 'none';
+      document.getElementById('mainPortalApp').style.display = 'block';
+      onUserAuthenticated();
+    }
+
     function loginUser() {
       const phone = document.getElementById('loginPhone').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
       if (!phone || !pass) return alert('電話番号とパスワードを入力してください');
-
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "loginUser", phoneNo: phone, userPass: pass, userAgent: navigator.userAgent })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === 'success') {
-          alert('ログインに成功いたしました');
-          isWebVerified = true;
-          currentUserPhone = phone;
-          lineUserId = "WEB_" + phone;
-
-          localStorage.setItem('arbre_user_saved_phone', phone);
-          localStorage.setItem('arbre_user_saved_pass', pass);
-          localStorage.setItem('arbre_user_auth_expire', (Date.now() + (10 * 60 * 1000)).toString());
-
-          document.getElementById('phoneNo').value = phone;
-          document.getElementById('lineUserInfo').innerText = `🌐 Web認証済み (${phone})`;
-          document.getElementById('webAuthContainer').style.display = 'none';
-          document.getElementById('mainPortalApp').style.display = 'block';
-
-          onUserAuthenticated();
-        } else {
-          alert('ログインエラー: ' + data.message);
-        }
-      });
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "loginUser", phoneNo: phone, userPass: pass }) })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success' && data.sessionToken) { alert('ログインしました'); onAuthSuccess(phone, data.sessionToken); }
+          else alert('ログインエラー: ' + (data.message || ''));
+        });
     }
 
     function registerUser() {
       const phone = document.getElementById('regPhone').value.trim();
       const pass = document.getElementById('regPass').value.trim();
-      if (!phone || !pass) return alert('電話番号と希望パスワードを入力してください');
-
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "registerUser", phoneNo: phone, userPass: pass, userAgent: navigator.userAgent })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === 'success') {
-          alert('登録が完了しました。ログイン処理を実行します。');
-          document.getElementById('loginPhone').value = phone;
-          document.getElementById('loginPass').value = pass;
-          loginUser();
-        } else {
-          alert('登録エラー: ' + data.message);
-        }
-      });
-    }
-
-    function loadAnnounceAndShowBoard() {
-      fetch(`${GAS_URL}?action=getAnnounce`)
+      if (!phone || pass.length < 6) return alert('電話番号と6文字以上のパスワードを入力してください');
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "registerUser", phoneNo: phone, userPass: pass }) })
         .then(res => res.json())
         .then(data => {
-          if (data && data.calendarWeeks) {
-            maxCalendarWeeks = parseInt(data.calendarWeeks) || 4;
-            updatePickupMaxDate();
-          }
-          if (data && data.announce && data.announce.trim()) {
-            document.getElementById('announceContent').innerText = data.announce;
-          } else {
-            document.getElementById('announceContent').innerText = "現在、病院からの特別なお知らせはありません。";
-          }
-          showAnnounceBoard();
-        }).catch(()=>{
-          showAnnounceBoard();
+          if (data.status === 'success' && data.sessionToken) { alert('新規登録が完了しました！'); onAuthSuccess(phone, data.sessionToken); }
+          else alert('登録エラー: ' + (data.message || ''));
         });
     }
 
+    function loadAnnounceAndShowBoard() {
+      fetch(`${GAS_URL}?action=getAnnounce`).then(res => res.json()).then(data => {
+        if (data && data.calendarWeeks) { maxCalendarWeeks = parseInt(data.calendarWeeks) || 4; updatePickupMaxDate(); }
+        document.getElementById('announceContent').innerText = (data && data.announce && data.announce.trim()) ? data.announce : "現在、病院からの特別なお知らせはありません。";
+        showAnnounceBoard();
+      }).catch(() => showAnnounceBoard());
+    }
+
     function updatePickupMaxDate() {
-      const maxDate = new Date();
-      maxDate.setDate(maxDate.getDate() + (maxCalendarWeeks * 7));
-      const yyyy = maxDate.getFullYear();
-      const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
-      const dd = String(maxDate.getDate()).padStart(2, '0');
-      document.getElementById('pickupDatePicker').max = `${yyyy}-${mm}-${dd}`;
+      const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + (maxCalendarWeeks * 7));
+      document.getElementById('pickupDatePicker').max = `${maxDate.getFullYear()}-${String(maxDate.getMonth() + 1).padStart(2, '0')}-${String(maxDate.getDate()).padStart(2, '0')}`;
     }
 
     function showAnnounceBoard() {
-      document.getElementById('viewAnnounceBoard').style.display = 'block';
-      document.getElementById('viewPortalMenu').style.display = 'none';
-      document.getElementById('viewNewReserve').style.display = 'none';
-      document.getElementById('viewMyReservations').style.display = 'none';
-      document.getElementById('viewPatientProfile').style.display = 'none';
+      ['viewAnnounceBoard', 'viewPortalMenu', 'viewNewReserve', 'viewMyReservations', 'viewPatientProfile'].forEach(id => {
+        document.getElementById(id).style.display = (id === 'viewAnnounceBoard') ? 'block' : 'none';
+      });
     }
 
-    function proceedToPortalMenu() {
-      document.getElementById('viewAnnounceBoard').style.display = 'none';
-      document.getElementById('viewPortalMenu').style.display = 'block';
-    }
+    function proceedToPortalMenu() { document.getElementById('viewAnnounceBoard').style.display = 'none'; document.getElementById('viewPortalMenu').style.display = 'block'; }
 
     function loadPatientProfileData() {
       const targetPhone = currentUserPhone || localStorage.getItem('arbre_user_saved_phone');
       if (!targetPhone) return;
-
       document.getElementById('profPhoneNo').value = targetPhone;
 
-      fetch(`${GAS_URL}?action=getPatientInfo&phone=${encodeURIComponent(targetPhone)}`)
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getPatientInfo", phone: targetPhone, lineUserId, sessionToken }) })
         .then(res => res.json())
         .then(data => {
+          if (data.status === 'unauthorized') return forceRelogin(data.message);
           patientPetList = (data && data.pets && data.pets.length > 0) ? data.pets : [];
-          
           if (data && data.ownerName) {
             document.getElementById('profOwnerName').value = data.ownerName;
-            if (!document.getElementById('ownerName').value) {
-              document.getElementById('ownerName').value = data.ownerName;
-            }
+            if (!document.getElementById('ownerName').value) document.getElementById('ownerName').value = data.ownerName;
           }
           document.getElementById('phoneNo').value = targetPhone;
-
           renderProfPetTiles();
-
-          if (patientPetList.length > 0) {
-            selectProfPetTile(0);
-          } else {
-            selectProfPetTile('NEW');
-          }
-
+          selectProfPetTile(patientPetList.length > 0 ? 0 : 'NEW');
           updateSavedPetTilesFromList(patientPetList);
         });
     }
 
     function renderProfPetTiles() {
       const grid = document.getElementById('profPetTileGrid');
-      let html = patientPetList.map((p, idx) => `
-        <div class="btn-tile ${activeProfPetIndex === idx ? 'selected' : ''}" onclick="selectProfPetTile(${idx})">
-          🐾 ${p.petName} ちゃん<br><small style="font-weight:normal;">(${p.petType || '犬'})</small>
-        </div>
-      `).join('');
-
-      html += `
-        <div class="btn-tile ${activeProfPetIndex === 'NEW' ? 'selected' : ''}" style="border-style:dashed; border-color:#3b82f6; color:#1d4ed8;" onclick="selectProfPetTile('NEW')">
-          ＋ 新しいペットを追加
-        </div>
-      `;
-
-      grid.innerHTML = html;
+      grid.innerHTML = patientPetList.map((p, idx) => `<div class="btn-tile ${activeProfPetIndex === idx ? 'selected' : ''}" onclick="selectProfPetTile(${idx})">🐾 ${escapeHtml(p.petName)} ちゃん<br><small style="font-weight:normal;">(${escapeHtml(p.petType || '犬')})</small></div>`).join('')
+        + `<div class="btn-tile ${activeProfPetIndex === 'NEW' ? 'selected' : ''}" style="border-style:dashed; border-color:#3b82f6; color:#1d4ed8;" onclick="selectProfPetTile('NEW')">＋ 新しいペットを追加</div>`;
     }
 
     function selectProfPetTile(indexVal) {
-      activeProfPetIndex = indexVal;
-      renderProfPetTiles();
-
-      if (indexVal === 'NEW') {
-        fillProfPetFields({});
-      } else {
-        const p = patientPetList[indexVal];
-        if (p) fillProfPetFields(p);
-      }
-    }
-
-    function fillProfPetFields(p) {
+      activeProfPetIndex = indexVal; renderProfPetTiles();
+      const p = indexVal === 'NEW' ? {} : (patientPetList[indexVal] || {});
       document.getElementById('profPetName').value = p.petName || '';
       document.getElementById('profPetType').value = p.petType || '犬';
       document.getElementById('profPetBreed').value = p.petBreed || '';
       document.getElementById('profPetSex').value = p.petSex || '';
-      
-      const birthInput = document.getElementById('profPetBirth');
-      const normBirth = normalizeDateStr(p.petBirth);
-      if (birthInput) birthInput.value = normBirth;
-
+      document.getElementById('profPetBirth').value = normalizeDateStr(p.petBirth);
       document.getElementById('profPetMemo').value = p.petMemo || '';
-      
-      const formattedTicket = formatTicketNo(p.ticketNo);
-      const profTicketNo = document.getElementById('profTicketNo');
-      if (profTicketNo) {
-        profTicketNo.value = formattedTicket;
-      }
-      const ticketNo = document.getElementById('ticketNo');
-      if (ticketNo && formattedTicket) {
-        ticketNo.value = formattedTicket;
-      }
+      const ft = formatTicketNo(p.ticketNo);
+      document.getElementById('profTicketNo').value = ft;
+      if (ft) document.getElementById('ticketNo').value = ft;
     }
 
     function updateSavedPetTilesFromList(pets) {
-      const box = document.getElementById('savedPetBox');
-      const grid = document.getElementById('savedPetTileGrid');
-
+      const box = document.getElementById('savedPetBox'), grid = document.getElementById('savedPetTileGrid');
       if (pets && pets.length > 0) {
         box.style.display = 'block';
-        let html = pets.map((p, idx) => `
-          <div class="btn-tile ${idx === 0 ? 'selected' : ''}" id="savedPetTile_${idx}" onclick="selectSavedPetTile(${idx})">
-            🐾 ${p.petName} ちゃん<br><small style="font-weight:normal;">(${p.petType || '犬'})</small>
-          </div>
-        `).join('');
-
-        html += `
-          <div class="btn-tile" id="savedPetTile_NEW" style="border-style:dashed;" onclick="selectSavedPetTile('NEW')">
-            ＋ 手入力・新規
-          </div>
-        `;
-        grid.innerHTML = html;
+        grid.innerHTML = pets.map((p, idx) => `<div class="btn-tile ${idx === 0 ? 'selected' : ''}" id="savedPetTile_${idx}" onclick="selectSavedPetTile(${idx})">🐾 ${escapeHtml(p.petName)} ちゃん<br><small style="font-weight:normal;">(${escapeHtml(p.petType || '犬')})</small></div>`).join('')
+          + `<div class="btn-tile" id="savedPetTile_NEW" style="border-style:dashed;" onclick="selectSavedPetTile('NEW')">＋ 手入力・新規</div>`;
         selectSavedPetTile(0);
-      } else {
-        box.style.display = 'none';
-      }
+      } else { box.style.display = 'none'; }
     }
 
     function selectSavedPetTile(indexVal) {
       document.querySelectorAll('#savedPetTileGrid .btn-tile').forEach(el => el.classList.remove('selected'));
       const targetEl = document.getElementById(`savedPetTile_${indexVal}`);
       if (targetEl) targetEl.classList.add('selected');
+      const birthInput = document.getElementById('petBirth'), cb = document.getElementById('petBirthUnknown');
+      const p = (indexVal === 'NEW' || !patientPetList[indexVal]) ? {} : patientPetList[indexVal];
 
-      const birthInput = document.getElementById('petBirth');
-      const birthUnknownCb = document.getElementById('petBirthUnknown');
-
-      if (indexVal === 'NEW' || !patientPetList[indexVal]) {
-        document.getElementById('petName').value = '';
-        document.getElementById('petBreed').value = '';
-        document.getElementById('petSex').value = '';
-        if (birthInput) {
-          birthInput.value = '';
-          birthInput.disabled = false;
-          birthInput.style.backgroundColor = '#fff';
-        }
-        if (birthUnknownCb) birthUnknownCb.checked = false;
-
-        document.querySelectorAll('input[name="petType"]').forEach(r => {
-          const isMatch = (r.value === '犬');
-          r.checked = isMatch;
-          const tile = r.closest('.btn-tile');
-          if (tile) tile.classList.toggle('selected', isMatch);
-        });
-        return;
-      }
-
-      const p = patientPetList[indexVal];
       document.getElementById('petName').value = p.petName || '';
       document.getElementById('petBreed').value = p.petBreed || '';
       document.getElementById('petSex').value = p.petSex || '';
+      if (p.ticketNo) document.getElementById('ticketNo').value = formatTicketNo(p.ticketNo);
 
-      if (p.ticketNo) {
-        document.getElementById('ticketNo').value = formatTicketNo(p.ticketNo);
-      }
-
-      const normBirth = normalizeDateStr(p.petBirth);
       if (p.petBirth === '不明') {
-        if (birthInput) {
-          birthInput.value = '';
-          birthInput.disabled = true;
-          birthInput.style.backgroundColor = '#edf2f7';
-        }
-        if (birthUnknownCb) birthUnknownCb.checked = true;
+        birthInput.value = ''; birthInput.disabled = true; birthInput.style.backgroundColor = '#edf2f7'; cb.checked = true;
       } else {
-        if (birthInput) {
-          birthInput.value = normBirth;
-          birthInput.disabled = false;
-          birthInput.style.backgroundColor = '#fff';
-        }
-        if (birthUnknownCb) birthUnknownCb.checked = false;
+        birthInput.value = normalizeDateStr(p.petBirth); birthInput.disabled = false; birthInput.style.backgroundColor = '#fff'; cb.checked = false;
       }
-
       const targetType = p.petType || '犬';
       document.querySelectorAll('input[name="petType"]').forEach(r => {
-        const isMatch = (r.value === targetType);
-        r.checked = isMatch;
-        const tile = r.closest('.btn-tile');
-        if (tile) tile.classList.toggle('selected', isMatch);
+        r.checked = (r.value === targetType);
+        r.closest('.btn-tile').classList.toggle('selected', r.checked);
       });
     }
 
     function savePatientProfile() {
       const ownerName = document.getElementById('profOwnerName').value.trim();
       const phoneNo = document.getElementById('profPhoneNo').value.trim();
-      const ticketNo = formatTicketNo(document.getElementById('profTicketNo').value);
       const petName = document.getElementById('profPetName').value.trim();
-      const petType = document.getElementById('profPetType').value;
-      const petBreed = document.getElementById('profPetBreed').value.trim();
-      const petSex = document.getElementById('profPetSex').value;
-      const petBirth = document.getElementById('profPetBirth').value;
-      const petMemo = document.getElementById('profPetMemo').value.trim();
-
-      if (!ownerName || !petName || !phoneNo) {
-        return alert('飼い主様のお名前、ペットのお名前、電話番号は必須項目です');
-      }
+      if (!ownerName || !petName || !phoneNo) return alert('必須項目を入力してください');
 
       const btn = document.getElementById('btnSaveProfile');
-      btn.disabled = true;
-      btn.innerText = '保存中...';
-
-      const payload = {
-        action: "updatePatientInfo",
-        phoneNo: phoneNo,
-        oldPhoneNo: currentUserPhone || phoneNo,
-        ownerName: ownerName,
-        petName: petName,
-        petType: petType,
-        petBreed: petBreed,
-        petSex: petSex,
-        petBirth: petBirth,
-        petMemo: petMemo,
-        ticketNo: ticketNo
-      };
-
+      btn.disabled = true; btn.innerText = '保存中...';
       fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(data => {
-        btn.disabled = false;
-        btn.innerText = '💾 この患者・ペット情報を保存する';
-        if (data.status === 'success') {
-          alert('患者・ペット情報を保存しました！');
-          currentUserPhone = phoneNo;
-          localStorage.setItem('arbre_user_saved_phone', phoneNo);
-          loadPatientProfileData();
-          returnToPortal();
-        } else {
-          alert('保存エラー: ' + data.message);
-        }
-      })
-      .catch(err => {
-        btn.disabled = false;
-        btn.innerText = '💾 この患者・ペット情報を保存する';
-        alert('通信エラーが発生しました');
-      });
+        body: JSON.stringify({
+          action: "updatePatientInfo", sessionToken, lineUserId,
+          phoneNo, oldPhoneNo: currentUserPhone || phoneNo, ownerName, petName,
+          petType: document.getElementById('profPetType').value,
+          petBreed: document.getElementById('profPetBreed').value.trim(),
+          petSex: document.getElementById('profPetSex').value,
+          petBirth: document.getElementById('profPetBirth').value,
+          petMemo: document.getElementById('profPetMemo').value.trim(),
+          ticketNo: formatTicketNo(document.getElementById('profTicketNo').value)
+        })
+      }).then(res => res.json()).then(data => {
+        btn.disabled = false; btn.innerText = '💾 この患者・ペット情報を保存する';
+        if (data.status === 'unauthorized') return forceRelogin(data.message);
+        if (data.status === 'success') { alert('保存しました！'); currentUserPhone = phoneNo; localStorage.setItem('arbre_user_saved_phone', phoneNo); loadPatientProfileData(); returnToPortal(); }
+        else alert('保存エラー: ' + data.message);
+      }).catch(() => { btn.disabled = false; btn.innerText = '💾 この患者・ペット情報を保存する'; alert('通信エラーが発生しました'); });
     }
 
     function openNavSection(section) {
@@ -1016,165 +631,93 @@
       document.getElementById('viewNewReserve').style.display = (section === 'newReserve') ? 'block' : 'none';
       document.getElementById('viewMyReservations').style.display = (section === 'myReservations') ? 'block' : 'none';
       document.getElementById('viewPatientProfile').style.display = (section === 'patientProfile') ? 'block' : 'none';
-
-      if (section === 'newReserve') {
-        restoreSavedInput();
-        fetchExistingReservations();
-      }
+      if (section === 'newReserve') { setStep(1); restoreSavedInput(); fetchPublicSlots(); }
       if (section === 'myReservations') loadUserReservations();
       if (section === 'patientProfile') loadPatientProfileData();
     }
 
     function returnToPortal() {
+      ['viewAnnounceBoard', 'viewNewReserve', 'viewMyReservations', 'viewPatientProfile'].forEach(id => document.getElementById(id).style.display = 'none');
       document.getElementById('viewPortalMenu').style.display = 'block';
-      document.getElementById('viewAnnounceBoard').style.display = 'none';
-      document.getElementById('viewNewReserve').style.display = 'none';
-      document.getElementById('viewMyReservations').style.display = 'none';
-      document.getElementById('viewPatientProfile').style.display = 'none';
     }
 
     function loadUserReservations() {
       const container = document.getElementById('myReservationList');
       container.innerHTML = '<div style="text-align:center; padding:20px; color:#64748b;">予約履歴を読み込み中...</div>';
-
-      fetch(`${GAS_URL}?action=getUserReservations&lineUserId=${encodeURIComponent(lineUserId)}&phone=${encodeURIComponent(currentUserPhone)}`)
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getUserReservations", lineUserId, phone: currentUserPhone, sessionToken }) })
         .then(res => res.json())
         .then(data => {
-          const activeReservations = (data || []).filter(r => r && r.status !== 'キャンセル');
+          if (data.status === 'unauthorized') return forceRelogin(data.message);
+          const active = (data.reservations || []).filter(r => r && r.status !== 'キャンセル');
+          if (active.length === 0) { container.innerHTML = '<div style="text-align:center; padding:30px; color:#94a3b8; font-weight:bold;">現在ご予約はありません</div>'; return; }
 
-          if (!activeReservations || activeReservations.length === 0) {
-            container.innerHTML = '<div style="text-align:center; padding:30px; color:#94a3b8; font-weight:bold;">現在ご予約はありません</div>';
-            return;
-          }
-
-          activeReservations.sort((a, b) => {
-            const dateA = normalizeDateStr(a.date) + ' ' + extractHourMin(a.time);
-            const dateB = normalizeDateStr(b.date) + ' ' + extractHourMin(b.time);
-            return dateB.localeCompare(dateA) || (b.rowIndex - a.rowIndex);
-          });
-
+          active.sort((a, b) => (normalizeDateStr(b.date) + ' ' + extractHourMin(b.time)).localeCompare(normalizeDateStr(a.date) + ' ' + extractHourMin(a.time)) || (b.rowIndex - a.rowIndex));
           const now = new Date();
-          const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+          const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+          const groups = {};
+          active.forEach(r => { const ym = normalizeDateStr(r.date).substring(0, 7) || 'その他'; if (!groups[ym]) groups[ym] = []; groups[ym].push(r); });
 
-          const monthGroups = {};
-          activeReservations.forEach(r => {
-            const normDate = normalizeDateStr(r.date);
-            const ym = normDate ? normDate.substring(0, 7) : 'その他';
-            if (!monthGroups[ym]) monthGroups[ym] = [];
-            monthGroups[ym].push(r);
-          });
-
-          const sortedYms = Object.keys(monthGroups).sort().reverse();
-
-          container.innerHTML = sortedYms.map(ym => {
-            const items = monthGroups[ym];
-            const isCurrentMonth = (ym === currentYearMonth);
-            const isOpen = isCurrentMonth ? 'open' : '';
-
-            let titleLabel = ym;
-            if (ym !== 'その他') {
-              const parts = ym.split('-');
-              if (parts.length === 2) titleLabel = `${parts[0]}年 ${parseInt(parts[1])}月`;
-            }
-            if (isCurrentMonth) titleLabel += '（今月）';
-
+          container.innerHTML = Object.keys(groups).sort().reverse().map(ym => {
+            const items = groups[ym];
+            const isCurrent = ym === currentYM;
+            const p = ym.split('-');
+            const label = (p.length === 2 ? `${p[0]}年 ${parseInt(p[1])}月` : ym) + (isCurrent ? '（今月）' : '');
             const cardsHtml = items.map(r => `
               <div class="res-card">
-                <header>
-                  <span class="res-card-title">📅 ${r.date} ${r.time}</span>
-                  <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-weight:bold;">${r.status}</span>
-                </header>
-                <div><strong>ペット:</strong> ${r.petName}</div>
-                <div><strong>メニュー:</strong> ${r.menu}</div>
-                <div style="font-size:0.8rem; color:#64748b; margin-top:4px;">${r.symptoms || ''}</div>
-                
-                <div style="display:flex; gap:6px; margin-top:10px;">
-                  <button type="button" class="btn btn-secondary" style="padding:6px; font-size:0.8rem;" onclick="userCancelRes(${r.rowIndex})">❌ キャンセル</button>
-                </div>
+                <header><span class="res-card-title">📅 ${escapeHtml(r.date)} ${escapeHtml(r.time)}</span><span class="badge" style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-weight:bold;">${escapeHtml(r.status)}</span></header>
+                <div><strong>ペット:</strong> ${escapeHtml(r.petName)}</div>
+                <div><strong>メニュー:</strong> ${escapeHtml(r.menu)}</div>
+                <div style="font-size:0.8rem; color:#64748b; margin-top:4px;">${escapeHtml(r.symptoms || '')}</div>
+                <div style="display:flex; gap:6px; margin-top:10px;"><button type="button" class="btn btn-secondary" style="padding:6px; font-size:0.8rem;" onclick="userCancelRes(${r.rowIndex})">❌ キャンセル</button></div>
               </div>
             `).join('');
-
-            return `
-              <details class="month-folder" ${isOpen}>
-                <summary>📁 ${titleLabel} (${items.length}件)</summary>
-                <div>${cardsHtml}</div>
-              </details>
-            `;
+            return `<details class="month-folder" ${isCurrent ? 'open' : ''}><summary>📁 ${label} (${items.length}件)</summary><div>${cardsHtml}</div></details>`;
           }).join('');
         });
     }
 
     function userCancelRes(rowIndex) {
       if (!confirm('このご予約をキャンセルしますか？')) return;
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "userCancelReservation", rowIndex: rowIndex, lineUserId: lineUserId })
-      })
-      .then(res => res.json())
-      .then(data => {
-        alert('ご予約を取り消しました');
-        loadUserReservations();
-      });
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "userCancelReservation", rowIndex, lineUserId, phone: currentUserPhone, sessionToken }) })
+        .then(res => res.json()).then(data => {
+          if (data.status === 'unauthorized') return forceRelogin(data.message);
+          alert('ご予約を取り消しました'); loadUserReservations();
+        });
     }
 
     function toggleBirthUnknown(cb) {
-      const birthInput = document.getElementById('petBirth');
-      if (cb.checked) {
-        birthInput.value = '';
-        birthInput.disabled = true;
-        birthInput.style.backgroundColor = '#edf2f7';
-      } else {
-        birthInput.disabled = false;
-        birthInput.style.backgroundColor = '#fff';
-      }
+      const el = document.getElementById('petBirth');
+      el.disabled = cb.checked; el.style.backgroundColor = cb.checked ? '#edf2f7' : '#fff';
+      if (cb.checked) el.value = '';
     }
 
     function renderMedicalChips(menuName) {
       const container = document.getElementById('medicalChipContainer');
       if (!container) return;
       const items = MENU_SYMPTOMS_MAP[menuName] || MENU_SYMPTOMS_MAP['一般診療'];
-      container.innerHTML = items.map(item =>
-        `<div class="chip" onclick="toggleChip(this)">${item}</div>`
-      ).join('');
+      container.innerHTML = items.map(item => `<div class="chip" onclick="toggleChip(this)">${escapeHtml(item)}</div>`).join('');
     }
 
     function toggleMenuType(type, menuName) {
       isPickupMode = (type === 'pickup');
       document.getElementById('sectionMedicalSymptoms').style.display = isPickupMode ? 'none' : 'block';
       document.getElementById('sectionPickupDetail').style.display = isPickupMode ? 'block' : 'none';
-      
       document.getElementById('medicalCalendarArea').style.display = isPickupMode ? 'none' : 'block';
       document.getElementById('pickupCalendarArea').style.display = isPickupMode ? 'block' : 'none';
-
-      if (!isPickupMode) {
-        const selectedMenu = menuName || document.querySelector('input[name="menu"]:checked')?.value || '一般診療';
-        renderMedicalChips(selectedMenu);
-      }
-
-      selectedDateStr = "";
-      selectedTimeStr = "";
+      if (!isPickupMode) renderMedicalChips(menuName || document.querySelector('input[name="menu"]:checked')?.value || '一般診療');
+      selectedDateStr = ""; selectedTimeStr = "";
       document.getElementById('selectedSlotNotice').style.display = 'none';
       document.getElementById('btnToStep5').disabled = true;
     }
 
-    function fetchExistingReservations() {
-      fetch(`${GAS_URL}?action=getReservations`)
+    function fetchPublicSlots() {
+      fetch(`${GAS_URL}?action=getPublicSlots`)
         .then(res => res.json())
         .then(data => {
-          let list = [];
-          if (Array.isArray(data)) {
-            list = data;
-          } else if (data && Array.isArray(data.reservations)) {
-            list = data.reservations;
-          }
-          if (data && data.calendarWeeks) {
-            maxCalendarWeeks = parseInt(data.calendarWeeks) || 4;
-            updatePickupMaxDate();
-          }
-          existingReservations = list.filter(r => r && r.status !== 'キャンセル');
+          if (data && data.calendarWeeks) { maxCalendarWeeks = parseInt(data.calendarWeeks) || 4; updatePickupMaxDate(); }
+          publicSlots = (data && Array.isArray(data.slots)) ? data.slots : [];
           renderCalendar();
-        })
-        .catch(() => renderCalendar());
+        }).catch(() => renderCalendar());
     }
 
     document.querySelectorAll('.grid-2, #petTypeGrid').forEach(container => {
@@ -1183,235 +726,124 @@
         if (!target) return;
         const groupInput = target.querySelector('input');
         if (!groupInput) return;
-        const group = groupInput.name;
-        container.querySelectorAll(`input[name="${group}"]`).forEach(input => {
-          input.closest('.btn-tile').classList.remove('selected');
-        });
-        target.classList.add('selected');
-        groupInput.checked = true;
+        container.querySelectorAll(`input[name="${groupInput.name}"]`).forEach(input => input.closest('.btn-tile').classList.remove('selected'));
+        target.classList.add('selected'); groupInput.checked = true;
       });
     });
 
-    function toggleTicket(show) {
-      document.getElementById('ticketArea').style.display = show ? 'block' : 'none';
-    }
-
+    function toggleTicket(show) { document.getElementById('ticketArea').style.display = show ? 'block' : 'none'; }
     function toggleChip(el) { el.classList.toggle('selected'); }
 
     function extractHourMin(str) {
       if (!str) return '';
       const m = String(str).match(/(\d{1,2}:\d{2})/);
       if (!m) return '';
-      const parts = m[1].split(':');
-      return `${parts[0].padStart(2, '0')}:${parts[1]}`;
+      const p = m[1].split(':');
+      return `${p[0].padStart(2, '0')}:${p[1]}`;
+    }
+
+    function normalizeDateStr(str) {
+      if (!str) return '';
+      const m = String(str).match(/(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/);
+      return m ? `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}` : '';
     }
 
     function renderCalendar() {
-      const monthHeader = document.getElementById('calMonthHeader');
-      const dateHeader = document.getElementById('calDateHeader');
-      const body = document.getElementById('calBody');
-
-      let dates = [];
-      let today = new Date();
-      today.setHours(0,0,0,0);
-
-      const maxLimitDate = new Date(today);
-      maxLimitDate.setDate(maxLimitDate.getDate() + (maxCalendarWeeks * 7));
-
-      for (let i = 0; i < 7; i++) {
-        let d = new Date(currentWeekStart);
-        d.setDate(d.getDate() + i);
-        dates.push(d);
-      }
-
-      let m1 = `${dates[0].getFullYear()}年 ${dates[0].getMonth() + 1}月`;
-      let m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
-      monthHeader.innerHTML = `<th colspan="1" style="background:#fff;"></th><th colspan="7">${m1 === m2 ? m1 : m1 + ' / ' + m2}</th>`;
-
+      const today = new Date(); today.setHours(0,0,0,0);
+      const maxLimit = new Date(today); maxLimit.setDate(maxLimit.getDate() + (maxCalendarWeeks * 7));
+      const dates = Array.from({ length: 7 }, (_, i) => { const d = new Date(currentWeekStart); d.setDate(d.getDate() + i); return d; });
+      const m1 = `${dates[0].getFullYear()}年 ${dates[0].getMonth() + 1}月`, m2 = `${dates[6].getFullYear()}年 ${dates[6].getMonth() + 1}月`;
+      document.getElementById('calMonthHeader').innerHTML = `<th colspan="1" style="background:#fff;"></th><th colspan="7">${m1 === m2 ? m1 : m1 + ' / ' + m2}</th>`;
       const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-      let dhHtml = `<th style="width:50px;">時間</th>`;
-      dates.forEach(d => {
-        let dayClass = d.getDay() === 0 ? 'sun' : (d.getDay() === 6 ? 'sat' : '');
-        dhHtml += `<th class="${dayClass}">${d.getDate()}<br>(${dayNames[d.getDay()]})</th>`;
-      });
-      dateHeader.innerHTML = dhHtml;
+      document.getElementById('calDateHeader').innerHTML = `<th style="width:50px;">時間</th>` + dates.map(d => `<th class="${d.getDay()===0?'sun':(d.getDay()===6?'sat':'')}">${d.getDate()}<br>(${dayNames[d.getDay()]})</th>`).join('');
 
-      let bodyHtml = "";
-      TIME_SLOTS.forEach(time => {
-        bodyHtml += `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.75rem;">${time}</td>`;
-        
-        dates.forEach(d => {
-          let yyyy = d.getFullYear();
-          let mm = String(d.getMonth() + 1).padStart(2, '0');
-          let dd = String(d.getDate()).padStart(2, '0');
-          let dateStr = `${yyyy}-${mm}-${dd}`;
-
-          let isPast = d < today;
-          let isOverRange = d > maxLimitDate;
-
-          let dayRecords = existingReservations.filter(r => normalizeDateStr(r.date) === dateStr);
-          let targetHm = extractHourMin(time);
-
-          let isHolidaySlot = dayRecords.some(r => {
-            const isHolidayRecord = (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY');
-            if (!isHolidayRecord) return false;
-            const isFullDay = (r.time && (r.time.includes('全日') || r.time.includes('1日'))) || (r.symptoms && r.symptoms.includes('1日休診'));
-            if (isFullDay) return true;
-            return extractHourMin(r.time) === targetHm;
-          });
-
-          let isReservedSlot = dayRecords.some(r => {
-            const isHolidayRecord = (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY');
-            if (isHolidayRecord) return false;
-            return extractHourMin(r.time) === targetHm;
-          });
-
-          if (isPast || isOverRange) {
-            bodyHtml += `<td><span class="cell-none">-</span></td>`;
-          } else if (isHolidaySlot) {
-            bodyHtml += `<td class="cell-wed">休</td>`;
-          } else if (isReservedSlot) {
-            bodyHtml += `<td><span class="cell-ng">✕</span></td>`;
-          } else {
-            let isSelected = (selectedDateStr === dateStr && selectedTimeStr === time);
-            let mark = isSelected ? '●' : '〇';
-            let style = isSelected ? 'color:#047857; font-weight:900;' : '';
-            bodyHtml += `<td><span class="cell-ok" style="${style}" onclick="selectSlot('${dateStr}', '${time}')">${mark}</span></td>`;
-          }
-        });
-        bodyHtml += `</tr>`;
-      });
-
-      body.innerHTML = bodyHtml;
+      document.getElementById('calBody').innerHTML = TIME_SLOTS.map(time => {
+        const targetHm = extractHourMin(time);
+        const tds = dates.map(d => {
+          const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          if (d < today || d > maxLimit) return `<td><span class="cell-none">-</span></td>`;
+          const dayRecs = publicSlots.filter(s => normalizeDateStr(s.date) === dateStr);
+          const isHol = dayRecs.some(s => s.isHoliday && (s.isFullDayHoliday || extractHourMin(s.time) === targetHm));
+          if (isHol) return `<td class="cell-wed">休</td>`;
+          const isRes = dayRecs.some(s => !s.isHoliday && extractHourMin(s.time) === targetHm);
+          if (isRes) return `<td><span class="cell-ng">✕</span></td>`;
+          const sel = (selectedDateStr === dateStr && selectedTimeStr === time);
+          return `<td><span class="cell-ok" style="${sel ? 'color:#047857; font-weight:900;' : ''}" onclick="selectSlot('${dateStr}', '${time}')">${sel ? '●' : '〇'}</span></td>`;
+        }).join('');
+        return `<tr><td style="font-weight:bold; background:#f8fafc; font-size:0.75rem;">${time}</td>${tds}</tr>`;
+      }).join('');
     }
 
-    function changeWeek(offsetDays) {
-      currentWeekStart.setDate(currentWeekStart.getDate() + offsetDays);
-      renderCalendar();
-    }
+    function changeWeek(offset) { currentWeekStart.setDate(currentWeekStart.getDate() + offset); renderCalendar(); }
 
     function selectSlot(dateStr, timeStr) {
-      selectedDateStr = dateStr;
-      selectedTimeStr = timeStr;
-      
+      selectedDateStr = dateStr; selectedTimeStr = timeStr;
       document.getElementById('selectedSlotNotice').style.display = 'block';
       document.getElementById('selectedSlotText').innerText = `${dateStr} ${timeStr}`;
       document.getElementById('btnToStep5').disabled = false;
-
       renderCalendar();
     }
 
     function onPickupDateChange() {
       const dateVal = document.getElementById('pickupDatePicker').value;
       if (!dateVal) return;
-
-      selectedDateStr = dateVal;
-      selectedTimeStr = "";
+      selectedDateStr = dateVal; selectedTimeStr = "";
       document.getElementById('selectedSlotNotice').style.display = 'none';
       document.getElementById('btnToStep5').disabled = true;
 
-      const dayHolidays = existingReservations.filter(r => 
-        normalizeDateStr(r.date) === dateVal && (r.status === '休診' || r.lineUserId === 'SYSTEM_HOLIDAY')
-      );
+      const dayHolidays = publicSlots.filter(s => normalizeDateStr(s.date) === dateVal && s.isHoliday);
+      const isAllDayOff = dayHolidays.some(s => s.isFullDayHoliday);
+      const offHms = dayHolidays.map(s => extractHourMin(s.time));
+      const amAvailable = !isAllDayOff && ["09:00", "10:00", "11:00"].some(t => !offHms.includes(t));
+      const pmAvailable = !isAllDayOff && ["16:00", "17:00", "18:00"].some(t => !offHms.includes(t));
 
-      const isAllDayOff = dayHolidays.some(r => 
-        (r.time && (r.time.includes('全日') || r.time.includes('1日'))) || (r.symptoms && r.symptoms.includes('1日休診'))
-      );
-
-      const offTimeHms = dayHolidays.map(r => extractHourMin(r.time));
-
-      const amSlots = ["09:00", "10:00", "11:00"];
-      const pmSlots = ["16:00", "17:00", "18:00"];
-
-      const amAvailable = !isAllDayOff && amSlots.some(t => !offTimeHms.includes(t));
-      const pmAvailable = !isAllDayOff && pmSlots.some(t => !offTimeHms.includes(t));
-
-      const btnAm = document.getElementById('btnPickupAm');
-      const btnPm = document.getElementById('btnPickupPm');
-      const lblAm = document.getElementById('pickupAmLabel');
-      const lblPm = document.getElementById('pickupPmLabel');
-
-      btnAm.classList.remove('selected', 'disabled');
-      btnPm.classList.remove('selected', 'disabled');
-
-      if (!amAvailable) {
-        btnAm.classList.add('disabled');
-        lblAm.innerText = "受付不可・休診";
-      } else {
-        lblAm.innerText = "09:00 - 12:00";
-      }
-
-      if (!pmAvailable) {
-        btnPm.classList.add('disabled');
-        lblPm.innerText = "受付不可・休診";
-      } else {
-        lblPm.innerText = "16:00 - 19:00";
-      }
-
+      const btnAm = document.getElementById('btnPickupAm'), btnPm = document.getElementById('btnPickupPm');
+      btnAm.classList.remove('selected', 'disabled'); btnPm.classList.remove('selected', 'disabled');
+      if (!amAvailable) { btnAm.classList.add('disabled'); document.getElementById('pickupAmLabel').innerText = "受付不可・休診"; }
+      else document.getElementById('pickupAmLabel').innerText = "09:00 - 12:00";
+      if (!pmAvailable) { btnPm.classList.add('disabled'); document.getElementById('pickupPmLabel').innerText = "受付不可・休診"; }
+      else document.getElementById('pickupPmLabel').innerText = "16:00 - 19:00";
       document.getElementById('pickupTimeOptions').style.display = 'block';
     }
 
     function selectPickupBlock(blockType) {
-      const btnAm = document.getElementById('btnPickupAm');
-      const btnPm = document.getElementById('btnPickupPm');
-      const lblAm = document.getElementById('pickupAmLabel').innerText;
-      const lblPm = document.getElementById('pickupPmLabel').innerText;
-
+      const btnAm = document.getElementById('btnPickupAm'), btnPm = document.getElementById('btnPickupPm');
       if (blockType === 'AM') {
         if (btnAm.classList.contains('disabled')) return;
-        btnAm.classList.add('selected');
-        btnPm.classList.remove('selected');
-        selectedTimeStr = `午前 (${lblAm})`;
+        btnAm.classList.add('selected'); btnPm.classList.remove('selected');
+        selectedTimeStr = `午前 (${document.getElementById('pickupAmLabel').innerText})`;
       } else {
         if (btnPm.classList.contains('disabled')) return;
-        btnPm.classList.add('selected');
-        btnAm.classList.remove('selected');
-        selectedTimeStr = `午後 (${lblPm})`;
+        btnPm.classList.add('selected'); btnAm.classList.remove('selected');
+        selectedTimeStr = `午後 (${document.getElementById('pickupPmLabel').innerText})`;
       }
-
       document.getElementById('selectedSlotNotice').style.display = 'block';
       document.getElementById('selectedSlotText').innerText = `${selectedDateStr} ${selectedTimeStr}`;
       document.getElementById('btnToStep5').disabled = false;
     }
 
-    function normalizeDateStr(str) {
-      if (!str) return '';
-      const matched = String(str).match(/(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/);
-      if (!matched) return '';
-      return `${matched[1]}-${matched[2].padStart(2, '0')}-${matched[3].padStart(2, '0')}`;
-    }
-
     function nextStep(step) {
-      if (!isWebVerified) {
-        return alert('予約の進展にはログインが必要です。');
-      }
-
+      if (!isWebVerified) return alert('ログインが必要です。');
       if (step === 1) {
         if (!document.getElementById('petName').value.trim()) return alert('ペットのお名前を入力してください');
         if (!document.getElementById('ownerName').value.trim()) return alert('飼い主様のお名前を入力してください');
         if (!document.getElementById('phoneNo').value.trim()) return alert('電話番号を入力してください');
         saveCurrentBookingInput();
       }
-
       if (step === 3 && isPickupMode) {
-        const chips = Array.from(document.querySelectorAll('#sectionPickupDetail .chip.selected')).map(c => c.innerText);
-        const days = document.getElementById('pickupDays').value.trim();
-        if (chips.length === 0) return alert('受取対象（薬・フード・サプリメント等）を選択してください');
-        if (!days) return alert('何日分（数量）か入力してください');
+        if (document.querySelectorAll('#sectionPickupDetail .chip.selected').length === 0) return alert('受取対象を選択してください');
+        if (!document.getElementById('pickupDays').value.trim()) return alert('何日分（数量）か入力してください');
       }
-
       if (step === 4) {
         const ownerName = document.getElementById('ownerName').value.trim();
         const visitType = document.querySelector('input[name="visitType"]:checked').value;
-        const rawTicketNo = document.getElementById('ticketNo').value;
-        const ticketNo = formatTicketNo(rawTicketNo);
+        const ticketNo = formatTicketNo(document.getElementById('ticketNo').value);
         const phoneNo = document.getElementById('phoneNo').value;
         const petType = document.querySelector('input[name="petType"]:checked').value;
         const petName = document.getElementById('petName').value;
         const petBreed = document.getElementById('petBreed').value;
         const petSex = document.getElementById('petSex').value;
-        const isUnknown = document.getElementById('petBirthUnknown').checked;
-        const petBirth = isUnknown ? '不明' : (document.getElementById('petBirth').value || '未設定');
+        const petBirth = document.getElementById('petBirthUnknown').checked ? '不明' : (document.getElementById('petBirth').value || '未設定');
         const menu = document.querySelector('input[name="menu"]:checked').value;
 
         let symptomsText = "";
@@ -1425,27 +857,20 @@
           const detail = document.getElementById('symptomsDetail').value;
           symptomsText = `[症状] ${chips.join('、')} ${detail ? ' / ' + detail : ''}`;
         }
-
         document.getElementById('confPet').innerText = `${petName} ちゃん（${petType}） ${petBreed} ${petSex} [生年月日: ${petBirth}]`;
         document.getElementById('confOwner').innerText = `${ownerName} 様 (${visitType}${ticketNo ? ' 券:' + ticketNo : ''}) TEL: ${phoneNo}`;
         document.getElementById('confMenu').innerText = menu;
         document.getElementById('confDate').innerText = `${selectedDateStr} ${selectedTimeStr}`;
         document.getElementById('confSymptoms').innerText = symptomsText || '特になし';
       }
-
-      if (step === 3 && !isPickupMode) {
-        renderCalendar();
-      }
-
+      if (step === 3 && !isPickupMode) renderCalendar();
       setStep(step + 1);
     }
 
     function prevStep(step) { setStep(step - 1); }
 
     function setStep(targetStep) {
-      document.querySelectorAll('.step-content').forEach((el, idx) => {
-        el.classList.toggle('active', idx + 1 === targetStep);
-      });
+      document.querySelectorAll('.step-content').forEach((el, idx) => el.classList.toggle('active', idx + 1 === targetStep));
       for (let i = 1; i <= 4; i++) {
         const dot = document.getElementById(`dot${i}`);
         dot.classList.remove('active', 'finished');
@@ -1457,14 +882,10 @@
 
     document.getElementById("reserveForm").addEventListener("submit", function(e) {
       e.preventDefault();
-
-      if (!isWebVerified) {
-        return alert('ログインを完了させてから予約を行ってください');
-      }
+      if (!isWebVerified) return alert('ログインを完了させてから予約を行ってください');
 
       const btn = document.getElementById("submitBtn");
-      btn.disabled = true;
-      btn.innerText = "送信中...";
+      btn.disabled = true; btn.innerText = "送信中...";
 
       const ownerName = document.getElementById('ownerName').value.trim();
       const visitType = document.querySelector('input[name="visitType"]:checked').value;
@@ -1474,8 +895,7 @@
       const petName = document.getElementById('petName').value.trim();
       const petBreed = document.getElementById('petBreed').value;
       const petSex = document.getElementById('petSex').value;
-      const isUnknown = document.getElementById('petBirthUnknown').checked;
-      const petBirth = isUnknown ? '不明' : (document.getElementById('petBirth').value || '未設定');
+      const petBirth = document.getElementById('petBirthUnknown').checked ? '不明' : (document.getElementById('petBirth').value || '未設定');
       const menu = document.querySelector('input[name="menu"]:checked').value;
 
       saveCurrentBookingInput();
@@ -1492,55 +912,41 @@
         symptomsText = `[症状] ${chips.join('、')} ${detail ? ' / ' + detail : ''}`;
       }
 
-      let visitTypeStr = visitType;
-      if (ticketNo) visitTypeStr += ` 券No:${ticketNo}`;
-
-      let petInfoStr = `${petBreed} ${petSex} (生年月日:${petBirth})`.trim();
-
-      const finalUserId = lineUserId === "WEB_USER" ? ("WEB_" + phoneNo) : lineUserId;
-
       const payload = {
-        lineUserId: finalUserId,
+        sessionToken,
+        lineUserId: lineUserId === "WEB_USER" ? ("WEB_" + phoneNo) : lineUserId,
         lineUserName: ownerName,
         phoneNo: phoneNo,
-        visitType: visitTypeStr,
+        visitType: ticketNo ? `${visitType} 券No:${ticketNo}` : visitType,
         petName: `${petName}（${petType}）`,
-        petInfo: petInfoStr,
+        petInfo: `${petBreed} ${petSex} (生年月日:${petBirth})`.trim(),
         menu: menu,
         date: selectedDateStr,
         time: selectedTimeStr,
-        symptoms: symptomsText || '特になし'
+        symptoms: symptomsText || '特になし',
+        patientProfile: { phoneNo, ownerName, petName, petType, petBreed, petSex, petBirth, ticketNo }
       };
 
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "updatePatientInfo",
-          phoneNo: phoneNo,
-          ownerName: ownerName,
-          petName: petName,
-          petType: petType,
-          petBreed: petBreed,
-          petSex: petSex,
-          petBirth: petBirth,
-          ticketNo: ticketNo
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(data => {
+          btn.disabled = false; btn.innerText = "予約を確定する 🐾";
+          if (data.status === 'unauthorized') return forceRelogin(data.message);
+          if (data.status === 'success') {
+            alert("予約を受け付けました！ご来院をお待ちしております。");
+            selectedDateStr = ""; selectedTimeStr = "";
+            document.getElementById('selectedSlotNotice').style.display = 'none';
+            document.getElementById('btnToStep5').disabled = true;
+            returnToPortal();
+          } else {
+            alert("予約できませんでした: " + (data.message || ''));
+            fetchPublicSlots();
+          }
         })
-      });
-
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(() => {
-        alert("予約を受け付けました！ご来院をお待ちしております。");
-        returnToPortal();
-      })
-      .catch(err => {
-        alert("送信エラーが発生しました: " + err);
-        btn.disabled = false;
-        btn.innerText = "予約を確定する 🐾";
-      });
+        .catch(err => {
+          alert("送信エラーが発生しました: " + err);
+          btn.disabled = false; btn.innerText = "予約を確定する 🐾";
+        });
     });
   </script>
 </body>
